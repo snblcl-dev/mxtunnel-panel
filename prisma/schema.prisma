@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+model User {
+  id              String     @id @default(uuid()) // UUID que usa la app como token
+  username        String     @unique
+  email           String     @unique
+  password        String? // bcrypt (login del panel)
+  role            Role       @default(USER)
+  expiration_date DateTime?
+  banned          Boolean    @default(false)
+  configs_locked  Boolean    @default(false)
+  config_version  Int        @default(1)
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  categories Category[]
+  servers    Server[]
+
+  @@map("users")
+}
+
+model Category {
+  id         Int      @id @default(autoincrement())
+  name       String
+  color      String   @default("#3B82F6")
+  sorter     Int      @default(0)
+  status     String   @default("ACTIVE")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  user_id    String
+
+  servers Server[]
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([user_id])
+  @@map("categories")
+}
+
+model Server {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  category_id Int
+  sorter      Int      @default(0)
+  status      String   @default("ACTIVE")
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  tunnel_type Int @default(1)
+
+  // SSH
+  ssh_server String?
+  ssh_port   String?
+  ssh_user   String?
+  ssh_pass   String?
+
+  // SSL / payload / proxy
+  custom_sni          String?
+  proxy_payload       String?
+  usar_default_payload Boolean @default(true)
+  proxy_ip            String?
+  proxy_port          String?
+  local_port          String  @default("1080")
+
+  // DNS
+  dns_forward   Boolean @default(true)
+  dns_resolver1 String?
+  dns_resolver2 String?
+  udp_forward   Boolean @default(true)
+  udp_resolver  String?
+
+  // DNSTT / UDP
+  udp_server      String?
+  udp_auth        String?
+  udp_obfs        String?
+  udp_down        String?
+  udp_up          String?
+  udp_buffer      String?
+  udp_port        String?
+  udp_sni         String?
+  udp_version     String?
+  udp_line_input  String?
+  config_line_input String?
+
+  // V2Ray
+  v2ray_json String?
+
+  // Psiphon
+  psi_server_entry String?
+  psi_proxy        String?
+  psi_region       String?
+  psi_timeout      String?
+  psi_auth         String?
+
+  user_id String
+
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  category Category @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([user_id])
+  @@index([category_id])
+  @@map("servers")
+}
+
+model Setting {
+  key   String @id
+  value String
+
+  @@map("settings")
+}

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MXTunnel Panel — Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <div class="container">
+      <span class="navbar-brand">MXTunnel Panel</span>
+      <div class="d-flex align-items-center gap-3">
+        <a class="nav-link" href="/admin/users">Usuarios</a>
+        <form method="POST" action="/logout" class="mb-0">
+          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+          <button class="btn btn-outline-light btn-sm" type="submit">Salir</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    <h4>Resumen</h4>
+    <div class="row g-3 mt-1">
+      <div class="col-md-4">
+        <div class="card text-bg-primary"><div class="card-body"><h5 class="card-title">Usuarios</h5><p class="display-6 mb-0"><%= it.stats.users %></p></div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-bg-success"><div class="card-body"><h5 class="card-title">Servidores</h5><p class="display-6 mb-0"><%= it.stats.servers %></p></div></div>
+      </div>
+      <div class="col-md-4">
+        <div class="card text-bg-warning"><div class="card-body"><h5 class="card-title">Categorías</h5><p class="display-6 mb-0"><%= it.stats.categories %></p></div></div>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <a href="/admin/users" class="btn btn-primary">Gestionar usuarios</a>
+    </div>
+  </div>
+</body>
+</html>

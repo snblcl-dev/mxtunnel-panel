@@ -17,44 +17,56 @@
   <div class="bg-glow bg-glow-2"></div>
   <%~ include('sidebar', it) %>
 
-  <main class="app-main" style="max-width:760px">
-    <div class="page-header">
-      <div>
-        <h3>Perfil</h3>
-        <div class="text-muted">Tu información de cuenta</div>
+  <main class="app-main">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-9 col-xl-7">
+        <div class="page-header">
+          <div>
+            <h3>Perfil</h3>
+            <div class="text-muted">Tu información de cuenta</div>
+          </div>
+        </div>
+
+        <div class="profile-section fade-in">
+          <h6><i class="bi bi-person me-2"></i>Datos de la cuenta</h6>
+          <dl class="dl-info row mb-0">
+            <dt class="col-sm-4">Usuario</dt><dd class="col-sm-8"><%= it.me.username %></dd>
+            <dt class="col-sm-4">Email</dt><dd class="col-sm-8"><%= it.me.email %></dd>
+            <dt class="col-sm-4">Expira</dt><dd class="col-sm-8"><%= it.me.expiration_date ? it.me.expiration_date.toLocaleDateString('es-ES') : 'Sin fecha' %></dd>
+          </dl>
+          <div class="mt-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <span class="token-highlight"><code><%= it.me.id %></code></span>
+              <button class="btn btn-sm btn-outline-primary" onclick="copyText('<%= it.me.id %>')">
+                <i class="bi bi-clipboard me-1"></i>Copiar token
+              </button>
+            </div>
+            <small class="d-block mt-2 text-muted" style="color:var(--ink-2)!important">Pega este UUID en la app MXTunnel junto con la URL del panel.</small>
+          </div>
+        </div>
+
+        <div class="profile-section fade-in">
+          <h6><i class="bi bi-envelope me-2"></i>Cambiar email</h6>
+          <form method="POST" action="/user/profile" data-ajax="true">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+            <input type="hidden" name="action" value="update_email" />
+            <div class="mb-2"><input class="form-control" type="email" name="email" value="<%= it.me.email %>" required /></div>
+            <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Actualizar email</button>
+          </form>
+        </div>
+
+        <div class="profile-section fade-in">
+          <h6><i class="bi bi-lock me-2"></i>Cambiar contraseña</h6>
+          <form method="POST" action="/user/profile" data-ajax="true">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+            <input type="hidden" name="action" value="update_password" />
+            <div class="mb-2"><input class="form-control" type="password" name="current_password" placeholder="Contraseña actual" required /></div>
+            <div class="mb-2"><input class="form-control" type="password" name="new_password" placeholder="Nueva contraseña (mín. 6)" required minlength="6" /></div>
+            <div class="mb-2"><input class="form-control" type="password" name="confirm_password" placeholder="Confirmar nueva contraseña" required minlength="6" /></div>
+            <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Actualizar contraseña</button>
+          </form>
+        </div>
       </div>
-    </div>
-
-    <div class="profile-section fade-in">
-      <h6><i class="bi bi-person me-2"></i>Datos de la cuenta</h6>
-      <dl class="dl-info row mb-0">
-        <dt class="col-sm-3">Usuario</dt><dd class="col-sm-9"><%= it.me.username %></dd>
-        <dt class="col-sm-3">Email</dt><dd class="col-sm-9"><%= it.me.email %></dd>
-        <dt class="col-sm-3">Token (UUID)</dt><dd class="col-sm-9"><div class="d-flex align-items-center gap-2"><code class="text-info"><%= it.me.id %></code><button class="btn btn-sm btn-outline-primary" onclick="copyText('<%= it.me.id %>')"><i class="bi bi-clipboard"></i></button></div></dd>
-        <dt class="col-sm-3">Expira</dt><dd class="col-sm-9"><%= it.me.expiration_date ? it.me.expiration_date.toLocaleDateString('es-ES') : 'Sin fecha' %></dd>
-      </dl>
-    </div>
-
-    <div class="profile-section fade-in">
-      <h6><i class="bi bi-envelope me-2"></i>Cambiar email</h6>
-      <form method="POST" action="/user/profile" data-ajax="true">
-        <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-        <input type="hidden" name="action" value="update_email" />
-        <div class="mb-2"><input class="form-control" type="email" name="email" value="<%= it.me.email %>" required /></div>
-        <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Actualizar email</button>
-      </form>
-    </div>
-
-    <div class="profile-section fade-in">
-      <h6><i class="bi bi-lock me-2"></i>Cambiar contraseña</h6>
-      <form method="POST" action="/user/profile" data-ajax="true">
-        <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-        <input type="hidden" name="action" value="update_password" />
-        <div class="mb-2"><input class="form-control" type="password" name="current_password" placeholder="Contraseña actual" required /></div>
-        <div class="mb-2"><input class="form-control" type="password" name="new_password" placeholder="Nueva contraseña (mín. 6)" required minlength="6" /></div>
-        <div class="mb-2"><input class="form-control" type="password" name="confirm_password" placeholder="Confirmar nueva contraseña" required minlength="6" /></div>
-        <button class="btn btn-primary btn-sm"><i class="bi bi-check-lg me-1"></i>Actualizar contraseña</button>
-      </form>
     </div>
   </main>
 </div>

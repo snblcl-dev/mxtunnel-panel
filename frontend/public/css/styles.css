@@ -174,6 +174,7 @@ body {
   border: 1px solid var(--card-bd);
   border-radius: var(--r-lg);
   padding: 1.4rem 1.5rem;
+  min-height: 110px;
   display: flex; align-items: center; gap: 1rem;
   transition: all .25s;
   box-shadow: var(--glow-sm);
@@ -612,6 +613,28 @@ h1, h2, h3, h4, h5, h6 {
   font-size: .82rem;
   color: var(--purple-l);
   word-break: break-all;
+}
+
+/* Token destacado (estilo botón pero solo visual, no interactivo) */
+.token-highlight {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--purple), var(--blue));
+  color: #fff;
+  padding: .55rem 1rem;
+  border-radius: var(--r-sm);
+  font-family: var(--f-mono);
+  font-size: .85rem;
+  letter-spacing: .01em;
+  box-shadow: var(--glow-accent);
+  word-break: break-all;
+  user-select: all;
+  border: none;
+}
+.token-highlight code {
+  color: #fff !important;
+  background: transparent !important;
+  padding: 0 !important;
+  font-size: inherit !important;
 }
 
 /* ============================================

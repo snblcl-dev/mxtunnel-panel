@@ -1,6 +1,6 @@
 <aside class="app-sidebar">
   <div class="brand">
-    <i class="bi bi-shield-lock-fill"></i>
+    <span class="brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
     <span>MXTunnel</span>
     <span class="badge bg-primary ms-1">Admin</span>
   </div>

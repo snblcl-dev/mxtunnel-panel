@@ -146,28 +146,31 @@
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="0" /></div>
-            <div class="col-12 mt-3"><strong class="small text-muted">SSH</strong></div>
-            <div class="col-md-4"><label class="form-label">Host</label><input class="form-control" name="ssh_server" /></div>
-            <div class="col-md-2"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" /></div>
-            <div class="col-md-3"><label class="form-label">Usuario</label><input class="form-control" name="ssh_user" /></div>
-            <div class="col-md-3"><label class="form-label">Contraseña</label><input class="form-control" name="ssh_pass" /></div>
-            <div class="col-12 mt-3"><strong class="small text-muted">SSL / Payload / Proxy</strong></div>
-            <div class="col-md-4"><label class="form-label">SNI</label><input class="form-control" name="custom_sni" /></div>
-            <div class="col-md-8"><label class="form-label">Payload</label><input class="form-control" name="proxy_payload" /></div>
-            <div class="col-md-4"><label class="form-label">Puerto local</label><input class="form-control" name="local_port" value="1080" /></div>
-            <div class="col-md-4"><label class="form-label">Proxy IP</label><input class="form-control" name="proxy_ip" /></div>
-            <div class="col-md-4"><label class="form-label">Proxy puerto</label><input class="form-control" name="proxy_port" /></div>
-            <div class="col-12 mt-3"><strong class="small text-muted">DNS</strong></div>
+            <div class="col-12 section-divider"><i class="bi bi-terminal"></i><strong>SSH</strong></div>
+            <div class="col-md-5"><label class="form-label">Host</label><input class="form-control" name="ssh_server" /></div>
+            <div class="col-md-3"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" /></div>
+            <div class="col-md-2"><label class="form-label">Usuario</label><input class="form-control" name="ssh_user" /></div>
+            <div class="col-md-2"><label class="form-label">Contraseña</label><input class="form-control" name="ssh_pass" /></div>
+            <div class="col-12 section-divider"><i class="bi bi-shield-lock"></i><strong>SSL / Payload / Proxy</strong></div>
+            <div class="col-12">
+              <label class="form-label">Payload <small class="text-muted">(arrastra la esquina para expandir)</small></label>
+              <textarea class="form-control font-monospace" name="proxy_payload" rows="3" placeholder="CONNECT [host_port] [protocol][crlf][crlf]"></textarea>
+            </div>
+            <div class="col-md-6"><label class="form-label">SNI</label><input class="form-control" name="custom_sni" /></div>
+            <div class="col-md-6"><label class="form-label">Puerto local</label><input class="form-control" name="local_port" value="1080" /></div>
+            <div class="col-md-6"><label class="form-label">Proxy IP</label><input class="form-control" name="proxy_ip" /></div>
+            <div class="col-md-6"><label class="form-label">Proxy puerto</label><input class="form-control" name="proxy_port" /></div>
+            <div class="col-12 section-divider"><i class="bi bi-globe"></i><strong>DNS</strong></div>
             <div class="col-md-4"><label class="form-label">DNS 1</label><input class="form-control" name="dns_resolver1" /></div>
             <div class="col-md-4"><label class="form-label">DNS 2</label><input class="form-control" name="dns_resolver2" /></div>
             <div class="col-md-4"><label class="form-label">UDP resolver</label><input class="form-control" name="udp_resolver" /></div>
-            <div class="col-12 mt-3"><strong class="small text-muted">DNSTT / UDP</strong></div>
+            <div class="col-12 section-divider"><i class="bi bi-broadcast"></i><strong>DNSTT / UDP</strong></div>
             <div class="col-md-3"><label class="form-label">UDP server</label><input class="form-control" name="udp_server" /></div>
             <div class="col-md-3"><label class="form-label">UDP puerto</label><input class="form-control" name="udp_port" /></div>
             <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" /></div>
             <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" /></div>
-            <div class="col-12 mt-3"><strong class="small text-muted">V2Ray / Psiphon</strong></div>
-            <div class="col-md-6"><label class="form-label">v2ray JSON</label><textarea class="form-control" name="v2ray_json" rows="2"></textarea></div>
+            <div class="col-12 section-divider"><i class="bi bi-shield-shaded"></i><strong>V2Ray / Psiphon</strong></div>
+            <div class="col-md-6"><label class="form-label">v2ray JSON <small class="text-muted">(arrastra para expandir)</small></label><textarea class="form-control font-monospace" name="v2ray_json" rows="3"></textarea></div>
             <div class="col-md-3"><label class="form-label">Psiphon región</label><input class="form-control" name="psi_region" /></div>
             <div class="col-md-3"><label class="form-label">Psiphon server</label><input class="form-control" name="psi_server_entry" /></div>
           </div>

@@ -391,6 +391,29 @@ body {
 .dl-info dd { padding-top: 0.4rem; padding-bottom: 0.4rem; }
 
 /* ============================================
+   Section divider (modal)
+   ============================================ */
+.section-divider {
+  border-top: 1px solid var(--border);
+  padding-top: 0.85rem;
+  margin-top: 1.25rem !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.section-divider strong {
+  color: var(--primary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 600;
+}
+.section-divider i {
+  color: var(--primary);
+  font-size: 0.95rem;
+}
+
+/* ============================================
    Animations
    ============================================ */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

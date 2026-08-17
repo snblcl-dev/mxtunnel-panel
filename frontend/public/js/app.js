@@ -66,8 +66,11 @@
   window.submitAjax = function (form) {
     return new Promise((resolve, reject) => {
       try {
-        if (!form.action) { reject(new Error('Form sin action')); return; }
-        const url = form.action + (form.action.includes('?') ? '&' : '?') + 'ajax=1';
+        // Usar getAttribute para garantizar string (form.action puede no comportarse como string en algunos browsers)
+        const action = form.getAttribute('action') || '';
+        if (!action) { showToast('Form sin action', 'error'); reject(new Error('sin action')); return; }
+        const sep = action.indexOf('?') >= 0 ? '&' : '?';
+        const url = action + sep + 'ajax=1';
         const body = toUrlEncoded(new FormData(form));
         const btn = form.querySelector('button[type="submit"], button:not([type])');
         let originalHtml = '';
@@ -90,6 +93,7 @@
             reject(err);
           });
       } catch (e) {
+        console.error('submitAjax thrown', e);
         reject(e);
       }
     });

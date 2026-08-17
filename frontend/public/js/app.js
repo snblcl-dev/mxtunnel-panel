@@ -166,7 +166,34 @@
     if (window.bootstrap) new bootstrap.Modal(m).show();
   };
 
+  // ----- Copy to clipboard (con fallback para HTTP) -----
+  function fallbackCopy(text) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    ta.style.top = '0';
+    ta.setAttribute('readonly', '');
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      const ok = document.execCommand('copy');
+      document.body.removeChild(ta);
+      if (ok) showToast('Copiado', 'success', 2000);
+      else showToast('No se pudo copiar', 'error');
+    } catch (e) {
+      document.body.removeChild(ta);
+      showToast('No se pudo copiar', 'error');
+    }
+  }
+
   window.copyText = function (text) {
-    navigator.clipboard.writeText(text).then(() => showToast('Copiado', 'success', 2000));
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text)
+        .then(() => showToast('Copiado', 'success', 2000))
+        .catch(() => fallbackCopy(text));
+    } else {
+      fallbackCopy(text);
+    }
   };
 })();

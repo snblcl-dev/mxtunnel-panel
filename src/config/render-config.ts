@@ -14,9 +14,9 @@ export class Render {
     const file = path.join(pages, filename);
     const content = eta.readFile(file);
     const res = eta.renderString(content, {
-      ...options,
       user: (req as any).user || null,
       csrfToken: (req as any).csrfToken || '',
+      ...options,
     });
     reply.header('Content-Type', 'text/html');
     return reply.send(res);

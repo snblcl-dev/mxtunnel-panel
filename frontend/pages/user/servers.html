@@ -139,7 +139,7 @@
         <h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar servidor</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <form method="POST" data-ajax="true">
+      <form method="POST" onsubmit="submitForm(this); return false;">
         <div class="modal-body">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
           <input type="hidden" name="action" value="update" />
@@ -192,7 +192,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
         </div>
       </form>
     </div>
@@ -210,10 +210,10 @@
       <div class="modal-body"><p id="confirmDeleteMessage" class="m-0"></p></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form id="confirmDeleteForm" method="POST" data-ajax="true" class="m-0">
+        <form id="confirmDeleteForm" method="POST" onsubmit="submitForm(this); return false;" class="m-0">
           <input type="hidden" name="_csrf" id="confirmDeleteCsrf" value="" />
           <input type="hidden" name="action" value="delete" />
-          <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
         </form>
       </div>
     </div>
@@ -227,13 +227,13 @@
 <script>
   const servers = JSON.parse(document.getElementById('servers-data').textContent);
   const categories = JSON.parse(document.getElementById('categories-data').textContent);
-  const editModal = new bootstrap.Modal(document.getElementById('editServerModal'));
+  const editSrvModalEl = document.getElementById('editServerModal');
+  const editSrvModal = new bootstrap.Modal(editSrvModalEl);
 
   window.openEditServer = function(id) {
     const s = servers.find(x => x.id === id);
-    if (!s) return;
-    const modal = document.getElementById('editServerModal');
-    const form = modal.querySelector('form');
+    if (!s) { alert('Servidor no encontrado'); return; }
+    const form = editSrvModalEl.querySelector('form');
     form.action = '/user/servers/' + id;
     const set = (n, v) => { const el = form.elements[n]; if (el) el.value = v ?? ''; };
     set('name', s.name);
@@ -250,11 +250,10 @@
     set('udp_sni', s.udp_sni); set('udp_version', s.udp_version);
     set('v2ray_json', s.v2ray_json);
     set('psi_region', s.psi_region); set('psi_server_entry', s.psi_server_entry);
-    // Populate category select
     const catSel = form.elements.category_id;
     catSel.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
     catSel.value = s.category_id;
-    editModal.show();
+    editSrvModal.show();
   };
 </script>
 </body>

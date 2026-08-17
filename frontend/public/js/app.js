@@ -19,81 +19,95 @@
   const ICONS = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', info: 'bi-info-circle-fill' };
 
   window.showToast = function (message, type = 'info', delay = 3500) {
-    const c = ensureToastContainer();
-    const id = 'toast-' + Date.now();
-    const el = document.createElement('div');
-    el.className = 'toast toast-' + type + ' fade-in';
-    el.id = id;
-    el.role = 'alert';
-    el.innerHTML = '<div class="toast-body"><i class="bi ' + ICONS[type] + '"></i><span>' + message + '</span></div>';
-    c.appendChild(el);
-    const t = new bootstrap.Toast(el, { delay, autohide: true });
-    t.show();
-    el.addEventListener('hidden.bs.toast', () => el.remove());
+    try {
+      const c = ensureToastContainer();
+      const el = document.createElement('div');
+      el.className = 'toast toast-' + type + ' fade-in';
+      el.role = 'alert';
+      el.innerHTML = '<div class="toast-body"><i class="bi ' + ICONS[type] + '"></i><span>' + message + '</span></div>';
+      c.appendChild(el);
+      const t = new bootstrap.Toast(el, { delay, autohide: true });
+      t.show();
+      el.addEventListener('hidden.bs.toast', () => el.remove());
+    } catch (e) {
+      console.error('toast error', e);
+    }
   };
 
-  // ----- Build urlencoded body from FormData -----
   function toUrlEncoded(formData) {
     const params = new URLSearchParams();
     for (const [k, v] of formData.entries()) params.append(k, v);
     return params;
   }
 
-  // ----- AJAX form submit -----
-  window.submitAjax = function (form, opts = {}) {
-    return new Promise((resolve, reject) => {
-      const url = form.action + (form.action.includes('?') ? '&' : '?') + 'ajax=1';
-      const body = toUrlEncoded(new FormData(form));
-      const btn = form.querySelector('button[type="submit"]');
-      let originalHtml = '';
-      if (btn) { originalHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...'; }
+  // ----- submitForm: handler DIRECTO (para modales) -----
+  // Se llama desde onsubmit="submitForm(this); return false;"
+  window.submitForm = function (form) {
+    if (!form) { console.error('submitForm: no form'); return; }
+    try {
+      submitAjax(form).then(resp => {
+        showToast((resp && resp.message) || 'Guardado', 'success');
+        const modalEl = form.closest && form.closest('.modal');
+        if (modalEl && window.bootstrap) {
+          const inst = bootstrap.Modal.getInstance(modalEl);
+          if (inst) inst.hide();
+        }
+        setTimeout(() => window.location.reload(), 700);
+      }).catch(err => {
+        console.error('submitAjax error', err);
+      });
+    } catch (e) {
+      console.error('submitForm thrown', e);
+      showToast('Error al enviar formulario', 'error');
+    }
+  };
 
-      fetch(url, {
-        method: form.method || 'POST',
-        body,
-        headers: {
-          'X-Requested-With': 'XMLHttpRequest',
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-      })
-        .then(r => r.json().catch(() => ({ ok: r.ok, status: r.status })))
-        .then(resp => {
-          if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
-          if (resp && resp.ok) {
-            resolve(resp);
-          } else {
-            const msg = (resp && (resp.message || resp.error)) || 'Error';
-            showToast(msg, 'error');
-            reject(resp);
-          }
+  // ----- submitAjax (interno) -----
+  window.submitAjax = function (form) {
+    return new Promise((resolve, reject) => {
+      try {
+        if (!form.action) { reject(new Error('Form sin action')); return; }
+        const url = form.action + (form.action.includes('?') ? '&' : '?') + 'ajax=1';
+        const body = toUrlEncoded(new FormData(form));
+        const btn = form.querySelector('button[type="submit"], button:not([type])');
+        let originalHtml = '';
+        if (btn) { originalHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...'; }
+
+        fetch(url, {
+          method: form.method || 'POST',
+          body,
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
         })
-        .catch(err => {
-          if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
-          showToast('Error de red', 'error');
-          reject(err);
-        });
+          .then(r => r.json().catch(() => ({ ok: r.ok, status: r.status })))
+          .then(resp => {
+            if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
+            if (resp && resp.ok) resolve(resp);
+            else { showToast((resp && (resp.message || resp.error)) || 'Error', 'error'); reject(resp); }
+          })
+          .catch(err => {
+            if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
+            showToast('Error de red', 'error');
+            reject(err);
+          });
+      } catch (e) {
+        reject(e);
+      }
     });
   };
 
-  // ----- Bind all forms with data-ajax="true" -----
+  // ----- Delegación para forms INLINE (data-ajax) -----
   document.addEventListener('submit', function (e) {
     const form = e.target;
     if (!(form instanceof HTMLFormElement)) return;
     if (form.dataset.ajax !== 'true') return;
-
     e.preventDefault();
     submitAjax(form).then(resp => {
       showToast((resp && resp.message) || 'Guardado', 'success');
-      const modalEl = form.closest('.modal');
-      if (modalEl) {
-        const m = bootstrap.Modal.getInstance(modalEl);
-        if (m) m.hide();
-      }
       setTimeout(() => window.location.reload(), 700);
     }).catch(() => {});
   });
 
-  // ----- Toggle switch (AJAX) -----
+  // ----- Toggle switch -----
   document.addEventListener('change', function (e) {
     const t = e.target;
     if (!(t instanceof HTMLInputElement)) return;
@@ -110,10 +124,7 @@
     fetch(url + (url.includes('?') ? '&' : '?') + 'ajax=1', {
       method: 'POST',
       body: params,
-      headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
+      headers: { 'X-Requested-With': 'XMLHttpRequest' },
     })
       .then(r => r.json())
       .then(resp => {
@@ -139,7 +150,7 @@
       });
   });
 
-  // ----- Delete with confirmation modal -----
+  // ----- Delete confirmation -----
   window.confirmDelete = function (url, csrf, message) {
     const m = document.getElementById('confirmDeleteModal');
     if (!m) return;
@@ -148,12 +159,9 @@
     form.action = url;
     const csrfInput = document.getElementById('confirmDeleteCsrf');
     if (csrfInput) csrfInput.value = csrf;
-
-    const modal = new bootstrap.Modal(m);
-    modal.show();
+    if (window.bootstrap) new bootstrap.Modal(m).show();
   };
 
-  // ----- Copy to clipboard -----
   window.copyText = function (text) {
     navigator.clipboard.writeText(text).then(() => showToast('Copiado', 'success', 2000));
   };

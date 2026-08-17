@@ -136,7 +136,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar categoría</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <form method="POST" data-ajax="true">
+      <form method="POST" onsubmit="submitForm(this); return false;">
         <div class="modal-body">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
           <input type="hidden" name="action" value="update" />
@@ -148,7 +148,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
         </div>
       </form>
     </div>
@@ -160,7 +160,7 @@
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar servidor</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-      <form method="POST" data-ajax="true">
+      <form method="POST" onsubmit="submitForm(this); return false;">
         <div class="modal-body">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
           <input type="hidden" name="action" value="update" />
@@ -199,7 +199,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
         </div>
       </form>
     </div>
@@ -214,10 +214,10 @@
       <div class="modal-body"><p id="confirmDeleteMessage" class="m-0"></p></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <form id="confirmDeleteForm" method="POST" data-ajax="true" class="m-0">
+        <form id="confirmDeleteForm" method="POST" onsubmit="submitForm(this); return false;" class="m-0">
           <input type="hidden" name="_csrf" id="confirmDeleteCsrf" value="" />
           <input type="hidden" name="action" value="delete" />
-          <button class="btn btn-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
+          <button type="submit" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
         </form>
       </div>
     </div>
@@ -232,14 +232,15 @@
   const userId = '<%= it.user.id %>';
   const categories = JSON.parse(document.getElementById('categories-data').textContent);
   const servers = JSON.parse(document.getElementById('servers-data').textContent);
-  const editCatModal = new bootstrap.Modal(document.getElementById('editCategoryModal'));
-  const editSrvModal = new bootstrap.Modal(document.getElementById('editServerModal'));
+  const editCatModalEl = document.getElementById('editCategoryModal');
+  const editSrvModalEl = document.getElementById('editServerModal');
+  const editCatModal = new bootstrap.Modal(editCatModalEl);
+  const editSrvModal = new bootstrap.Modal(editSrvModalEl);
 
   window.openEditCategory = function(id) {
     const c = categories.find(x => x.id === id);
-    if (!c) return;
-    const modal = document.getElementById('editCategoryModal');
-    const form = modal.querySelector('form');
+    if (!c) { alert('Categoría no encontrada'); return; }
+    const form = editCatModalEl.querySelector('form');
     form.action = '/admin/users/' + userId + '/categories/' + id;
     form.elements.name.value = c.name;
     form.elements.color.value = c.color;
@@ -249,9 +250,8 @@
 
   window.openEditServer = function(id) {
     const s = servers.find(x => x.id === id);
-    if (!s) return;
-    const modal = document.getElementById('editServerModal');
-    const form = modal.querySelector('form');
+    if (!s) { alert('Servidor no encontrado'); return; }
+    const form = editSrvModalEl.querySelector('form');
     form.action = '/admin/users/' + userId + '/servers/' + id;
     const set = (n, v) => { const el = form.elements[n]; if (el) el.value = v ?? ''; };
     set('name', s.name); set('sorter', s.sorter); set('tunnel_type', s.tunnel_type);

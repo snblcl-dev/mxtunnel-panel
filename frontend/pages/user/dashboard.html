@@ -18,61 +18,101 @@
   <%~ include('sidebar', it) %>
 
   <main class="app-main">
-    <div class="page-header">
-      <div>
-        <h3>Inicio</h3>
-        <div class="text-muted">Resumen de tu cuenta</div>
+    <!-- Welcome card -->
+    <div class="welcome-card fade-in">
+      <div class="welcome-left">
+        <div class="welcome-eyebrow">PANEL</div>
+        <h1 class="welcome-title">Hola, <%= it.me.username %></h1>
+        <p class="welcome-sub">Bienvenido a tu panel</p>
+      </div>
+      <div class="welcome-right">
+        <div class="welcome-info-row">
+          <div class="info-icon"><i class="bi bi-envelope"></i></div>
+          <div class="info-text">
+            <div class="info-label">EMAIL</div>
+            <div class="info-value"><%= it.me.email %></div>
+          </div>
+        </div>
+        <div class="welcome-info-row">
+          <div class="info-icon"><i class="bi bi-key"></i></div>
+          <div class="info-text" style="flex:1; min-width:0;">
+            <div class="info-label">TOKEN (UUID)</div>
+            <div class="info-value" style="font-size:.78rem;"><code><%= it.me.id %></code></div>
+          </div>
+          <button class="copy-btn" onclick="copyText('<%= it.me.id %>')" title="Copiar">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <div class="stat-card fade-in">
-          <div class="icon-box indigo"><i class="bi bi-person-circle"></i></div>
-          <div>
-            <div class="label">Usuario</div>
-            <div class="value" style="font-size:1.25rem"><%= it.me.username %></div>
-            <div class="sub"><%= it.me.email %></div>
-          </div>
-        </div>
-      </div>
+    <!-- Stats: estado, categorías, servidores -->
+    <div class="row g-3 mb-3">
       <div class="col-md-4">
         <div class="stat-card fade-in">
           <div class="icon-box <%= it.me.banned ? 'danger' : (it.expired ? 'warning' : 'success') %>">
             <i class="bi bi-<%= it.me.banned ? 'x-octagon-fill' : (it.expired ? 'exclamation-triangle-fill' : 'check-circle-fill') %>"></i>
           </div>
           <div>
-            <div class="label">Estado</div>
-            <div class="value" style="font-size:1.25rem">
+            <div class="label">ESTADO DE CUENTA</div>
+            <div class="value" style="font-size:1.2rem">
               <% if (it.me.banned) { %><span class="badge bg-danger">Suspendida</span>
               <% } else if (it.expired) { %><span class="badge bg-warning">Expirada</span>
               <% } else { %><span class="badge bg-success">Activa</span><% } %>
             </div>
-            <div class="sub">Expira: <%= it.me.expiration_date ? it.me.expiration_date.toLocaleDateString('es-ES') : 'Sin fecha' %></div>
           </div>
         </div>
       </div>
       <div class="col-md-4">
         <div class="stat-card fade-in">
-          <div class="icon-box info"><i class="bi bi-collection-fill"></i></div>
+          <div class="icon-box indigo"><i class="bi bi-folder-fill"></i></div>
           <div>
-            <div class="label">Contenido</div>
-            <div class="value"><%= it.counts.categories %> <small class="text-muted" style="font-size:0.9rem">cat.</small> · <%= it.counts.servers %> <small class="text-muted" style="font-size:0.9rem">srv.</small></div>
-            <div class="sub">Categorías y servidores</div>
+            <div class="label">CATEGORÍAS</div>
+            <div class="value"><%= it.counts.categories %></div>
+            <div class="sub">agrupaciones creadas</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card fade-in">
+          <div class="icon-box info"><i class="bi bi-hdd-rack-fill"></i></div>
+          <div>
+            <div class="label">SERVIDORES</div>
+            <div class="value"><%= it.counts.servers %></div>
+            <div class="sub">configs activas</div>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="profile-section fade-in">
-      <h6><i class="bi bi-key me-2"></i>Tu token (UUID)</h6>
-      <div class="d-flex align-items-center gap-2">
-        <div class="token-box flex-grow-1"><%= it.me.id %></div>
-        <button class="btn btn-outline-primary btn-sm" onclick="copyText('<%= it.me.id %>')">
-          <i class="bi bi-clipboard"></i>
-        </button>
+    <!-- Fechas de cuenta -->
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="stat-card fade-in">
+          <div class="icon-box"><i class="bi bi-calendar-plus"></i></div>
+          <div>
+            <div class="label">CUENTA CREADA</div>
+            <div class="value" style="font-size:1.15rem">
+              <%= it.me.created_at ? it.me.created_at.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : '—' %>
+            </div>
+            <div class="sub">fecha de registro</div>
+          </div>
+        </div>
       </div>
-      <p class="text-muted mt-2 mb-0" style="font-size:0.85rem">Pega este UUID junto con la URL del panel en la app MXTunnel.</p>
+      <div class="col-md-6">
+        <div class="stat-card fade-in">
+          <div class="icon-box <%= it.expired ? 'danger' : (it.me.expiration_date ? 'warning' : 'success') %>">
+            <i class="bi bi-calendar-event"></i>
+          </div>
+          <div>
+            <div class="label">EXPIRACIÓN</div>
+            <div class="value" style="font-size:1.15rem">
+              <%= it.me.expiration_date ? it.me.expiration_date.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Sin fecha' %>
+            </div>
+            <div class="sub"><%= it.expired ? 'cuenta expirada' : (it.me.expiration_date ? 'cuenta vigente' : 'sin límite') %></div>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>

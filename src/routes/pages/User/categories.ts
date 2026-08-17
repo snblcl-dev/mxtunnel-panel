@@ -14,6 +14,10 @@ export default {
       where: { user_id: userId },
       orderBy: { sorter: 'asc' },
     });
-    return Render.page(req, reply, '/user/categories.html', { active: 'categories', categories });
+    return Render.page(req, reply, '/user/categories.html', {
+      active: 'categories',
+      categories,
+      categoriesJson: JSON.stringify(categories),
+    });
   },
 } as RouteOptions;

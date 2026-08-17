@@ -3,6 +3,7 @@ import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
@@ -56,59 +57,39 @@ export default {
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const userId = (req as any).user.id;
     const parsed = schema.safeParse(req.body);
-    if (!parsed.success) {
-      return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-    }
+    if (!parsed.success) return ajaxFail(reply, 'Datos inválidos.');
     const d = parsed.data;
-
-    // Validar que la categoría pertenece al usuario
     const cat = await prisma.category.findFirst({ where: { id: d.category_id, user_id: userId } });
-    if (!cat) return reply.status(400).send({ error: 'ValidationError', message: 'Categoría inválida.' });
+    if (!cat) return ajaxFail(reply, 'Categoría inválida.');
 
     await prisma.server.create({
       data: {
-        name: d.name,
-        description: d.description ?? '',
-        category_id: d.category_id,
-        sorter: d.sorter,
-        status: 'ACTIVE',
-        tunnel_type: d.tunnel_type,
-        ssh_server: orEmpty(d.ssh_server),
-        ssh_port: orEmpty(d.ssh_port),
-        ssh_user: orEmpty(d.ssh_user),
-        ssh_pass: orEmpty(d.ssh_pass),
-        custom_sni: orEmpty(d.custom_sni),
-        proxy_payload: orEmpty(d.proxy_payload),
+        name: d.name, description: d.description ?? '',
+        category_id: d.category_id, sorter: d.sorter, status: 'ACTIVE', tunnel_type: d.tunnel_type,
+        ssh_server: orEmpty(d.ssh_server), ssh_port: orEmpty(d.ssh_port),
+        ssh_user: orEmpty(d.ssh_user), ssh_pass: orEmpty(d.ssh_pass),
+        custom_sni: orEmpty(d.custom_sni), proxy_payload: orEmpty(d.proxy_payload),
         usar_default_payload: d.usar_default_payload !== undefined ? d.usar_default_payload === '1' : true,
-        proxy_ip: orEmpty(d.proxy_ip),
-        proxy_port: orEmpty(d.proxy_port),
+        proxy_ip: orEmpty(d.proxy_ip), proxy_port: orEmpty(d.proxy_port),
         local_port: d.local_port || '1080',
         dns_forward: d.dns_forward !== undefined ? d.dns_forward === '1' : true,
-        dns_resolver1: orEmpty(d.dns_resolver1),
-        dns_resolver2: orEmpty(d.dns_resolver2),
+        dns_resolver1: orEmpty(d.dns_resolver1), dns_resolver2: orEmpty(d.dns_resolver2),
         udp_forward: d.udp_forward !== undefined ? d.udp_forward === '1' : true,
         udp_resolver: orEmpty(d.udp_resolver),
-        udp_server: orEmpty(d.udp_server),
-        udp_auth: orEmpty(d.udp_auth),
-        udp_obfs: orEmpty(d.udp_obfs),
-        udp_down: orEmpty(d.udp_down),
-        udp_up: orEmpty(d.udp_up),
-        udp_buffer: orEmpty(d.udp_buffer),
-        udp_port: orEmpty(d.udp_port),
-        udp_sni: orEmpty(d.udp_sni),
+        udp_server: orEmpty(d.udp_server), udp_auth: orEmpty(d.udp_auth),
+        udp_obfs: orEmpty(d.udp_obfs), udp_down: orEmpty(d.udp_down),
+        udp_up: orEmpty(d.udp_up), udp_buffer: orEmpty(d.udp_buffer),
+        udp_port: orEmpty(d.udp_port), udp_sni: orEmpty(d.udp_sni),
         udp_version: orEmpty(d.udp_version),
-        udp_line_input: orEmpty(d.udp_line_input),
-        config_line_input: orEmpty(d.config_line_input),
+        udp_line_input: orEmpty(d.udp_line_input), config_line_input: orEmpty(d.config_line_input),
         v2ray_json: orEmpty(d.v2ray_json),
-        psi_server_entry: orEmpty(d.psi_server_entry),
-        psi_proxy: orEmpty(d.psi_proxy),
-        psi_region: orEmpty(d.psi_region),
-        psi_timeout: orEmpty(d.psi_timeout),
+        psi_server_entry: orEmpty(d.psi_server_entry), psi_proxy: orEmpty(d.psi_proxy),
+        psi_region: orEmpty(d.psi_region), psi_timeout: orEmpty(d.psi_timeout),
         psi_auth: orEmpty(d.psi_auth),
         user_id: userId,
       },
     });
     await bumpConfigVersion(userId);
-    return reply.redirect('/user/servers');
+    return ajaxOrRedirect(req, reply, '/user/servers', 'Servidor creado');
   },
 } as RouteOptions;

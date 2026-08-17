@@ -25,6 +25,13 @@ export default {
       orderBy: [{ category_id: 'asc' }, { sorter: 'asc' }],
     });
 
-    return Render.page(req, reply, '/admin/config.html', { active: 'users', user, categories, servers });
+    return Render.page(req, reply, '/admin/config.html', {
+      active: 'users',
+      user,
+      categories,
+      servers,
+      categoriesJson: JSON.stringify(categories),
+      serversJson: JSON.stringify(servers),
+    });
   },
 } as RouteOptions;

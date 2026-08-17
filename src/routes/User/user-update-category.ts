@@ -3,6 +3,7 @@ import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
@@ -29,30 +30,30 @@ export default {
     const category = await prisma.category.findFirst({
       where: { id: Number(cid), user_id: userId },
     });
-    if (!category) return reply.status(404).send({ error: 'NotFound' });
+    if (!category) return ajaxFail(reply, 'No encontrada', 404);
 
     if (action === 'toggle') {
       await prisma.category.update({
         where: { id: category.id },
         data: { status: category.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/categories', 'Estado actualizado');
     } else if (action === 'delete') {
       await prisma.category.delete({ where: { id: category.id } });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/categories', 'Categoría eliminada');
     } else if (action === 'update') {
       const parsed = schema.safeParse(body);
-      if (!parsed.success) {
-        return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-      }
+      if (!parsed.success) return ajaxFail(reply, 'Datos inválidos.');
       const { name, color, sorter } = parsed.data;
       await prisma.category.update({
         where: { id: category.id },
         data: { name, color, sorter },
       });
-    } else {
-      return reply.status(400).send({ error: 'ValidationError', message: 'Acción inválida.' });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/categories', 'Categoría actualizada');
     }
-
-    await bumpConfigVersion(userId);
-    return reply.redirect('/user/categories');
+    return ajaxFail(reply, 'Acción inválida.');
   },
 } as RouteOptions;

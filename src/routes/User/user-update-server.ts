@@ -3,6 +3,7 @@ import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
@@ -64,71 +65,56 @@ export default {
     const server = await prisma.server.findFirst({
       where: { id: Number(sid), user_id: userId },
     });
-    if (!server) return reply.status(404).send({ error: 'NotFound' });
+    if (!server) return ajaxFail(reply, 'No encontrado', 404);
 
     if (action === 'toggle') {
       await prisma.server.update({
         where: { id: server.id },
         data: { status: server.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
       });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/servers', 'Estado actualizado');
     } else if (action === 'delete') {
       await prisma.server.delete({ where: { id: server.id } });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/servers', 'Servidor eliminado');
     } else if (action === 'update') {
       const parsed = schema.safeParse(body);
-      if (!parsed.success) {
-        return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-      }
+      if (!parsed.success) return ajaxFail(reply, 'Datos inválidos.');
       const d = parsed.data;
       const cat = await prisma.category.findFirst({ where: { id: d.category_id, user_id: userId } });
-      if (!cat) return reply.status(400).send({ error: 'ValidationError', message: 'Categoría inválida.' });
+      if (!cat) return ajaxFail(reply, 'Categoría inválida.');
 
       await prisma.server.update({
         where: { id: server.id },
         data: {
-          name: d.name,
-          description: d.description ?? '',
-          category_id: d.category_id,
-          sorter: d.sorter,
-          tunnel_type: d.tunnel_type,
-          ssh_server: orEmpty(d.ssh_server),
-          ssh_port: orEmpty(d.ssh_port),
-          ssh_user: orEmpty(d.ssh_user),
-          ssh_pass: orEmpty(d.ssh_pass),
-          custom_sni: orEmpty(d.custom_sni),
-          proxy_payload: orEmpty(d.proxy_payload),
+          name: d.name, description: d.description ?? '',
+          category_id: d.category_id, sorter: d.sorter, tunnel_type: d.tunnel_type,
+          ssh_server: orEmpty(d.ssh_server), ssh_port: orEmpty(d.ssh_port),
+          ssh_user: orEmpty(d.ssh_user), ssh_pass: orEmpty(d.ssh_pass),
+          custom_sni: orEmpty(d.custom_sni), proxy_payload: orEmpty(d.proxy_payload),
           usar_default_payload: d.usar_default_payload !== undefined ? d.usar_default_payload === '1' : true,
-          proxy_ip: orEmpty(d.proxy_ip),
-          proxy_port: orEmpty(d.proxy_port),
+          proxy_ip: orEmpty(d.proxy_ip), proxy_port: orEmpty(d.proxy_port),
           local_port: d.local_port || '1080',
           dns_forward: d.dns_forward !== undefined ? d.dns_forward === '1' : true,
-          dns_resolver1: orEmpty(d.dns_resolver1),
-          dns_resolver2: orEmpty(d.dns_resolver2),
+          dns_resolver1: orEmpty(d.dns_resolver1), dns_resolver2: orEmpty(d.dns_resolver2),
           udp_forward: d.udp_forward !== undefined ? d.udp_forward === '1' : true,
           udp_resolver: orEmpty(d.udp_resolver),
-          udp_server: orEmpty(d.udp_server),
-          udp_auth: orEmpty(d.udp_auth),
-          udp_obfs: orEmpty(d.udp_obfs),
-          udp_down: orEmpty(d.udp_down),
-          udp_up: orEmpty(d.udp_up),
-          udp_buffer: orEmpty(d.udp_buffer),
-          udp_port: orEmpty(d.udp_port),
-          udp_sni: orEmpty(d.udp_sni),
+          udp_server: orEmpty(d.udp_server), udp_auth: orEmpty(d.udp_auth),
+          udp_obfs: orEmpty(d.udp_obfs), udp_down: orEmpty(d.udp_down),
+          udp_up: orEmpty(d.udp_up), udp_buffer: orEmpty(d.udp_buffer),
+          udp_port: orEmpty(d.udp_port), udp_sni: orEmpty(d.udp_sni),
           udp_version: orEmpty(d.udp_version),
-          udp_line_input: orEmpty(d.udp_line_input),
-          config_line_input: orEmpty(d.config_line_input),
+          udp_line_input: orEmpty(d.udp_line_input), config_line_input: orEmpty(d.config_line_input),
           v2ray_json: orEmpty(d.v2ray_json),
-          psi_server_entry: orEmpty(d.psi_server_entry),
-          psi_proxy: orEmpty(d.psi_proxy),
-          psi_region: orEmpty(d.psi_region),
-          psi_timeout: orEmpty(d.psi_timeout),
+          psi_server_entry: orEmpty(d.psi_server_entry), psi_proxy: orEmpty(d.psi_proxy),
+          psi_region: orEmpty(d.psi_region), psi_timeout: orEmpty(d.psi_timeout),
           psi_auth: orEmpty(d.psi_auth),
         },
       });
-    } else {
-      return reply.status(400).send({ error: 'ValidationError', message: 'Acción inválida.' });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/servers', 'Servidor actualizado');
     }
-
-    await bumpConfigVersion(userId);
-    return reply.redirect('/user/servers');
+    return ajaxFail(reply, 'Acción inválida.');
   },
 } as RouteOptions;

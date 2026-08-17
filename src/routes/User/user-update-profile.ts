@@ -3,6 +3,7 @@ import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
@@ -25,42 +26,26 @@ export default {
 
     if (action === 'update_email') {
       const parsed = emailSchema.safeParse(body);
-      if (!parsed.success) {
-        return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-      }
+      if (!parsed.success) return ajaxFail(reply, 'Email inválido.');
       try {
-        await prisma.user.update({
-          where: { id: userId },
-          data: { email: parsed.data.email },
-        });
+        await prisma.user.update({ where: { id: userId }, data: { email: parsed.data.email } });
       } catch (e: any) {
-        if (e.code === 'P2002') {
-          return reply.status(409).send({ error: 'Conflict', message: 'Ese email ya está en uso.' });
-        }
+        if (e.code === 'P2002') return ajaxFail(reply, 'Ese email ya está en uso.', 409);
         throw e;
       }
+      return ajaxOrRedirect(req, reply, '/user/profile', 'Email actualizado');
     } else if (action === 'update_password') {
       const parsed = passSchema.safeParse(body);
-      if (!parsed.success) {
-        return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-      }
-      if (parsed.data.new_password !== parsed.data.confirm_password) {
-        return reply.status(400).send({ error: 'ValidationError', message: 'Las contraseñas no coinciden.' });
-      }
+      if (!parsed.success) return ajaxFail(reply, 'Datos inválidos.');
+      if (parsed.data.new_password !== parsed.data.confirm_password) return ajaxFail(reply, 'Las contraseñas no coinciden.');
       const user = await prisma.user.findUnique({ where: { id: userId } });
-      if (!user || !user.password) {
-        return reply.status(400).send({ error: 'ValidationError', message: 'No tienes contraseña configurada.' });
-      }
+      if (!user || !user.password) return ajaxFail(reply, 'No tienes contraseña configurada.');
       const ok = await comparePassword(parsed.data.current_password, user.password);
-      if (!ok) {
-        return reply.status(400).send({ error: 'ValidationError', message: 'Contraseña actual incorrecta.' });
-      }
+      if (!ok) return ajaxFail(reply, 'Contraseña actual incorrecta.');
       const hashed = await hashPassword(parsed.data.new_password);
       await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
-    } else {
-      return reply.status(400).send({ error: 'ValidationError', message: 'Acción inválida.' });
+      return ajaxOrRedirect(req, reply, '/user/profile', 'Contraseña actualizada');
     }
-
-    return reply.redirect('/user/profile');
+    return ajaxFail(reply, 'Acción inválida.');
   },
 } as RouteOptions;

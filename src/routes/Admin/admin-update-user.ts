@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import AdminAuthentication from '../../middlewares/admin-authentication';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 type Params = { id: string };
@@ -14,34 +15,27 @@ export default {
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const { id } = req.params as Params;
     const { action, expiration_date } = req.body as Body;
-
     const user = await prisma.user.findUnique({ where: { id } });
-    if (!user) return reply.status(404).send({ error: 'NotFound' });
+    if (!user) return ajaxFail(reply, 'No encontrado', 404);
 
     switch (action) {
-      case 'ban': {
+      case 'ban':
         await prisma.user.update({ where: { id }, data: { banned: !user.banned } });
-        break;
-      }
-      case 'expire': {
+        return ajaxOrRedirect(req, reply, '/admin/users', user.banned ? 'Usuario desbaneado' : 'Usuario baneado');
+      case 'expire':
         await prisma.user.update({
           where: { id },
           data: { expiration_date: expiration_date ? new Date(expiration_date) : null },
         });
-        break;
-      }
-      case 'lock': {
+        return ajaxOrRedirect(req, reply, '/admin/users', 'Expiración actualizada');
+      case 'lock':
         await prisma.user.update({ where: { id }, data: { configs_locked: !user.configs_locked } });
-        break;
-      }
-      case 'delete': {
+        return ajaxOrRedirect(req, reply, '/admin/users', 'Bloqueo actualizado');
+      case 'delete':
         await prisma.user.delete({ where: { id } });
-        break;
-      }
+        return ajaxOrRedirect(req, reply, '/admin/users', 'Usuario eliminado');
       default:
-        return reply.status(400).send({ error: 'ValidationError', message: 'Acción inválida.' });
+        return ajaxFail(reply, 'Acción inválida.');
     }
-
-    return reply.redirect('/admin/users');
   },
 } as RouteOptions;

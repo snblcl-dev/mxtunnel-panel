@@ -2,6 +2,7 @@ import { z } from 'zod';
 import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import AdminAuthentication from '../../middlewares/admin-authentication';
+import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
@@ -21,18 +22,10 @@ export default {
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const { id } = req.params as Params;
     const parsed = schema.safeParse(req.body);
-    if (!parsed.success) {
-      return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
-    }
-
+    if (!parsed.success) return ajaxFail(reply, 'Datos inválidos.');
     const { name, color, sorter } = parsed.data;
-
-    await prisma.category.create({
-      data: { name, color, sorter, status: 'ACTIVE', user_id: id },
-    });
-
+    await prisma.category.create({ data: { name, color, sorter, status: 'ACTIVE', user_id: id } });
     await bumpConfigVersion(id);
-
-    return reply.redirect(`/admin/users/${id}/config`);
+    return ajaxOrRedirect(req, reply, `/admin/users/${id}/config`, 'Categoría creada');
   },
 } as RouteOptions;

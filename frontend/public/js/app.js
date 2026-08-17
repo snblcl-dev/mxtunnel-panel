@@ -32,23 +32,37 @@
     el.addEventListener('hidden.bs.toast', () => el.remove());
   };
 
+  // ----- Build urlencoded body from FormData -----
+  function toUrlEncoded(formData) {
+    const params = new URLSearchParams();
+    for (const [k, v] of formData.entries()) params.append(k, v);
+    return params;
+  }
+
   // ----- AJAX form submit -----
   window.submitAjax = function (form, opts = {}) {
     return new Promise((resolve, reject) => {
       const url = form.action + (form.action.includes('?') ? '&' : '?') + 'ajax=1';
-      const data = new FormData(form);
+      const body = toUrlEncoded(new FormData(form));
       const btn = form.querySelector('button[type="submit"]');
       let originalHtml = '';
       if (btn) { originalHtml = btn.innerHTML; btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Guardando...'; }
 
-      fetch(url, { method: form.method || 'POST', body: data, headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      fetch(url, {
+        method: form.method || 'POST',
+        body,
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      })
         .then(r => r.json().catch(() => ({ ok: r.ok, status: r.status })))
         .then(resp => {
           if (btn) { btn.disabled = false; btn.innerHTML = originalHtml; }
-          if (resp.ok) {
+          if (resp && resp.ok) {
             resolve(resp);
           } else {
-            const msg = resp.message || resp.error || 'Error';
+            const msg = (resp && (resp.message || resp.error)) || 'Error';
             showToast(msg, 'error');
             reject(resp);
           }
@@ -69,16 +83,13 @@
 
     e.preventDefault();
     submitAjax(form).then(resp => {
-      if (resp && resp.message) showToast(resp.message, 'success');
-      else showToast('Guardado', 'success');
-      // Close enclosing modal if present
+      showToast((resp && resp.message) || 'Guardado', 'success');
       const modalEl = form.closest('.modal');
       if (modalEl) {
         const m = bootstrap.Modal.getInstance(modalEl);
         if (m) m.hide();
       }
-      // Reload after short delay
-      setTimeout(() => window.location.reload(), 600);
+      setTimeout(() => window.location.reload(), 700);
     }).catch(() => {});
   });
 
@@ -92,18 +103,23 @@
     const original = t.checked;
     t.disabled = true;
 
-    const fd = new FormData();
-    fd.append('action', t.dataset.action || 'toggle');
-    fd.append('_csrf', t.dataset.csrf);
+    const params = new URLSearchParams();
+    params.append('action', t.dataset.action || 'toggle');
+    params.append('_csrf', t.dataset.csrf);
 
     fetch(url + (url.includes('?') ? '&' : '?') + 'ajax=1', {
-      method: 'POST', body: fd, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      method: 'POST',
+      body: params,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
     })
       .then(r => r.json())
       .then(resp => {
         t.disabled = false;
-        if (resp.ok) {
-          showToast(resp.message || 'Actualizado', 'success');
+        if (resp && resp.ok) {
+          showToast(resp.message || 'Actualizado', 'success', 2000);
           const badge = document.querySelector('[data-status-badge="' + t.dataset.targetId + '"]');
           if (badge) {
             const newStatus = original ? t.dataset.activeLabel : t.dataset.inactiveLabel;
@@ -113,7 +129,7 @@
         } else {
           t.checked = !original;
           t.disabled = false;
-          showToast(resp.message || 'Error', 'error');
+          showToast((resp && resp.message) || 'Error', 'error');
         }
       })
       .catch(() => {

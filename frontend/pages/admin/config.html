@@ -46,6 +46,7 @@
               <li class="list-group-item d-flex justify-content-between align-items-center">
                 <span><span style="color:<%= c.color %>">●</span> <%= c.name %> <span class="badge text-bg-secondary"><%= c.status %></span></span>
                 <span class="d-flex gap-1">
+                  <a class="btn btn-sm btn-outline-primary" href="/admin/users/<%= it.user.id %>/categories/<%= c.id %>/edit">Editar</a>
                   <form method="POST" action="/admin/users/<%= it.user.id %>/categories/<%= c.id %>" class="mb-0">
                     <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                     <input type="hidden" name="action" value="toggle" />
@@ -141,6 +142,7 @@
                 <td><%= s.ssh_server || s.udp_server || s.psi_server_entry || '—' %></td>
                 <td><span class="badge text-bg-<%= s.status === 'ACTIVE' ? 'success' : 'secondary' %>"><%= s.status %></span></td>
                 <td class="d-flex gap-1">
+                  <a class="btn btn-sm btn-outline-primary" href="/admin/users/<%= it.user.id %>/servers/<%= s.id %>/edit">Editar</a>
                   <form method="POST" action="/admin/users/<%= it.user.id %>/servers/<%= s.id %>" class="mb-0">
                     <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                     <input type="hidden" name="action" value="toggle" />

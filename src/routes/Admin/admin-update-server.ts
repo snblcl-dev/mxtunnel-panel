@@ -1,3 +1,4 @@
+import { z } from 'zod';
 import prisma from '../../config/prisma-client';
 import RequireCSRF from '../../middlewares/require-csrf';
 import AdminAuthentication from '../../middlewares/admin-authentication';
@@ -5,7 +6,54 @@ import { bumpConfigVersion } from '../../utils/bump-version';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 type Params = { id: string; sid: string };
-type Body = { action?: string };
+
+const schema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().optional(),
+  category_id: z.coerce.number().int(),
+  sorter: z.coerce.number().int().default(0),
+  tunnel_type: z.coerce.number().int().min(1).max(11).default(1),
+  // SSH
+  ssh_server: z.string().optional(),
+  ssh_port: z.string().optional(),
+  ssh_user: z.string().optional(),
+  ssh_pass: z.string().optional(),
+  // SSL / payload / proxy
+  custom_sni: z.string().optional(),
+  proxy_payload: z.string().optional(),
+  usar_default_payload: z.string().optional(),
+  proxy_ip: z.string().optional(),
+  proxy_port: z.string().optional(),
+  local_port: z.string().optional().default('1080'),
+  // DNS
+  dns_forward: z.string().optional(),
+  dns_resolver1: z.string().optional(),
+  dns_resolver2: z.string().optional(),
+  udp_forward: z.string().optional(),
+  udp_resolver: z.string().optional(),
+  // DNSTT / UDP
+  udp_server: z.string().optional(),
+  udp_auth: z.string().optional(),
+  udp_obfs: z.string().optional(),
+  udp_down: z.string().optional(),
+  udp_up: z.string().optional(),
+  udp_buffer: z.string().optional(),
+  udp_port: z.string().optional(),
+  udp_sni: z.string().optional(),
+  udp_version: z.string().optional(),
+  udp_line_input: z.string().optional(),
+  config_line_input: z.string().optional(),
+  // V2Ray
+  v2ray_json: z.string().optional(),
+  // Psiphon
+  psi_server_entry: z.string().optional(),
+  psi_proxy: z.string().optional(),
+  psi_region: z.string().optional(),
+  psi_timeout: z.string().optional(),
+  psi_auth: z.string().optional(),
+});
+
+const orEmpty = (v?: string) => v ?? '';
 
 export default {
   url: '/admin/users/:id/servers/:sid',
@@ -14,7 +62,8 @@ export default {
   preHandler: [RequireCSRF],
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const { id, sid } = req.params as Params;
-    const { action } = req.body as Body;
+    const body = req.body as Record<string, any>;
+    const { action } = body;
 
     const server = await prisma.server.findFirst({
       where: { id: Number(sid), user_id: id },
@@ -28,6 +77,57 @@ export default {
       });
     } else if (action === 'delete') {
       await prisma.server.delete({ where: { id: server.id } });
+    } else if (action === 'update') {
+      const parsed = schema.safeParse(body);
+      if (!parsed.success) {
+        return reply.status(400).send({ error: 'ValidationError', details: parsed.error.issues });
+      }
+      const d = parsed.data;
+
+      await prisma.server.update({
+        where: { id: server.id },
+        data: {
+          name: d.name,
+          description: d.description ?? '',
+          category_id: d.category_id,
+          sorter: d.sorter,
+          tunnel_type: d.tunnel_type,
+          ssh_server: orEmpty(d.ssh_server),
+          ssh_port: orEmpty(d.ssh_port),
+          ssh_user: orEmpty(d.ssh_user),
+          ssh_pass: orEmpty(d.ssh_pass),
+          custom_sni: orEmpty(d.custom_sni),
+          proxy_payload: orEmpty(d.proxy_payload),
+          usar_default_payload: d.usar_default_payload !== undefined ? d.usar_default_payload === '1' : true,
+          proxy_ip: orEmpty(d.proxy_ip),
+          proxy_port: orEmpty(d.proxy_port),
+          local_port: d.local_port || '1080',
+          dns_forward: d.dns_forward !== undefined ? d.dns_forward === '1' : true,
+          dns_resolver1: orEmpty(d.dns_resolver1),
+          dns_resolver2: orEmpty(d.dns_resolver2),
+          udp_forward: d.udp_forward !== undefined ? d.udp_forward === '1' : true,
+          udp_resolver: orEmpty(d.udp_resolver),
+          udp_server: orEmpty(d.udp_server),
+          udp_auth: orEmpty(d.udp_auth),
+          udp_obfs: orEmpty(d.udp_obfs),
+          udp_down: orEmpty(d.udp_down),
+          udp_up: orEmpty(d.udp_up),
+          udp_buffer: orEmpty(d.udp_buffer),
+          udp_port: orEmpty(d.udp_port),
+          udp_sni: orEmpty(d.udp_sni),
+          udp_version: orEmpty(d.udp_version),
+          udp_line_input: orEmpty(d.udp_line_input),
+          config_line_input: orEmpty(d.config_line_input),
+          v2ray_json: orEmpty(d.v2ray_json),
+          psi_server_entry: orEmpty(d.psi_server_entry),
+          psi_proxy: orEmpty(d.psi_proxy),
+          psi_region: orEmpty(d.psi_region),
+          psi_timeout: orEmpty(d.psi_timeout),
+          psi_auth: orEmpty(d.psi_auth),
+        },
+      });
+    } else {
+      return reply.status(400).send({ error: 'ValidationError', message: 'Acción inválida.' });
     }
 
     await bumpConfigVersion(id);

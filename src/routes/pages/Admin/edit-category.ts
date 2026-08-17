@@ -20,6 +20,6 @@ export default {
     });
     if (!category) return reply.status(404).send({ error: 'NotFound' });
 
-    return Render.page(req, reply, '/admin/edit-category.html', { user, category });
+    return Render.page(req, reply, '/admin/edit-category.html', { active: 'users', user, category });
   },
 } as RouteOptions;

@@ -1,0 +1,22 @@
+<aside class="bg-dark text-white p-3 d-flex flex-column" style="width:240px;min-height:100vh;position:sticky;top:0;height:100vh">
+  <h5 class="text-white mb-1">MXTunnel <span class="badge text-bg-warning">Admin</span></h5>
+  <small class="text-muted mb-4"><%= it.user ? it.user.username : '' %></small>
+  <ul class="nav nav-pills flex-column mb-auto">
+    <li class="nav-item">
+      <a href="/" class="nav-link text-white <%= it.active === 'home' ? 'active bg-primary' : '' %>">Inicio</a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/users" class="nav-link text-white <%= it.active === 'users' ? 'active bg-primary' : '' %>">Usuarios</a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/app" class="nav-link text-white <%= it.active === 'app' ? 'active bg-primary' : '' %>">Aplicación</a>
+    </li>
+    <li class="nav-item">
+      <a href="/admin/profile" class="nav-link text-white <%= it.active === 'profile' ? 'active bg-primary' : '' %>">Perfil</a>
+    </li>
+  </ul>
+  <form method="POST" action="/logout">
+    <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+    <button class="btn btn-outline-light btn-sm w-100" type="submit">Cerrar sesión</button>
+  </form>
+</aside>

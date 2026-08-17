@@ -25,6 +25,6 @@ export default {
       orderBy: { sorter: 'asc' },
     });
 
-    return Render.page(req, reply, '/admin/edit-server.html', { user, server, categories });
+    return Render.page(req, reply, '/admin/edit-server.html', { active: 'users', user, server, categories });
   },
 } as RouteOptions;

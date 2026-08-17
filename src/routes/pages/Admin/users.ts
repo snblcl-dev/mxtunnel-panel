@@ -13,7 +13,6 @@ export default {
       orderBy: { created_at: 'desc' },
       include: { _count: { select: { servers: true, categories: true } } },
     });
-
-    return Render.page(req, reply, '/admin/users.html', { users });
+    return Render.page(req, reply, '/admin/users.html', { active: 'users', users });
   },
 } as RouteOptions;

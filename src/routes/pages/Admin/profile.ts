@@ -5,21 +5,13 @@ import AdminAuthentication from '../../../middlewares/admin-authentication';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 export default {
-  url: '/',
+  url: '/admin/profile',
   method: 'GET',
-  onRequest: [Authentication],
+  onRequest: [Authentication, AdminAuthentication],
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
-    if ((req as any).user.role !== 'ADMIN') return reply.redirect('/user');
-
-    const [users, servers, categories] = await Promise.all([
-      prisma.user.count(),
-      prisma.server.count(),
-      prisma.category.count(),
-    ]);
-
-    return Render.page(req, reply, '/admin/dashboard.html', {
-      active: 'home',
-      stats: { users, servers, categories },
-    });
+    const adminId = (req as any).user.id;
+    const me = await prisma.user.findUnique({ where: { id: adminId } });
+    if (!me) return reply.redirect('/login');
+    return Render.page(req, reply, '/admin/profile.html', { active: 'profile', me });
   },
 } as RouteOptions;

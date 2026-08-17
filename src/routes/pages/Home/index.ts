@@ -8,6 +8,8 @@ export default {
   method: 'GET',
   onRequest: [Authentication],
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
+    if ((req as any).user.role !== 'ADMIN') return reply.redirect('/user');
+
     const [users, servers, categories] = await Promise.all([
       prisma.user.count(),
       prisma.server.count(),

@@ -7,9 +7,10 @@ import fastifyStatic from '@fastify/static';
 import fastifyCookie, { type FastifyCookieOptions } from '@fastify/cookie';
 
 const dashboard = path.resolve(process.cwd(), 'frontend', 'public');
+const views = path.resolve(process.cwd(), 'frontend', 'views');
 
 const fastify = Fastify({ ignoreTrailingSlash: true });
-export const eta = new Eta();
+export const eta = new Eta({ views, cache: false });
 
 import routes from './routes/handle-routes';
 

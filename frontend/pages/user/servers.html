@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MXTunnel — Servidores</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+<div class="d-flex">
+  <%~ include('sidebar', it) %>
+  <main class="flex-grow-1 p-4">
+    <h3>Servidores</h3>
+    <p class="text-muted">Gestiona los servidores que recibe tu app.</p>
+
+    <% if (it.categories.length === 0) { %>
+      <div class="alert alert-warning">Primero crea una <a href="/user/categories">categoría</a>.</div>
+    <% } else { %>
+      <div class="card mb-3">
+        <div class="card-header">Nuevo servidor</div>
+        <div class="card-body">
+          <form method="POST" action="/user/servers">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+            <div class="row g-2">
+              <div class="col-md-4"><input class="form-control" name="name" placeholder="Nombre (ej: US-1)" required /></div>
+              <div class="col-md-4">
+                <select class="form-select" name="category_id" required>
+                  <% it.categories.forEach(function(c) { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <select class="form-select" name="tunnel_type">
+                  <option value="1">SSH Directo</option>
+                  <option value="2">SSH Proxy</option>
+                  <option value="3">SSH SSL</option>
+                  <option value="4">SSL Payload</option>
+                  <option value="5">SlowDNS</option>
+                  <option value="6">SSL RP</option>
+                  <option value="7">SSH</option>
+                  <option value="8">RE</option>
+                  <option value="9">UDP</option>
+                  <option value="10">V2Ray</option>
+                  <option value="11">Psiphon</option>
+                </select>
+              </div>
+              <div class="col-md-2"><input class="form-control" name="sorter" type="number" value="0" /></div>
+
+              <div class="col-12"><strong class="small text-muted">SSH</strong></div>
+              <div class="col-md-3"><input class="form-control" name="ssh_server" placeholder="Host" /></div>
+              <div class="col-md-2"><input class="form-control" name="ssh_port" placeholder="Puerto" /></div>
+              <div class="col-md-3"><input class="form-control" name="ssh_user" placeholder="Usuario" /></div>
+              <div class="col-md-4"><input class="form-control" name="ssh_pass" placeholder="Contraseña" /></div>
+
+              <div class="col-12"><strong class="small text-muted">SSL / Payload / Proxy</strong></div>
+              <div class="col-md-3"><input class="form-control" name="custom_sni" placeholder="SNI" /></div>
+              <div class="col-md-6"><input class="form-control" name="proxy_payload" placeholder="Payload" /></div>
+              <div class="col-md-3"><input class="form-control" name="local_port" placeholder="Puerto local" value="1080" /></div>
+              <div class="col-md-3"><input class="form-control" name="proxy_ip" placeholder="Proxy IP" /></div>
+              <div class="col-md-2"><input class="form-control" name="proxy_port" placeholder="Proxy puerto" /></div>
+
+              <div class="col-12"><strong class="small text-muted">DNS</strong></div>
+              <div class="col-md-4"><input class="form-control" name="dns_resolver1" placeholder="DNS 1" /></div>
+              <div class="col-md-4"><input class="form-control" name="dns_resolver2" placeholder="DNS 2" /></div>
+              <div class="col-md-4"><input class="form-control" name="udp_resolver" placeholder="UDP resolver" /></div>
+
+              <div class="col-12"><strong class="small text-muted">DNSTT / UDP</strong></div>
+              <div class="col-md-3"><input class="form-control" name="udp_server" placeholder="UDP server" /></div>
+              <div class="col-md-3"><input class="form-control" name="udp_port" placeholder="UDP puerto" /></div>
+              <div class="col-md-3"><input class="form-control" name="udp_sni" placeholder="UDP SNI" /></div>
+              <div class="col-md-3"><input class="form-control" name="udp_version" placeholder="UDP version" /></div>
+
+              <div class="col-12"><strong class="small text-muted">V2Ray / Psiphon</strong></div>
+              <div class="col-md-6"><textarea class="form-control" name="v2ray_json" rows="2" placeholder="v2ray JSON"></textarea></div>
+              <div class="col-md-3"><input class="form-control" name="psi_region" placeholder="Psiphon región" /></div>
+              <div class="col-md-3"><input class="form-control" name="psi_server_entry" placeholder="Psiphon server" /></div>
+
+              <div class="col-12"><button class="btn btn-primary">Crear servidor</button></div>
+            </div>
+          </form>
+        </div>
+      </div>
+    <% } %>
+
+    <div class="card">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle mb-0">
+          <thead><tr><th>Nombre</th><th>Categoría</th><th>Tipo</th><th>Host</th><th>Estado</th><th>Acciones</th></tr></thead>
+          <tbody>
+          <% if (it.servers.length === 0) { %>
+            <tr><td colspan="6" class="text-center text-muted py-4">No hay servidores todavía.</td></tr>
+          <% } %>
+          <% it.servers.forEach(function(s) { %>
+            <tr>
+              <td><%= s.name %></td>
+              <td><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></td>
+              <td><%= s.tunnel_type %></td>
+              <td><%= s.ssh_server || s.udp_server || s.psi_server_entry || '—' %></td>
+              <td><span class="badge text-bg-<%= s.status === 'ACTIVE' ? 'success' : 'secondary' %>"><%= s.status %></span></td>
+              <td class="d-flex gap-1">
+                <a class="btn btn-sm btn-outline-primary" href="/user/servers/<%= s.id %>/edit">Editar</a>
+                <form method="POST" action="/user/servers/<%= s.id %>" class="mb-0">
+                  <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+                  <input type="hidden" name="action" value="toggle" />
+                  <button class="btn btn-sm btn-outline-secondary">On/Off</button>
+                </form>
+                <form method="POST" action="/user/servers/<%= s.id %>" class="mb-0" onsubmit="return confirm('¿Eliminar servidor?')">
+                  <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+                  <input type="hidden" name="action" value="delete" />
+                  <button class="btn btn-sm btn-outline-danger">×</button>
+                </form>
+              </td>
+            </tr>
+          <% }) %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

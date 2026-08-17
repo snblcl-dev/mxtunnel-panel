@@ -18,7 +18,11 @@
         <h3>Configuración de <%= it.user.username %></h3>
         <div class="text-muted">Token: <code><%= it.user.id %></code> · Versión: <span class="badge bg-primary"><%= it.user.config_version %></span></div>
       </div>
-      <a href="/admin/users" class="btn btn-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+      <div class="d-flex gap-2">
+        <a href="/admin/users" class="btn btn-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
+        <button class="btn btn-outline-primary" onclick="openCreateCategory()"><i class="bi bi-folder-plus me-1"></i>Nueva categoría</button>
+        <button class="btn btn-primary" onclick="openCreateServer()" <%= it.categories.length === 0 ? 'disabled' : '' %>><i class="bi bi-plus-lg me-1"></i>Nuevo servidor</button>
+      </div>
     </div>
 
     <div class="row g-3">
@@ -27,14 +31,6 @@
         <div class="card fade-in">
           <div class="card-header"><i class="bi bi-folder me-2"></i>Categorías</div>
           <div class="card-body">
-            <form method="POST" action="/admin/users/<%= it.user.id %>/categories" data-ajax="true" class="row g-2 mb-3">
-              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-              <div class="col-7"><input class="form-control" name="name" placeholder="Nombre" required /></div>
-              <div class="col-3"><input class="form-control" name="color" type="color" value="#818CF8" /></div>
-              <div class="col-2"><input class="form-control" name="sorter" type="number" value="0" /></div>
-              <div class="col-12"><button class="btn btn-primary btn-sm w-100"><i class="bi bi-plus-lg me-1"></i>Agregar categoría</button></div>
-            </form>
-
             <ul class="list-group list-group-flush">
             <% if (it.categories.length === 0) { %>
               <li class="list-group-item bg-transparent"><div class="empty-state"><i class="bi bi-folder"></i><p class="m-0">Sin categorías</p></div></li>
@@ -64,32 +60,6 @@
       <div class="col-lg-7">
         <% if (it.categories.length === 0) { %>
           <div class="alert alert-warning fade-in"><i class="bi bi-exclamation-triangle me-2"></i>Crea primero una categoría para poder agregar servidores.</div>
-        <% } else { %>
-          <div class="card mb-3 fade-in">
-            <div class="card-header"><i class="bi bi-plus-circle me-2"></i>Nuevo servidor</div>
-            <div class="card-body">
-              <form method="POST" action="/admin/users/<%= it.user.id %>/servers" data-ajax="true">
-                <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-                <div class="row g-2">
-                  <div class="col-md-5"><input class="form-control" name="name" placeholder="Nombre" required /></div>
-                  <div class="col-md-4">
-                    <select class="form-select" name="category_id" required>
-                      <% it.categories.forEach(function(c) { %><option value="<%= c.id %>"><%= c.name %></option><% }) %>
-                    </select>
-                  </div>
-                  <div class="col-md-2">
-                    <select class="form-select" name="tunnel_type">
-                      <option value="1">SSH Dir.</option><option value="2">SSH Proxy</option><option value="3">SSH SSL</option>
-                      <option value="4">SSL Pay.</option><option value="5">SlowDNS</option><option value="6">SSL RP</option>
-                      <option value="7">SSH</option><option value="8">RE</option><option value="9">UDP</option>
-                      <option value="10">V2Ray</option><option value="11">Psiphon</option>
-                    </select>
-                  </div>
-                  <div class="col-md-1"><input class="form-control" name="sorter" type="number" value="0" /></div>
-                </div>
-              </form>
-            </div>
-          </div>
         <% } %>
 
         <div class="card fade-in">
@@ -131,11 +101,11 @@
   </main>
 </div>
 
-<!-- Modal: Editar categoría -->
+<!-- Modal: Crear/Editar categoría -->
 <div class="modal fade" id="editCategoryModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar categoría</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5 class="modal-title" id="editCategoryTitle"><i class="bi bi-pencil me-2"></i>Editar categoría</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <form method="POST" onsubmit="submitForm(this); return false;">
         <div class="modal-body">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
@@ -143,23 +113,23 @@
           <div class="mb-3"><label class="form-label">Nombre</label><input class="form-control" name="name" required /></div>
           <div class="row g-2">
             <div class="col-6"><label class="form-label">Color</label><input class="form-control" type="color" name="color" /></div>
-            <div class="col-6"><label class="form-label">Orden</label><input class="form-control" type="number" name="sorter" /></div>
+            <div class="col-6"><label class="form-label">Orden</label><input class="form-control" type="number" name="sorter" value="0" /></div>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i><span id="editCategoryBtnText">Guardar</span></button>
         </div>
       </form>
     </div>
   </div>
 </div>
 
-<!-- Modal: Editar servidor -->
+<!-- Modal: Crear/Editar servidor -->
 <div class="modal fade" id="editServerModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-scrollable modal-lg modal-dialog-centered">
     <div class="modal-content">
-      <div class="modal-header"><h5 class="modal-title"><i class="bi bi-pencil me-2"></i>Editar servidor</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+      <div class="modal-header"><h5 class="modal-title" id="editServerTitle"><i class="bi bi-pencil me-2"></i>Editar servidor</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
       <form method="POST" onsubmit="submitForm(this); return false;">
         <div class="modal-body">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
@@ -175,7 +145,7 @@
                 <option value="10">V2Ray</option><option value="11">Psiphon</option>
               </select>
             </div>
-            <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" /></div>
+            <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="0" /></div>
             <div class="col-12 mt-2"><strong class="small text-muted">SSH</strong></div>
             <div class="col-md-4"><label class="form-label">Host</label><input class="form-control" name="ssh_server" /></div>
             <div class="col-md-2"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" /></div>
@@ -184,7 +154,7 @@
             <div class="col-12 mt-2"><strong class="small text-muted">SSL / Payload / Proxy</strong></div>
             <div class="col-md-4"><label class="form-label">SNI</label><input class="form-control" name="custom_sni" /></div>
             <div class="col-md-8"><label class="form-label">Payload</label><input class="form-control" name="proxy_payload" /></div>
-            <div class="col-md-4"><label class="form-label">Puerto local</label><input class="form-control" name="local_port" /></div>
+            <div class="col-md-4"><label class="form-label">Puerto local</label><input class="form-control" name="local_port" value="1080" /></div>
             <div class="col-md-4"><label class="form-label">Proxy IP</label><input class="form-control" name="proxy_ip" /></div>
             <div class="col-md-4"><label class="form-label">Proxy puerto</label><input class="form-control" name="proxy_port" /></div>
             <div class="col-12 mt-2"><strong class="small text-muted">DNS</strong></div>
@@ -199,7 +169,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar</button>
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i><span id="editServerBtnText">Guardar</span></button>
         </div>
       </form>
     </div>
@@ -237,14 +207,32 @@
   const editCatModal = new bootstrap.Modal(editCatModalEl);
   const editSrvModal = new bootstrap.Modal(editSrvModalEl);
 
+  function fillCategorySelect(form, selectedId) {
+    const catSel = form.elements['category_id'];
+    catSel.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+    if (selectedId) catSel.value = selectedId;
+  }
+
   window.openEditCategory = function(id) {
     const c = categories.find(x => x.id === id);
     if (!c) { alert('Categoría no encontrada'); return; }
     const form = editCatModalEl.querySelector('form');
-    form.action = '/admin/users/' + userId + '/categories/' + id;
-    form.elements.name.value = c.name;
-    form.elements.color.value = c.color;
-    form.elements.sorter.value = c.sorter;
+    form.setAttribute('action', '/admin/users/' + userId + '/categories/' + id);
+    document.getElementById('editCategoryTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar categoría';
+    document.getElementById('editCategoryBtnText').textContent = 'Guardar';
+    form.elements['name'].value = c.name;
+    form.elements['color'].value = c.color;
+    form.elements['sorter'].value = c.sorter;
+    editCatModal.show();
+  };
+
+  window.openCreateCategory = function() {
+    const form = editCatModalEl.querySelector('form');
+    form.setAttribute('action', '/admin/users/' + userId + '/categories');
+    document.getElementById('editCategoryTitle').innerHTML = '<i class="bi bi-folder-plus me-2"></i>Nueva categoría';
+    document.getElementById('editCategoryBtnText').textContent = 'Crear';
+    form.reset();
+    form.elements['sorter'].value = '0';
     editCatModal.show();
   };
 
@@ -252,7 +240,9 @@
     const s = servers.find(x => x.id === id);
     if (!s) { alert('Servidor no encontrado'); return; }
     const form = editSrvModalEl.querySelector('form');
-    form.action = '/admin/users/' + userId + '/servers/' + id;
+    form.setAttribute('action', '/admin/users/' + userId + '/servers/' + id);
+    document.getElementById('editServerTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar servidor';
+    document.getElementById('editServerBtnText').textContent = 'Guardar';
     const set = (n, v) => { const el = form.elements[n]; if (el) el.value = v ?? ''; };
     set('name', s.name); set('sorter', s.sorter); set('tunnel_type', s.tunnel_type);
     set('ssh_server', s.ssh_server); set('ssh_port', s.ssh_port);
@@ -266,9 +256,21 @@
     set('udp_sni', s.udp_sni); set('udp_version', s.udp_version);
     set('v2ray_json', s.v2ray_json);
     set('psi_region', s.psi_region); set('psi_server_entry', s.psi_server_entry);
-    const catSel = form.elements.category_id;
-    catSel.innerHTML = categories.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-    catSel.value = s.category_id;
+    fillCategorySelect(form, s.category_id);
+    editSrvModal.show();
+  };
+
+  window.openCreateServer = function() {
+    if (categories.length === 0) { alert('Primero crea una categoría'); return; }
+    const form = editSrvModalEl.querySelector('form');
+    form.setAttribute('action', '/admin/users/' + userId + '/servers');
+    document.getElementById('editServerTitle').innerHTML = '<i class="bi bi-plus-circle me-2"></i>Nuevo servidor';
+    document.getElementById('editServerBtnText').textContent = 'Crear';
+    form.reset();
+    form.elements['local_port'].value = '1080';
+    form.elements['sorter'].value = '0';
+    form.elements['tunnel_type'].value = '1';
+    fillCategorySelect(form);
     editSrvModal.show();
   };
 </script>

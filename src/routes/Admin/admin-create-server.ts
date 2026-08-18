@@ -42,11 +42,6 @@ const schema = z.object({
   config_line_input: z.string().optional(),
   v2ray_json: z.string().optional(),
   enhanced: z.string().optional(),
-  psi_server_entry: z.string().optional(),
-  psi_proxy: z.string().optional(),
-  psi_region: z.string().optional(),
-  psi_timeout: z.string().optional(),
-  psi_auth: z.string().optional(),
 });
 
 const orEmpty = (v?: string) => v ?? '';
@@ -83,9 +78,6 @@ export default {
         udp_line_input: orEmpty(d.udp_line_input), config_line_input: orEmpty(d.config_line_input),
         v2ray_json: orEmpty(d.v2ray_json),
         enhanced: d.enhanced !== undefined ? d.enhanced === '1' : true,
-        psi_server_entry: orEmpty(d.psi_server_entry), psi_proxy: orEmpty(d.psi_proxy),
-        psi_region: orEmpty(d.psi_region), psi_timeout: orEmpty(d.psi_timeout),
-        psi_auth: orEmpty(d.psi_auth),
         user_id: id,
       },
     });

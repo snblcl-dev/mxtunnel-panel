@@ -44,7 +44,6 @@
                 <option value="8"  <%= it.server.tunnel_type === 8  ? 'selected' : '' %>>RE</option>
                 <option value="9"  <%= it.server.tunnel_type === 9  ? 'selected' : '' %>>UDP</option>
                 <option value="10" <%= it.server.tunnel_type === 10 ? 'selected' : '' %>>V2Ray</option>
-                <option value="11" <%= it.server.tunnel_type === 11 ? 'selected' : '' %>>Psiphon</option>
                 <option value="12" <%= it.server.tunnel_type === 12 ? 'selected' : '' %>>DNSTT + V2Ray</option>
               </select>
             </div>
@@ -74,10 +73,8 @@
             <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" value="<%= it.server.udp_sni %>" /></div>
             <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" value="<%= it.server.udp_version %>" /></div>
 
-            <div class="col-12"><strong class="small text-muted">V2Ray / Psiphon</strong></div>
+            <div class="col-12"><strong class="small text-muted">V2Ray</strong></div>
             <div class="col-md-6"><label class="form-label">v2ray JSON</label><textarea class="form-control" name="v2ray_json" rows="2"><%= it.server.v2ray_json %></textarea></div>
-            <div class="col-md-3"><label class="form-label">Psiphon región</label><input class="form-control" name="psi_region" value="<%= it.server.psi_region %>" /></div>
-            <div class="col-md-3"><label class="form-label">Psiphon server</label><input class="form-control" name="psi_server_entry" value="<%= it.server.psi_server_entry %>" /></div>
 
             <div class="col-12"><strong class="small text-muted">Opciones (V2)</strong></div>
             <div class="col-md-3">

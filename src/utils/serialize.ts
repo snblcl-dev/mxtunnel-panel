@@ -44,12 +44,6 @@ export function serializeServer(server: Server) {
     v2rayjson: server.v2ray_json ?? '',
     // Enhanced mode (V2)
     enhanced: server.enhanced,
-    // Psiphon
-    psiserverentry: server.psi_server_entry ?? '',
-    psiproxy: server.psi_proxy ?? '',
-    psiregion: server.psi_region ?? '',
-    psitimeout: server.psi_timeout ?? '',
-    psiauth: server.psi_auth ?? '',
   };
 }
 

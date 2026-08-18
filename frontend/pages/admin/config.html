@@ -80,7 +80,7 @@
                   <td><strong><%= s.name %></strong></td>
                   <td><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
                   <td><span class="badge bg-primary"><%= s.tunnel_type %></span></td>
-                  <td><code><%= s.ssh_server || s.udp_server || s.psi_server_entry || '—' %></code></td>
+                  <td><code><%= s.ssh_server || s.udp_server || '—' %></code></td>
                   <td><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
                   <td>
                     <div class="d-flex align-items-center gap-2">
@@ -147,7 +147,7 @@
                 <option value="1">SSH Dir.</option><option value="2">SSH Proxy</option><option value="3">SSH SSL</option>
                 <option value="4">SSL Pay.</option><option value="5">SlowDNS</option><option value="6">SSL RP</option>
                 <option value="7">SSH</option><option value="8">RE</option><option value="9">UDP</option>
-                <option value="10">V2Ray</option><option value="11">Psiphon</option><option value="12">DNSTT + V2Ray</option>
+                <option value="10">V2Ray</option><option value="12">DNSTT + V2Ray</option>
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="0" /></div>
@@ -174,10 +174,8 @@
             <div class="col-md-3"><label class="form-label">UDP puerto</label><input class="form-control" name="udp_port" /></div>
             <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" /></div>
             <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" /></div>
-            <div class="col-12 section-divider"><i class="bi bi-shield-shaded"></i><strong>V2Ray / Psiphon</strong></div>
+            <div class="col-12 section-divider"><i class="bi bi-shield-shaded"></i><strong>V2Ray</strong></div>
             <div class="col-md-6"><label class="form-label">v2ray JSON <small class="text-muted">(arrastra para expandir)</small></label><textarea class="form-control font-monospace" name="v2ray_json" rows="3"></textarea></div>
-            <div class="col-md-3"><label class="form-label">Psiphon región</label><input class="form-control" name="psi_region" /></div>
-            <div class="col-md-3"><label class="form-label">Psiphon server</label><input class="form-control" name="psi_server_entry" /></div>
             <div class="col-12 section-divider"><i class="bi bi-sliders"></i><strong>Opciones (V2)</strong></div>
             <div class="col-md-4">
               <label class="form-label">Enhanced</label>
@@ -277,7 +275,6 @@
     set('udp_sni', s.udp_sni); set('udp_version', s.udp_version);
     set('v2ray_json', s.v2ray_json);
     set('enhanced', s.enhanced ? '1' : '0');
-    set('psi_region', s.psi_region); set('psi_server_entry', s.psi_server_entry);
     fillCategorySelect(form, s.category_id);
     editSrvModal.show();
   };

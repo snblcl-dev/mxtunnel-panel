@@ -101,13 +101,6 @@ model Server {
   // Enhanced mode (V2)
   enhanced Boolean @default(true)
 
-  // Psiphon
-  psi_server_entry String?
-  psi_proxy        String?
-  psi_region       String?
-  psi_timeout      String?
-  psi_auth         String?
-
   user_id String
 
   user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)

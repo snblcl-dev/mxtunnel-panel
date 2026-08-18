@@ -98,6 +98,9 @@ model Server {
   // V2Ray
   v2ray_json String?
 
+  // Enhanced mode (V2)
+  enhanced Boolean @default(true)
+
   // Psiphon
   psi_server_entry String?
   psi_proxy        String?

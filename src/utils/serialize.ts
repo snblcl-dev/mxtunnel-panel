@@ -42,6 +42,8 @@ export function serializeServer(server: Server) {
     configLineInput: server.config_line_input ?? '',
     // V2Ray
     v2rayjson: server.v2ray_json ?? '',
+    // Enhanced mode (V2)
+    enhanced: server.enhanced,
     // Psiphon
     psiserverentry: server.psi_server_entry ?? '',
     psiproxy: server.psi_proxy ?? '',

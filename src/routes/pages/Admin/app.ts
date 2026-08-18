@@ -8,7 +8,14 @@ export default {
   url: '/admin/app',
   method: 'GET',
   onRequest: [Authentication, AdminAuthentication],
-  handler: (req: FastifyRequest, reply: FastifyReply) => {
-    return Render.page(req, reply, '/admin/app.html', { active: 'app' });
+  handler: async (req: FastifyRequest, reply: FastifyReply) => {
+    const globalTheme = await prisma.theme.findFirst({
+      where: { owner_id: null },
+      orderBy: { id: 'desc' },
+    });
+    return Render.page(req, reply, '/admin/app.html', {
+      active: 'app',
+      globalTheme,
+    });
   },
 } as RouteOptions;

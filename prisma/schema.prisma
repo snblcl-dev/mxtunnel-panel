@@ -22,13 +22,32 @@ model User {
   banned          Boolean    @default(false)
   configs_locked  Boolean    @default(false)
   config_version  Int        @default(1)
+  theme_version   Int        @default(1)
+  active_theme_id Int?
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt
 
-  categories Category[]
-  servers    Server[]
+  active_theme Theme?   @relation("ActiveTheme", fields: [active_theme_id], references: [id], onDelete: SetNull)
+  themes       Theme[]  @relation("ThemeOwner")
+  categories   Category[]
+  servers      Server[]
 
   @@map("users")
+}
+
+model Theme {
+  id         Int      @id @default(autoincrement())
+  name       String
+  html       String
+  owner_id   String? // null = tema global
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  owner      User?  @relation("ThemeOwner", fields: [owner_id], references: [id], onDelete: Cascade)
+  active_for User[] @relation("ActiveTheme")
+
+  @@index([owner_id])
+  @@map("themes")
 }
 
 model Category {

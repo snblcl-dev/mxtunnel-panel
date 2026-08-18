@@ -1,13 +1,12 @@
 import prisma from '../../config/prisma-client';
 import SafeCallback from '../../utils/safe-callback';
 import { isExpired } from '../../utils/format-date';
-import { serializeServer, serializeCategory } from '../../utils/serialize';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 type Query = { token?: string };
 
 export default {
-  url: '/api/config',
+  url: '/api/theme',
   method: 'GET',
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const { token } = req.query as Query;
@@ -32,30 +31,24 @@ export default {
       return reply.status(403).send({ error: 'Expired', message: 'Cuenta expirada.' });
     }
 
-    const [categories, servers] = await Promise.all([
-      SafeCallback(() =>
-        prisma.category.findMany({
-          where: { user_id: user.id, status: 'ACTIVE' },
-          orderBy: { sorter: 'asc' },
-        })
-      ),
-      SafeCallback(() =>
-        prisma.server.findMany({
-          where: {
-            user_id: user.id,
-            status: 'ACTIVE',
-            category: { status: 'ACTIVE' },
-          },
-          orderBy: [{ sorter: 'asc' }, { id: 'asc' }],
-        })
-      ),
-    ]);
+    // Tema efectivo: el activo del usuario, si no el tema global
+    let theme = null;
+    const activeId = user.active_theme_id;
+    if (activeId) {
+      theme = await SafeCallback(() =>
+        prisma.theme.findFirst({ where: { id: activeId, owner_id: user.id } })
+      );
+    }
+    if (!theme) {
+      theme = await SafeCallback(() =>
+        prisma.theme.findFirst({ where: { owner_id: null }, orderBy: { id: 'desc' } })
+      );
+    }
 
     return reply.send({
-      version: user.config_version,
-      themeVersion: user.theme_version,
-      categories: (categories ?? []).map(serializeCategory),
-      servers: (servers ?? []).map(serializeServer),
+      version: user.theme_version,
+      name: theme ? theme.name : null,
+      html: theme ? theme.html : null,
     });
   },
 } as RouteOptions;

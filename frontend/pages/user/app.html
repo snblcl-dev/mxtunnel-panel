@@ -20,13 +20,89 @@
     <div class="page-header">
       <div>
         <h3>Aplicación</h3>
-        <div class="text-muted">Configuración de la app móvil</div>
+        <div class="text-muted">Tus temas para la app</div>
       </div>
     </div>
-    <div class="empty-state fade-in">
-      <i class="bi bi-phone"></i>
-      <h6>Próximamente</h6>
-      <p>Aquí podrás ver y configurar aspectos de la app móvil.</p>
+
+    <div class="card mb-4 fade-in">
+      <div class="card-header"><i class="bi bi-palette me-2"></i>Tus temas</div>
+      <div class="card-body">
+        <div class="alert alert-secondary d-flex align-items-center gap-2">
+          <i class="bi bi-info-circle"></i>
+          <span>
+            Tema activo:
+            <% if (it.activeThemeId) { %>
+              <strong><%= (it.themes.find(t => t.id === it.activeThemeId) || {}).name || '—' %></strong>
+            <% } else if (it.globalTheme) { %>
+              <strong><%= it.globalTheme.name %></strong> <span class="text-muted">(tema global)</span>
+            <% } else { %>
+              <strong>Tema por defecto de la app</strong>
+            <% } %>
+          </span>
+        </div>
+
+        <% if (it.themes.length === 0) { %>
+          <div class="empty-state py-3">
+            <i class="bi bi-palette"></i>
+            <h6>No tienes temas propios</h6>
+            <p>Sube hasta <%= it.MAX_THEMES %> temas y activa el que quieras. Si no activas ninguno, se usa el global.</p>
+          </div>
+        <% } else { %>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead><tr><th>Nombre</th><th>Actualizado</th><th></th></tr></thead>
+              <tbody>
+              <% it.themes.forEach(function(t) { %>
+                <tr>
+                  <td>
+                    <strong><%= t.name %></strong>
+                    <% if (it.activeThemeId === t.id) { %><span class="badge bg-success ms-1">Activo</span><% } %>
+                  </td>
+                  <td class="text-muted small"><%= t.updated_at.toLocaleDateString('es-ES') %> · <%= (t.html || '').length %> car.</td>
+                  <td class="text-end">
+                    <div class="d-inline-flex gap-1">
+                      <% if (it.activeThemeId !== t.id) { %>
+                        <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0">
+                          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+                          <input type="hidden" name="action" value="activate" />
+                          <input type="hidden" name="id" value="<%= t.id %>" />
+                          <button class="btn btn-sm btn-primary"><i class="bi bi-check-lg me-1"></i>Activar</button>
+                        </form>
+                      <% } %>
+                      <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0">
+                        <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+                        <input type="hidden" name="action" value="delete" />
+                        <input type="hidden" name="id" value="<%= t.id %>" />
+                        <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash"></i></button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              <% }) %>
+              </tbody>
+            </table>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card fade-in">
+      <div class="card-header"><i class="bi bi-plus-circle me-2"></i>Nuevo tema</div>
+      <div class="card-body">
+        <% if (it.themes.length >= it.MAX_THEMES) { %>
+          <div class="alert alert-warning">Alcanzaste el máximo de <%= it.MAX_THEMES %> temas. Elimina uno para subir otro.</div>
+        <% } else { %>
+          <form method="POST" action="/user/app/theme" data-ajax="true">
+            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+            <div class="mb-2"><label class="form-label">Nombre del tema</label><input class="form-control" name="name" placeholder="Ej. Arctic, Dark, Verde…" required /></div>
+            <div class="mb-2">
+              <label class="form-label">HTML del tema</label>
+              <textarea class="form-control font-monospace" name="html" rows="10" placeholder="&lt;!DOCTYPE html&gt; …" required></textarea>
+            </div>
+            <button class="btn btn-primary"><i class="bi bi-cloud-arrow-up me-1"></i>Subir tema</button>
+          </form>
+        <% } %>
+      </div>
     </div>
   </main>
 </div>

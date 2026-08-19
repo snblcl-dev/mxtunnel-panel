@@ -33,8 +33,6 @@
             Tema activo:
             <% if (it.activeThemeId) { %>
               <strong><%= (it.themes.find(t => t.id === it.activeThemeId) || {}).name || '—' %></strong>
-            <% } else if (it.globalTheme) { %>
-              <strong><%= it.globalTheme.name %></strong> <span class="text-muted">(tema global)</span>
             <% } else { %>
               <strong>Tema por defecto de la app</strong>
             <% } %>
@@ -45,7 +43,7 @@
           <div class="empty-state py-3">
             <i class="bi bi-palette"></i>
             <h6>No tienes temas propios</h6>
-            <p>Sube hasta <%= it.MAX_THEMES %> temas y activa el que quieras. Si no activas ninguno, se usa el global.</p>
+            <p>Sube hasta <%= it.MAX_THEMES %> temas y activa el que quieras. Si no activas ninguno, la app usa su tema por defecto.</p>
           </div>
         <% } else { %>
           <div class="table-responsive">

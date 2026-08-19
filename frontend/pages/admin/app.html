@@ -20,43 +20,16 @@
     <div class="page-header">
       <div>
         <h3>Aplicación</h3>
-        <div class="text-muted">Configuración de la app móvil y temas</div>
+        <div class="text-muted">Configuración de la app móvil</div>
       </div>
     </div>
-
-    <div class="card mb-4 fade-in">
-      <div class="card-header"><i class="bi bi-palette me-2"></i>Tema global</div>
+    <div class="card fade-in">
+      <div class="card-header"><i class="bi bi-palette me-2"></i>Temas</div>
       <div class="card-body">
-        <% if (it.globalTheme) { %>
-          <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap gap-2">
-            <div>
-              <strong><%= it.globalTheme.name %></strong>
-              <div class="text-muted small">Actualizado: <%= it.globalTheme.updated_at.toLocaleDateString('es-ES') %> · <%= (it.globalTheme.html || '').length %> caracteres</div>
-            </div>
-            <form method="POST" action="/admin/app/theme" data-ajax="true">
-              <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-              <input type="hidden" name="action" value="delete" />
-              <button class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Eliminar</button>
-            </form>
-          </div>
-        <% } else { %>
-          <div class="empty-state py-3">
-            <i class="bi bi-palette"></i>
-            <h6>No hay tema global</h6>
-            <p>La app usará su tema por defecto hasta que subas uno.</p>
-          </div>
-        <% } %>
-
-        <hr />
-        <form method="POST" action="/admin/app/theme" data-ajax="true">
-          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-          <div class="mb-2"><label class="form-label">Nombre del tema</label><input class="form-control" name="name" value="<%= it.globalTheme ? it.globalTheme.name : '' %>" required /></div>
-          <div class="mb-2">
-            <label class="form-label">HTML del tema <small class="text-muted">(pega el contenido de tu theme)</small></label>
-            <textarea class="form-control font-monospace" name="html" rows="10" required><%= it.globalTheme ? it.globalTheme.html : '' %></textarea>
-          </div>
-          <button class="btn btn-primary"><i class="bi bi-cloud-arrow-up me-1"></i><%= it.globalTheme ? 'Actualizar tema global' : 'Subir tema global' %></button>
-        </form>
+        <div class="alert alert-secondary d-flex align-items-center gap-2">
+          <i class="bi bi-info-circle"></i>
+          <span>Cada usuario gestiona sus temas en su sección <strong>Aplicación</strong>. Si un usuario no activa un tema, la app usa el <strong>tema por defecto embebido</strong> en la propia app.</span>
+        </div>
       </div>
     </div>
   </main>

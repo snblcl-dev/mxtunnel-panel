@@ -31,17 +31,12 @@ export default {
       return reply.status(403).send({ error: 'Expired', message: 'Cuenta expirada.' });
     }
 
-    // Tema efectivo: el activo del usuario, si no el tema global
+    // Tema del usuario: si no tiene uno activo, la app usa su tema embebido (default)
     let theme = null;
     const activeId = user.active_theme_id;
     if (activeId) {
       theme = await SafeCallback(() =>
         prisma.theme.findFirst({ where: { id: activeId, owner_id: user.id } })
-      );
-    }
-    if (!theme) {
-      theme = await SafeCallback(() =>
-        prisma.theme.findFirst({ where: { owner_id: null }, orderBy: { id: 'desc' } })
       );
     }
 

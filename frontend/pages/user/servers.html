@@ -116,6 +116,7 @@
             <div class="col-md-3"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" /></div>
             <div class="col-md-2"><label class="form-label">Usuario</label><input class="form-control" name="ssh_user" /></div>
             <div class="col-md-2"><label class="form-label">Contraseña</label><input class="form-control" name="ssh_pass" /></div>
+            <div class="col-12"><label class="form-label">URL Check User <small class="text-muted">(p. ej. http://IP:2052; la app agrega /check/usuario?deviceId=)</small></label><input class="form-control font-monospace" name="url_check_user" placeholder="http://IP:PUERTO" /></div>
 
             <div class="col-12 section-divider"><i class="bi bi-shield-lock"></i><strong>SSL / Payload / Proxy</strong></div>
             <div class="col-12">
@@ -209,6 +210,7 @@
     set('tunnel_type', s.tunnel_type);
     set('ssh_server', s.ssh_server); set('ssh_port', s.ssh_port);
     set('ssh_user', s.ssh_user); set('ssh_pass', s.ssh_pass);
+    set('url_check_user', s.url_check_user);
     set('custom_sni', s.custom_sni); set('proxy_payload', s.proxy_payload);
     set('local_port', s.local_port); set('proxy_ip', s.proxy_ip);
     set('proxy_port', s.proxy_port);

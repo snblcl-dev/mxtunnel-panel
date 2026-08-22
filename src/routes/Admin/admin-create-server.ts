@@ -42,6 +42,7 @@ const schema = z.object({
   config_line_input: z.string().optional(),
   v2ray_json: z.string().optional(),
   enhanced: z.string().optional(),
+  url_check_user: z.string().optional(),
 });
 
 const orEmpty = (v?: string) => v ?? '';
@@ -78,6 +79,7 @@ export default {
         udp_line_input: orEmpty(d.udp_line_input), config_line_input: orEmpty(d.config_line_input),
         v2ray_json: orEmpty(d.v2ray_json),
         enhanced: d.enhanced !== undefined ? d.enhanced === '1' : true,
+        url_check_user: orEmpty(d.url_check_user),
         user_id: id,
       },
     });

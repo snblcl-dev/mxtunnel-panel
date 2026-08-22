@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="color-scheme" content="dark">
+<title>NEXUS VPN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#05060A;color:#E6E9EF;font-family:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:14px;line-height:1.4}
+body{position:relative}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent 0,transparent 2px,rgba(0,240,255,0.025) 3px,transparent 4px);pointer-events:none;z-index:1000;animation:scan 8s linear infinite}
+body::after{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at top,rgba(123,44,255,0.08),transparent 60%),radial-gradient(ellipse at bottom,rgba(0,240,255,0.05),transparent 60%);pointer-events:none;z-index:0}
+@keyframes scan{from{background-position:0 0}to{background-position:0 100px}}
+:root{--c:#00F0FF;--p:#7B2CFF;--m:#FF2D6F;--a:#FFB800;--bg:#05060A;--card:#0B0D17;--card2:#12151F;--line:rgba(0,240,255,0.15);--txt:#E6E9EF;--sub:#8A93A6;--mut:#4A5161;--mono:'JetBrains Mono',ui-monospace,'Cascadia Mono',Menlo,Consolas,monospace;--disp:'Orbitron',system-ui,sans-serif;--lbl:'Rajdhani',system-ui,sans-serif}
+button{font-family:inherit;font-size:inherit;color:inherit;background:none;border:none;cursor:pointer}
+input{font-family:inherit;color:inherit;background:none;border:none;outline:none}
+input::placeholder{color:var(--mut)}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:480px;margin:0 auto;background:var(--bg);overflow:hidden;z-index:1}
+/* ── Cabecera ── */
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line);background:rgba(5,6,10,0.6)}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:800;letter-spacing:2px;font-size:14px}
+.brand-mark{width:18px;height:18px;position:relative;display:inline-block}
+.brand-mark::before,.brand-mark::after{content:"";position:absolute;inset:0;border:2px solid var(--c);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+.brand-mark::after{border-color:var(--m);transform:rotate(30deg);opacity:0.7}
+.brand b{color:var(--c);text-shadow:0 0 10px rgba(0,240,255,0.6)}
+.brand i{color:var(--txt);font-style:normal;opacity:0.7;font-weight:500}
+.leds{display:flex;gap:6px;align-items:center}
+.led{width:6px;height:6px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);animation:ledpulse 2s ease-in-out infinite}
+.led.off{background:var(--mut);box-shadow:none;animation:none}
+.led.warn{background:var(--a);box-shadow:0 0 8px var(--a);animation:ledpulse 1s ease-in-out infinite}
+.led.err{background:var(--m);box-shadow:0 0 8px var(--m);animation:none}
+@keyframes ledpulse{0%,100%{opacity:1}50%{opacity:0.4}}
+/* ── Páginas ── */
+.tabs-wrap{flex:1;position:relative;overflow:hidden}
+.tab-page{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;padding:16px 16px 96px;opacity:0;transform:translateY(8px);pointer-events:none;transition:opacity 0.25s ease,transform 0.25s ease;scrollbar-width:thin;scrollbar-color:rgba(0,240,255,0.3) transparent}
+.tab-page::-webkit-scrollbar{width:4px}
+.tab-page::-webkit-scrollbar-thumb{background:rgba(0,240,255,0.3);border-radius:2px}
+.tab-page.active{opacity:1;transform:translateY(0);pointer-events:auto}
+.section-title{font-family:var(--lbl);font-weight:700;letter-spacing:3px;font-size:11px;color:var(--c);text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.section-title::before{content:"";width:3px;height:12px;background:var(--c);box-shadow:0 0 6px var(--c)}
+.section-title:first-child{margin-top:4px}
+/* ── Botón hexagonal ── */
+.center-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 0 8px;position:relative}
+.hex-btn{position:relative;width:220px;height:220px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-user-select:none;user-select:none}
+.hex-btn svg.ring{position:absolute;inset:0;width:100%;height:100%}
+.hex-core{position:relative;width:130px;height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#0B0D17 0%,#05060A 70%);border:2px solid var(--c);border-radius:50%;box-shadow:0 0 30px rgba(0,240,255,0.4),inset 0 0 20px rgba(0,240,255,0.1);transition:all 0.3s;z-index:2}
+.hex-btn:active .hex-core{transform:scale(0.95)}
+.hex-btn.connected .hex-core{border-color:var(--c);box-shadow:0 0 50px rgba(0,240,255,0.7),inset 0 0 30px rgba(0,240,255,0.3)}
+.hex-btn.connecting .hex-core{border-color:var(--a);box-shadow:0 0 40px rgba(255,184,0,0.6),inset 0 0 20px rgba(255,184,0,0.2);animation:spinPulse 1.5s ease-in-out infinite}
+.hex-btn.failed .hex-core{border-color:var(--m);box-shadow:0 0 30px rgba(255,45,111,0.5)}
+@keyframes spinPulse{0%,100%{box-shadow:0 0 40px rgba(255,184,0,0.6),inset 0 0 20px rgba(255,184,0,0.2)}50%{box-shadow:0 0 60px rgba(255,184,0,0.9),inset 0 0 30px rgba(255,184,0,0.4)}}
+.hex-core .glyph{font-family:var(--disp);font-weight:800;font-size:22px;letter-spacing:1px;color:var(--txt);text-shadow:0 0 10px rgba(0,240,255,0.5);transition:all 0.2s}
+.hex-btn.connected .hex-core .glyph{color:var(--c);text-shadow:0 0 20px var(--c),0 0 40px var(--c)}
+.hex-btn.connecting .hex-core .glyph{color:var(--a)}
+.hex-btn.failed .hex-core .glyph{color:var(--m)}
+.hex-core .lbl{font-family:var(--disp);font-size:9px;letter-spacing:2px;color:var(--sub);margin-top:6px}
+.lightning{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;z-index:1}
+.hex-btn.connected .lightning{opacity:1;animation:boltFlash 2.5s ease-in-out infinite}
+@keyframes boltFlash{0%,90%,100%{opacity:0}92%,96%{opacity:0.8}}
+.state-display{text-align:center;margin-top:16px;min-height:64px}
+.state-name{font-family:var(--disp);font-weight:700;font-size:18px;letter-spacing:4px;text-transform:uppercase;color:var(--sub);transition:all 0.2s}
+.state-name.connected{color:var(--c);text-shadow:0 0 12px var(--c);animation:glitch 3s steps(1) infinite}
+.state-name.connecting{color:var(--a);animation:glitchW 1.2s steps(1) infinite}
+.state-name.failed{color:var(--m);animation:glitchErr 2s steps(1) infinite}
+@keyframes glitch{0%,90%,100%{transform:translate(0);text-shadow:0 0 12px var(--c)}92%{transform:translate(-1px,1px);text-shadow:2px 0 var(--m),-2px 0 var(--c)}94%{transform:translate(1px,-1px);text-shadow:-2px 0 var(--m),2px 0 var(--c)}96%{transform:translate(0)}}
+@keyframes glitchW{0%,100%{transform:translate(0)}25%{transform:translate(1px,0)}50%{transform:translate(-1px,1px)}75%{transform:translate(0,-1px)}}
+@keyframes glitchErr{0%,95%,100%{transform:translate(0);text-shadow:0 0 12px var(--m)}96%{transform:translate(-2px,0);text-shadow:3px 0 var(--c)}98%{transform:translate(2px,0);text-shadow:-3px 0 var(--c)}}
+.state-meta{font-family:var(--mono);font-size:11px;color:var(--mut);margin-top:6px;letter-spacing:1px}
+.state-meta b{color:var(--c);font-weight:500}
+/* ── Métricas ── */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.metric{background:linear-gradient(180deg,#0B0D17 0%,#05060A 100%);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.metric::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)}
+.metric .mlbl{font-family:var(--lbl);font-size:10px;letter-spacing:2px;color:var(--sub);text-transform:uppercase;display:flex;align-items:center;gap:4px}
+.metric .mval{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--txt);margin-top:4px;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric .mval em{color:var(--c);font-style:normal;text-shadow:0 0 8px rgba(0,240,255,0.5)}
+.metric .msub{font-family:var(--mono);font-size:9px;color:var(--mut);margin-top:2px;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* ── Tarjetas / campos / botones ── */
+.card{background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;overflow:hidden;margin-bottom:10px}
+.card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.4),transparent)}
+.card.row{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;transition:all 0.2s}
+.card.row:active{background:linear-gradient(180deg,#12151F,#0B0D17);border-color:rgba(0,240,255,0.4)}
+.card-eyebrow{font-family:var(--lbl);font-size:10px;letter-spacing:2.5px;color:var(--c);text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:6px}
+.card-eyebrow::before{content:"";width:4px;height:4px;background:var(--c);box-shadow:0 0 4px var(--c);border-radius:50%}
+.card-title{font-family:var(--disp);font-weight:600;font-size:14px;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-sub{font-family:var(--mono);font-size:11px;color:var(--sub);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-arrow{color:var(--c);font-size:20px;line-height:1;flex-shrink:0}
+.field{margin-bottom:12px}
+.field label{display:block;font-family:var(--lbl);font-size:11px;letter-spacing:2.5px;color:var(--sub);text-transform:uppercase;margin-bottom:6px}
+.field-input{position:relative;display:flex;align-items:center;background:#0B0D17;border:1px solid var(--line);border-radius:8px;transition:all 0.2s}
+.field-input:focus-within{border-color:rgba(0,240,255,0.6);box-shadow:0 0 0 3px rgba(0,240,255,0.1)}
+.field-input input{flex:1;background:transparent;border:none;outline:none;padding:12px 14px;color:var(--txt);font-family:var(--mono);font-size:13px;letter-spacing:0.5px}
+.eye-btn{padding:0 12px;background:transparent;border:none;color:var(--sub);cursor:pointer;font-size:12px;letter-spacing:1px;font-family:var(--lbl);font-weight:600}
+.eye-btn:active{color:var(--c)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border:none;border-radius:8px;font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.btn-primary{background:linear-gradient(135deg,var(--c) 0%,#00B8D4 100%);color:#05060A;box-shadow:0 4px 20px rgba(0,240,255,0.3)}
+.btn-primary:active{transform:translateY(1px)}
+.btn-ghost{background:transparent;border:1px solid rgba(0,240,255,0.3);color:var(--c)}
+.btn-ghost:active{background:rgba(0,240,255,0.1)}
+.btn-danger{background:transparent;border:1px solid rgba(255,45,111,0.4);color:var(--m)}
+.btn-danger:active{background:rgba(255,45,111,0.1)}
+.info-card{background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid var(--line);border-radius:10px;padding:14px;position:relative;overflow:hidden;margin-bottom:10px}
+.info-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)}
+.info-row{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(0,240,255,0.08)}
+.info-row:last-child{border-bottom:none}
+.info-key{font-family:var(--lbl);font-size:11px;letter-spacing:2px;color:var(--sub);text-transform:uppercase}
+.info-val{font-family:var(--mono);font-size:12px;color:var(--txt);font-weight:500;text-align:right;word-break:break-all}
+.info-val em{color:var(--c);font-style:normal;text-shadow:0 0 6px rgba(0,240,255,0.4)}
+.info-val.danger{color:var(--m)}
+.info-val.muted{color:var(--mut)}
+/* ── Herramientas ── */
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tool{background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid var(--line);border-radius:10px;padding:14px 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;transition:all 0.2s;min-height:84px;text-align:center}
+.tool:active{background:linear-gradient(180deg,#12151F,#0B0D17);border-color:rgba(0,240,255,0.5);box-shadow:0 0 16px rgba(0,240,255,0.2)}
+.tool svg{width:22px;height:22px;color:var(--c);stroke-width:1.5}
+.tool span{font-family:var(--lbl);font-weight:600;font-size:10px;letter-spacing:1.5px;color:var(--txt);text-transform:uppercase}
+.tool.danger svg{color:var(--m)}
+.tool.danger span{color:var(--m)}
+/* ── Nav inferior ── */
+.bottom-nav{position:absolute;left:14px;right:14px;bottom:14px;display:flex;justify-content:space-around;padding:8px 4px;border-radius:14px;background:rgba(9,11,18,0.92);border:1px solid rgba(0,240,255,0.2);z-index:50}
+.bottom-nav::before{content:"";position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);opacity:0.5}
+.nav-i{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;background:transparent;border:none;cursor:pointer;padding:6px 0;color:var(--mut);transition:all 0.2s;position:relative;font-family:var(--lbl);font-weight:600}
+.nav-i svg{width:20px;height:20px;stroke-width:1.5}
+.nav-i span{font-size:9px;letter-spacing:2px;text-transform:uppercase}
+.nav-i.act{color:var(--c);text-shadow:0 0 8px rgba(0,240,255,0.4)}
+.nav-i.act::after{content:"";position:absolute;top:0;left:50%;width:24px;height:2px;background:var(--c);box-shadow:0 0 8px var(--c);transform:translateX(-50%)}
+/* ── Toasts ── */
+.toast-wrap{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;pointer-events:none;max-width:90%}
+.toast{padding:10px 16px;border-radius:8px;font-family:var(--lbl);font-weight:600;font-size:12px;letter-spacing:1px;animation:toastIn 0.3s ease,toastOut 0.3s ease 2.7s forwards}
+.toast.ok{background:rgba(0,240,255,0.15);border:1px solid var(--c);color:var(--c)}
+.toast.err{background:rgba(255,45,111,0.15);border:1px solid var(--m);color:var(--m)}
+@keyframes toastIn{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{to{opacity:0;transform:translateY(-20px)}}
+/* ── Sheets / modales ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(5,6,10,0.7);z-index:3000;opacity:0;pointer-events:none;transition:opacity 0.3s ease}
+.modal-overlay.open{opacity:1;pointer-events:auto}
+.modal-sheet{position:absolute;left:0;right:0;bottom:0;max-height:85vh;margin:0 auto;max-width:480px;background:linear-gradient(180deg,#0B0D17 0%,#05060A 100%);border-top:1px solid var(--c);box-shadow:0 -8px 40px rgba(0,240,255,0.2),0 -2px 8px rgba(0,240,255,0.1);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;overflow:hidden}
+.modal-overlay.open .modal-sheet{transform:translateY(0)}
+.modal-sheet::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.modal-handle{width:36px;height:3px;background:var(--c);box-shadow:0 0 6px var(--c);margin:10px auto 0;opacity:0.5}
+.modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--line)}
+.modal-title{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:4px;color:var(--c);text-transform:uppercase}
+.modal-title em{color:var(--m);font-style:normal;margin-left:8px}
+.modal-close{width:32px;height:32px;border-radius:6px;background:transparent;border:1px solid var(--m);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all 0.2s}
+.modal-close:active{background:rgba(255,45,111,0.2);transform:scale(0.92)}
+.modal-close svg{width:14px;height:14px}
+.modal-search{padding:14px 20px 10px;flex-shrink:0}
+.modal-search input{width:100%;padding:11px 14px;background:#0B0D17;border:1px solid var(--line);border-radius:6px;font-family:var(--mono);font-size:12px;color:var(--txt);outline:none;transition:all 0.2s;letter-spacing:0.5px}
+.modal-search input:focus{border-color:var(--c);box-shadow:0 0 0 2px rgba(0,240,255,0.15),0 0 20px rgba(0,240,255,0.2)}
+.modal-search input::placeholder{color:var(--mut)}
+.cat-tabs{display:flex;gap:6px;padding:0 20px 12px;overflow-x:auto;flex-shrink:0;scrollbar-width:none}
+.cat-tabs::-webkit-scrollbar{display:none}
+.cat-tab{padding:7px 14px;background:transparent;border:1px solid var(--line);border-radius:4px;font-family:var(--lbl);font-weight:600;font-size:10px;letter-spacing:2px;color:var(--sub);cursor:pointer;white-space:nowrap;transition:all 0.2s;flex-shrink:0;text-transform:uppercase}
+.cat-tab.act{background:rgba(0,240,255,0.15);color:var(--c);border-color:var(--c);box-shadow:0 0 12px rgba(0,240,255,0.3),inset 0 0 8px rgba(0,240,255,0.2)}
+.cat-tab:active{transform:scale(0.96)}
+.modal-list{flex:1;overflow-y:auto;padding:4px 14px 20px;-webkit-overflow-scrolling:touch}
+.modal-list::-webkit-scrollbar{width:3px}
+.modal-list::-webkit-scrollbar-thumb{background:rgba(0,240,255,0.3);border-radius:2px}
+.cat-section{margin-bottom:14px}
+.cat-section-title{font-family:var(--disp);font-weight:700;font-size:10px;letter-spacing:3px;color:var(--c);text-transform:uppercase;padding:10px 6px 8px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}
+.cat-section-count{font-family:var(--mono);font-size:9px;color:var(--mut);letter-spacing:1px}
+.srv-item{display:flex;align-items:center;gap:12px;padding:12px;background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid var(--line);border-radius:6px;margin-bottom:6px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden}
+.srv-item:active{background:linear-gradient(180deg,#12151F,#0B0D17);border-color:rgba(0,240,255,0.4);transform:scale(0.99)}
+.srv-item.sel{border-color:var(--c);box-shadow:0 0 20px rgba(0,240,255,0.2),inset 0 0 15px rgba(0,240,255,0.05)}
+.srv-item.sel::after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);box-shadow:0 0 8px var(--c)}
+.srv-icon{width:36px;height:36px;border-radius:4px;background:rgba(0,240,255,0.1);border:1px solid rgba(0,240,255,0.3);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:700;font-size:11px;color:var(--c);flex-shrink:0;clip-path:polygon(15% 0,100% 0,85% 100%,0 100%)}
+.srv-info{flex:1;min-width:0}
+.srv-name{font-family:var(--lbl);font-weight:700;font-size:13px;color:var(--txt);letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-transform:uppercase}
+.srv-sub{font-family:var(--mono);font-size:10px;color:var(--mut);margin-top:3px;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srv-check{width:20px;height:20px;border-radius:50%;background:var(--c);color:#05060A;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transform:scale(0.5);transition:all 0.2s;box-shadow:0 0 12px var(--c)}
+.srv-item.sel .srv-check{opacity:1;transform:scale(1)}
+.srv-check svg{width:12px;height:12px}
+.srv-empty{padding:40px 20px;text-align:center;color:var(--mut);font-family:var(--mono);font-size:12px;letter-spacing:1px}
+.srv-loading{padding:40px 20px;text-align:center;color:var(--c);font-family:var(--disp);font-size:11px;letter-spacing:3px;display:flex;align-items:center;justify-content:center;gap:10px;text-transform:uppercase}
+.srv-loading::after{content:"";width:12px;height:12px;border:2px solid rgba(0,240,255,0.2);border-top-color:var(--c);border-radius:50%;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Listas genéricas (idioma, dns) ── */
+.list{padding:6px 14px 20px;overflow-y:auto;flex:1}
+.r-item{display:flex;align-items:center;gap:12px;padding:13px 14px;background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid var(--line);border-radius:8px;margin-bottom:6px;cursor:pointer;transition:all 0.2s}
+.r-item:active{border-color:rgba(0,240,255,0.5)}
+.r-item.sel{border-color:var(--c);box-shadow:0 0 12px rgba(0,240,255,0.15)}
+.r-item .dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--mut);flex:none}
+.r-item.sel .dot{background:var(--c);border-color:var(--c);box-shadow:0 0 8px var(--c)}
+.r-item .tx{flex:1;min-width:0}
+.r-item .tx strong{font-family:var(--disp);font-size:12px;letter-spacing:1px;text-transform:uppercase}
+.r-item .tx .tx-sub{font-family:var(--mono);font-size:10px;color:var(--sub);margin-top:2px;display:block}
+.log{font-family:var(--mono);font-size:11px;line-height:1.5;padding:8px 12px;border-bottom:1px solid var(--line);word-break:break-all}
+.empty{padding:40px 20px;text-align:center;color:var(--mut);font-family:var(--mono);font-size:12px}
+.hwid-box{font-family:var(--mono);font-size:11px;color:var(--c);background:#0B0D17;border:1px solid var(--line);border-radius:8px;padding:12px;word-break:break-all;letter-spacing:0.5px}
+.warn{font-size:12px;color:var(--a);margin:10px 0;font-family:var(--mono)}
+</style>
+</head>
+<body style="background:#05060A">
+<div class="app">
+  <header class="hdr">
+    <div class="brand">
+      <span class="brand-mark"></span>
+      <span><b>NEXUS</b><i>VPN</i></span>
+    </div>
+    <div class="leds">
+      <div class="led" id="ledNet"></div>
+      <div class="led off" id="ledSync"></div>
+    </div>
+  </header>
+
+  <div class="tabs-wrap">
+    <!-- ═══ INICIO ═══ -->
+    <div class="tab-page active" id="tInicio">
+      <div class="center-stage">
+        <div class="hex-btn" id="hexBtn">
+          <svg class="ring" viewBox="0 0 220 220">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00F0FF"/>
+                <stop offset="50%" stop-color="#7B2CFF"/>
+                <stop offset="100%" stop-color="#FF2D6F"/>
+              </linearGradient>
+            </defs>
+            <polygon points="110,10 195,55 195,165 110,210 25,165 25,55" fill="none" stroke="url(#ringGrad)" stroke-width="1.5" opacity="0.4">
+              <animateTransform attributeName="transform" type="rotate" from="0 110 110" to="360 110 110" dur="20s" repeatCount="indefinite"/>
+            </polygon>
+            <polygon points="110,25 180,62 180,158 110,195 40,158 40,62" fill="none" stroke="#00F0FF" stroke-width="1" opacity="0.3">
+              <animateTransform attributeName="transform" type="rotate" from="360 110 110" to="0 110 110" dur="15s" repeatCount="indefinite"/>
+            </polygon>
+            <polygon points="110,40 165,70 165,150 110,180 55,150 55,70" fill="none" stroke="#FF2D6F" stroke-width="0.8" opacity="0.2" stroke-dasharray="3 4">
+              <animateTransform attributeName="transform" type="rotate" from="0 110 110" to="360 110 110" dur="30s" repeatCount="indefinite"/>
+            </polygon>
+          </svg>
+          <svg class="lightning" viewBox="0 0 220 220">
+            <path d="M110,10 L105,90 L130,90 L100,210 L115,120 L90,120 Z" fill="#00F0FF" opacity="0.8" filter="drop-shadow(0 0 8px #00F0FF)"/>
+            <path d="M40,55 L45,110 L30,110 L50,165" fill="none" stroke="#00F0FF" stroke-width="1.5" opacity="0.6"/>
+            <path d="M180,55 L175,110 L190,110 L170,165" fill="none" stroke="#00F0FF" stroke-width="1.5" opacity="0.6"/>
+          </svg>
+          <div class="hex-core">
+            <div class="glyph" id="hexGlyph">CONECTAR</div>
+            <div class="lbl" id="hexLbl">PULSAR</div>
+          </div>
+        </div>
+        <div class="state-display">
+          <div class="state-name" id="stateName">DESCONECTADO</div>
+          <div class="state-meta" id="stateMeta"><b>00:00:00</b> · <b id="pingVal">--</b>ms</div>
+        </div>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="mlbl">↓ Descarga</div>
+          <div class="mval" id="mDown">0<em> B</em></div>
+          <div class="msub" id="mDownSub">↓ 0 B/s</div>
+        </div>
+        <div class="metric">
+          <div class="mlbl">↑ Subida</div>
+          <div class="mval" id="mUp">0<em> B</em></div>
+          <div class="msub" id="mUpSub">↑ 0 B/s</div>
+        </div>
+      </div>
+
+      <div class="section-title">Servidor</div>
+      <div class="card row" id="cardServer">
+        <div class="card-info">
+          <div class="card-eyebrow">ACTIVO</div>
+          <div class="card-title" id="srvName">Seleccionar…</div>
+          <div class="card-sub" id="srvDesc">—</div>
+        </div>
+        <div class="card-arrow">›</div>
+      </div>
+
+      <div class="grid-2">
+        <div class="tool" id="tCambiar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          <span>Cambiar</span>
+        </div>
+        <div class="tool" id="tPing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>Ping</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CUENTA ═══ -->
+    <div class="tab-page" id="tCuenta">
+      <div class="section-title">Credenciales</div>
+      <div class="card" id="cardAcct">
+        <div class="field">
+          <label>Usuario</label>
+          <div class="field-input">
+            <input type="text" id="inpUser" placeholder="usuario" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label>Contraseña</label>
+          <div class="field-input">
+            <input type="password" id="inpPass" placeholder="••••••••" autocomplete="off">
+            <button class="eye-btn" id="eyePass" type="button">VER</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-title">Cuenta</div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-key">Usuario</div>
+          <div class="info-val muted" id="acUser">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Servidor</div>
+          <div class="info-val muted" id="acSrv">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Expiración</div>
+          <div class="info-val muted" id="acExp">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Conexiones</div>
+          <div class="info-val muted" id="acConn">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Estado</div>
+          <div class="info-val muted" id="acStat">Desconectado</div>
+        </div>
+      </div>
+      <button class="btn btn-ghost" id="btnVerify" style="margin-top:10px">Verificar cuenta</button>
+    </div>
+
+    <!-- ═══ HERRAMIENTAS ═══ -->
+    <div class="tab-page" id="tHtas">
+      <div class="section-title">Red</div>
+      <div class="grid-2">
+        <div class="tool" id="tUpdate">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/></svg>
+          <span>Actualizar</span>
+        </div>
+        <div class="tool" id="tIdioma">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <span>Idioma</span>
+        </div>
+        <div class="tool" id="tDns">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <span>DNS</span>
+        </div>
+        <div class="tool" id="tUdp">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span>UDPGW</span>
+        </div>
+        <div class="tool" id="tPingCfg">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          <span>Ping</span>
+        </div>
+        <div class="tool" id="tBatt">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="18" height="12" rx="2"/><line x1="23" y1="13" x2="23" y2="11"/></svg>
+          <span>Batería</span>
+        </div>
+        <div class="tool" id="tHwid">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>HWID</span>
+        </div>
+        <div class="tool" id="tShare">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0114.08 0"/><path d="M1.42 9a16 16 0 0121.16 0"/><path d="M8.53 16.11a6 6 0 016.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          <span>Compartir</span>
+        </div>
+        <div class="tool" id="tLogs">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
+          <span>Logs</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ INFO ═══ -->
+    <div class="tab-page" id="tInfo">
+      <div class="section-title">Sistema</div>
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-key">HWID</div>
+          <div class="info-val em" id="iHwid">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Config</div>
+          <div class="info-val muted" id="iCfg">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Tema</div>
+          <div class="info-val muted" id="iTheme">—</div>
+        </div>
+        <div class="info-row">
+          <div class="info-key">Idioma</div>
+          <div class="info-val muted" id="iLang">—</div>
+        </div>
+      </div>
+
+      <div class="section-title">Zona de riesgo</div>
+      <div class="grid-2">
+        <div class="tool danger" id="tRestore">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Restablecer</span>
+        </div>
+        <div class="tool danger" id="tExit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          <span>Salir</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-i act" data-t="tInicio">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      <span>Inicio</span>
+    </button>
+    <button class="nav-i" data-t="tCuenta">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Cuenta</span>
+    </button>
+    <button class="nav-i" data-t="tHtas">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      <span>Herr.</span>
+    </button>
+    <button class="nav-i" data-t="tInfo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+      <span>Info</span>
+    </button>
+  </nav>
+
+  <div class="toast-wrap" id="toastWrap"></div>
+</div>
+
+<!-- Servidores -->
+<div class="modal-overlay" id="srvModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Servidores<em id="srvCount">· 0</em></div>
+      <div class="modal-close" id="srvClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="srvSearch" placeholder="BUSCAR SERVIDOR…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="cat-tabs" id="catTabs">
+      <div class="cat-tab act" data-cat="all">TODOS</div>
+    </div>
+    <div class="modal-list" id="srvList">
+      <div class="srv-loading">Inicializando</div>
+    </div>
+  </div>
+</div>
+
+<!-- Registro -->
+<div class="modal-overlay" id="logModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Registro</div>
+      <div class="modal-close" id="logClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="modal-list" id="logList">
+      <div class="empty">Sin logs</div>
+    </div>
+    <div style="padding:8px 14px 18px">
+      <button class="btn btn-ghost" id="logClear">Limpiar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Idioma -->
+<div class="modal-overlay" id="langModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Idioma</div>
+      <div class="modal-close" id="langClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list" id="langList"></div>
+  </div>
+</div>
+
+<!-- DNS -->
+<div class="modal-overlay" id="dnsModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">DNS</div>
+      <div class="modal-close" id="dnsClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div id="dnsList"></div>
+      <div class="warn" id="dnsWarn" style="display:none">El túnel está activo: desconéctalo antes de guardar.</div>
+      <div class="section-title" style="margin-top:12px">Personalizado</div>
+      <div class="field">
+        <label>Primario</label>
+        <div class="field-input"><input type="text" id="dnsPrimary" placeholder="8.8.8.8" autocomplete="off"></div>
+      </div>
+      <div class="field">
+        <label>Secundario</label>
+        <div class="field-input"><input type="text" id="dnsSecondary" placeholder="8.8.4.4" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:8px;padding-top:4px">
+        <button class="btn btn-ghost" id="dnsCancel" style="margin:0">Cancelar</button>
+        <button class="btn btn-primary" id="dnsSave" style="margin:0">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UDPGW -->
+<div class="modal-overlay" id="udpModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">UDPGW</div>
+      <div class="modal-close" id="udpClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="field">
+        <label>Resolvedor UDP</label>
+        <div class="field-input"><input type="text" id="udpInput" placeholder="127.0.0.1:7300" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:8px;padding-top:4px">
+        <button class="btn btn-ghost" id="udpCancel" style="margin:0">Cancelar</button>
+        <button class="btn btn-primary" id="udpSave" style="margin:0">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Ping -->
+<div class="modal-overlay" id="pingModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Ping</div>
+      <div class="modal-close" id="pingClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="field">
+        <label>URL / Host de ping</label>
+        <div class="field-input"><input type="text" id="pingInput" placeholder="clients3.google.com" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:8px;padding-top:4px">
+        <button class="btn btn-ghost" id="pingCancel" style="margin:0">Cancelar</button>
+        <button class="btn btn-primary" id="pingSave" style="margin:0">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HWID -->
+<div class="modal-overlay" id="hwidModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">HWID</div>
+      <div class="modal-close" id="hwidClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="hwid-box" id="hwidText">—</div>
+      <div style="display:flex;gap:8px;padding-top:12px">
+        <button class="btn btn-ghost" id="hwidCopy" style="margin:0">Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Compartir proxy -->
+<div class="modal-overlay" id="shareModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Compartir proxy</div>
+      <div class="modal-close" id="shareClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="info-card">
+        <div class="info-row">
+          <div class="info-key">Proxy</div>
+          <div class="info-val em" id="shareAddr">—</div>
+        </div>
+      </div>
+      <div class="warn" id="shareWarn">Conéctate y activa. En el otro dispositivo usa estos datos como proxy en los ajustes WiFi.</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" id="shareToggle" style="margin:0">Activar</button>
+        <button class="btn btn-primary" id="shareCopy" style="margin:0">Copiar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Restablecer -->
+<div class="modal-overlay" id="restoreModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Restablecer</div>
+      <div class="modal-close" id="restoreCancel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="sub" style="color:var(--sub);font-size:13px;margin-bottom:14px">¿Seguro que quieres borrar todos los datos de la app?</div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost" id="restoreNo" style="margin:0">Cancelar</button>
+        <button class="btn btn-danger" id="restoreOk" style="margin:0">Borrar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Salir -->
+<div class="modal-overlay" id="exitModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title">Salir</div>
+      <div class="modal-close" id="exitCancel">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="list">
+      <div class="sub" style="color:var(--sub);font-size:13px;margin-bottom:14px">¿Qué quieres hacer?</div>
+      <button class="btn btn-ghost" id="exitMin" style="margin-bottom:8px">Minimizar</button>
+      <button class="btn btn-danger" id="exitOk" style="margin:0">Cerrar app</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id);};
+var estado='DISCONNECTED';
+var tSeg=null, segs=0;
+var lastBytesD=0, lastBytesU=0, lastTs=0, SPEED_D=0, SPEED_U=0;
+
+/* ── Utilidades ── */
+function toast(msg,kind){
+  var w=$('toastWrap');
+  var t=document.createElement('div');
+  t.className='toast '+(kind||'ok');
+  t.textContent=msg;
+  w.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); },3000);
+}
+function fmtTime(s){
+  s=Math.floor(s||0);
+  var h=Math.floor(s/3600),m=Math.floor((s%3600)/60),x=s%60;
+  return (h<10?'0':'')+h+':'+(m<10?'0':'')+m+':'+(x<10?'0':'')+x;
+}
+function openModal(id){ $(id).classList.add('open'); }
+function closeModal(id){ $(id).classList.remove('open'); }
+function onOverlay(ids){
+  ids.forEach(function(id){
+    $(id).addEventListener('click',function(e){ if(e.target===this) closeModal(id); });
+  });
+}
+
+/* ── Estado ── */
+function limpiarClases(){
+  $('hexBtn').classList.remove('connected','connecting','failed');
+  $('stateName').classList.remove('connected','connecting','failed');
+}
+function fmtBytes(b){
+  if(!b||b<0) return {v:'0',u:'B'};
+  if(b<1024) return {v:b.toString(),u:'B'};
+  if(b<1048576) return {v:(b/1024).toFixed(1),u:'KB'};
+  if(b<1073741824) return {v:(b/1048576).toFixed(2),u:'MB'};
+  return {v:(b/1073741824).toFixed(2),u:'GB'};
+}
+function fmtSpeed(bps){
+  if(!bps||bps<0) return '0 B/s';
+  if(bps<1024) return bps.toFixed(0)+' B/s';
+  if(bps<1048576) return (bps/1024).toFixed(1)+' KB/s';
+  return (bps/1048576).toFixed(2)+' MB/s';
+}
+function actualizarPing(){
+  var p='--';
+  try{
+    var v=MXTunnel.getPing();
+    if(v!==null&&v!==undefined&&Number(v)>=0) p=Number(v);
+  }catch(e){}
+  var el=$('pingVal'); if(el) el.textContent=p;
+}
+function actualizarTrafico(){
+  var rx=0,tx=0;
+  try{
+    var o=JSON.parse(MXTunnel.getTraffic()||'{}');
+    rx=Number(o.rxBytes)||0; tx=Number(o.txBytes)||0;
+  }catch(e){}
+  var now=Date.now();
+  if(lastTs>0){
+    var dt=(now-lastTs)/1000;
+    if(dt>0){
+      SPEED_D=Math.max(0,(rx-lastBytesD)/dt);
+      SPEED_U=Math.max(0,(tx-lastBytesU)/dt);
+    }
+  }
+  lastBytesD=rx; lastBytesU=tx; lastTs=now;
+  var fd=fmtBytes(rx),fu=fmtBytes(tx);
+  $('mDown').innerHTML=fd.v+'<em> '+fd.u+'</em>';
+  $('mUp').innerHTML=fu.v+'<em> '+fu.u+'</em>';
+  $('mDownSub').textContent='↓ '+fmtSpeed(SPEED_D);
+  $('mUpSub').textContent='↑ '+fmtSpeed(SPEED_U);
+}
+function metaHtml(){
+  return '<b>'+fmtTime(segs)+'</b> · <b id="pingVal">--</b>ms';
+}
+function detenerTemporizador(){
+  if(tSeg){ clearInterval(tSeg); tSeg=null; }
+  segs=0; lastBytesD=0; lastBytesU=0; lastTs=0; SPEED_D=0; SPEED_U=0;
+  $('stateMeta').innerHTML=metaHtml();
+  $('mDown').innerHTML='0<em> B</em>'; $('mDownSub').textContent='↓ 0 B/s';
+  $('mUp').innerHTML='0<em> B</em>'; $('mUpSub').textContent='↑ 0 B/s';
+}
+function inicioTemporizador(){
+  if(tSeg) clearInterval(tSeg);
+  segs=0; lastBytesD=0; lastBytesU=0; lastTs=0; SPEED_D=0; SPEED_U=0;
+  tSeg=setInterval(function(){
+    segs++;
+    $('stateMeta').innerHTML=metaHtml();
+    actualizarPing();
+    actualizarTrafico();
+  },1000);
+}
+function led(st){
+  var l=$('ledNet');
+  l.className='led '+(st==='CONNECTED'?'':st==='CONNECTING'||st==='AUTH'||st==='WAITING_PERMISSION'?'warn':st==='AUTH_FAILED'||st==='NO_NETWORK'?'err':'off');
+}
+function aplicarEstado(st){
+  estado=st;
+  limpiarClases();
+  var g=$('hexGlyph'),l=$('hexLbl'),n=$('stateName'),m=$('stateMeta');
+  led(st);
+  switch(st){
+    case 'CONNECTED':
+      $('hexBtn').classList.add('connected'); n.classList.add('connected');
+      g.textContent='CONECTADO'; l.textContent='ACTIVO'; n.textContent='CONECTADO';
+      m.innerHTML=metaHtml();
+      inicioTemporizador();
+      break;
+    case 'CONNECTING':
+    case 'AUTH':
+      $('hexBtn').classList.add('connecting'); n.classList.add('connecting');
+      g.textContent='...'; l.textContent='ESPERA';
+      n.textContent=(st==='AUTH'?'AUTENTICANDO':'CONECTANDO');
+      break;
+    case 'WAITING_PERMISSION':
+      $('hexBtn').classList.add('connecting'); n.classList.add('connecting');
+      g.textContent='...'; l.textContent='PERMISO';
+      n.textContent='ACEPTA LA VPN';
+      break;
+    case 'AUTH_FAILED':
+    case 'NO_NETWORK':
+      $('hexBtn').classList.add('failed'); n.classList.add('failed');
+      g.textContent='ERROR'; l.textContent='REINTENTAR';
+      n.textContent=(st==='AUTH_FAILED'?'AUTH FALLIDA':'SIN RED');
+      m.innerHTML=metaHtml();
+      detenerTemporizador();
+      break;
+    default:
+      g.textContent='CONECTAR'; l.textContent='PULSAR'; n.textContent='DESCONECTADO';
+      m.innerHTML=metaHtml();
+      detenerTemporizador();
+  }
+  var ac=$('acStat');
+  if(ac){
+    var map={'CONNECTED':'Conectado','CONNECTING':'Conectando','AUTH':'Autenticando','AUTH_FAILED':'Auth fallida','NO_NETWORK':'Sin red','WAITING_PERMISSION':'Esperando permiso'};
+    ac.textContent=map[st]||'Desconectado';
+  }
+}
+
+/* ── Eventos de la app ── */
+window.mxtunnel={
+  onStatus:function(st){ aplicarEstado(st); },
+  onServerApplied:function(name){
+    if(name) $('srvName').textContent=name;
+    actualizarSrvActual(); actualizarCuenta();
+  },
+  onConfigUpdated:function(){ actualizarSrvActual(); actualizarCuenta(); toast('Config actualizada'); },
+  onLog:function(){ if($('logModal').classList.contains('open')) cargarLogs(); },
+  onToast:function(msg){ if(msg) toast(msg); },
+  onOpenMenu:function(opt){
+    switch(opt){
+      case 'language': cargarIdioma(); break;
+      case 'dns': cargarDns(); break;
+      case 'udp': cargarUdp(); break;
+      case 'ping': cargarPing(); break;
+      case 'hwid': cargarHwid(); break;
+      case 'restore': openModal('restoreModal'); break;
+      case 'exit': openModal('exitModal'); break;
+    }
+  },
+  onCheckUserStarted:function(){
+    $('acStat').innerHTML='<span style="color:#FFB800">VERIFICANDO…</span>';
+    $('btnVerify').disabled=true; $('btnVerify').textContent='VERIFICANDO…';
+  },
+  onCheckUserResult:function(j){
+    var d;
+    try{ d=JSON.parse(j); }catch(e){ $('acStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>'; return; }
+    if(d.username){ $('acUser').textContent=d.username; $('acUser').classList.remove('muted'); }
+    $('acExp').textContent=d.expiration_date||'—';
+    $('acExp').classList.remove('muted');
+    $('acConn').textContent=(d.count_connections||0)+'/'+(d.limit_connections||'?');
+    $('acConn').classList.remove('muted');
+    var days=parseInt(d.expiration_days,10);
+    if(!isNaN(days)){
+      $('acStat').innerHTML=days>0?'<span style="color:#00F0FF">'+days+' DÍAS RESTANTES</span>':'<span style="color:#FF2D6F">VENCIDA</span>';
+    } else {
+      $('acStat').innerHTML='<span style="color:#00F0FF">ACTIVA</span>';
+    }
+    $('btnVerify').disabled=false; $('btnVerify').textContent='VERIFICAR CUENTA';
+  },
+  onCheckUserError:function(m){
+    $('acStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>';
+    $('btnVerify').disabled=false; $('btnVerify').textContent='VERIFICAR CUENTA';
+    toast(m||'Error de verificación','err');
+  }
+};
+
+/* ── Modales del menú (tematizados) ── */
+function cargarIdioma(){
+  var act='default';
+  try{ act=MXTunnel.getLanguage()||'default'; }catch(e){}
+  var map={default:'Español',en:'English',pt:'Português',fr:'Français'};
+  var html='';
+  Object.keys(map).forEach(function(k){
+    html+='<div class="r-item'+(k===act?' sel':'')+'" data-lang="'+k+'"><span class="dot"></span><span class="tx"><strong>'+map[k]+'</strong></span></div>';
+  });
+  $('langList').innerHTML=html;
+  $('langList').querySelectorAll('.r-item').forEach(function(el){
+    el.addEventListener('click',function(){
+      closeModal('langModal');
+      try{ MXTunnel.setLanguage(this.dataset.lang); }catch(e){}
+    });
+  });
+  openModal('langModal');
+}
+function cargarDns(){
+  var cfg={dnsSelected:'8.8.8.8,8.8.4.4',primary:'',secondary:'',tunnelActive:false};
+  try{ cfg=JSON.parse(MXTunnel.getDnsConfig()||'{}'); }catch(e){}
+  var presets=[['8.8.8.8,8.8.4.4','Google DNS','8.8.8.8, 8.8.4.4'],['1.1.1.1,1.0.0.1','Cloudflare DNS','1.1.1.1, 1.0.0.1'],['9.9.9.9,149.112.112.112','Quad9 DNS','9.9.9.9, 149.112.112.112'],['208.67.222.222,208.67.220.220','OpenDNS','208.67.222.222, 208.67.220.220'],['223.5.5.5,223.6.6.6','Alibaba DNS','223.5.5.5, 223.6.6.6']];
+  var sel=cfg.dnsSelected||'8.8.8.8,8.8.4.4';
+  var isCustom=true, html='';
+  presets.forEach(function(p){
+    var on=p[0]===sel;
+    if(on) isCustom=false;
+    html+='<div class="r-item'+(on?' sel':'')+'" data-p="'+p[0]+'"><span class="dot"></span><span class="tx"><strong>'+p[1]+'</strong><span class="tx-sub">'+p[2]+'</span></span></div>';
+  });
+  html+='<div class="r-item'+(isCustom?' sel':'')+'" data-p="custom"><span class="dot"></span><span class="tx"><strong>Custom</strong><span class="tx-sub">ingresa tus propios servidores</span></span></div>';
+  $('dnsList').innerHTML=html;
+  $('dnsPrimary').value=cfg.primary||'';
+  $('dnsSecondary').value=cfg.secondary||'';
+  $('dnsWarn').style.display=cfg.tunnelActive?'':'none';
+  $('dnsList').querySelectorAll('.r-item').forEach(function(el){
+    el.addEventListener('click',function(){
+      $('dnsList').querySelectorAll('.r-item').forEach(function(x){ x.classList.remove('sel'); });
+      el.classList.add('sel');
+      if(this.dataset.p!=='custom'){
+        var parts=this.dataset.p.split(',');
+        $('dnsPrimary').value=parts[0];
+        $('dnsSecondary').value=parts[1]||'';
+      }
+    });
+  });
+  openModal('dnsModal');
+}
+function cargarUdp(){
+  var v='';
+  try{ var o=JSON.parse(MXTunnel.getUdpConfig()||'{}'); v=o.udpResolver||''; }catch(e){}
+  $('udpInput').value=v;
+  openModal('udpModal');
+}
+function cargarPing(){
+  var v='';
+  try{ v=MXTunnel.getPingUrl()||''; }catch(e){}
+  $('pingInput').value=v;
+  openModal('pingModal');
+}
+function cargarHwid(){
+  var id='';
+  try{ id=MXTunnel.getHwid()||''; }catch(e){}
+  $('hwidText').textContent=id||'—';
+  openModal('hwidModal');
+}
+
+/* ── Pestañas ── */
+document.querySelectorAll('.nav-i').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.nav-i').forEach(function(x){ x.classList.remove('act'); });
+    document.querySelectorAll('.tab-page').forEach(function(x){ x.classList.remove('active'); });
+    b.classList.add('act');
+    $(b.dataset.t).classList.add('active');
+  });
+});
+
+/* ── Conectar / desconectar ── */
+$('hexBtn').addEventListener('click',function(){
+  if(estado==='CONNECTED'||estado==='CONNECTING'||estado==='AUTH'||estado==='WAITING_PERMISSION'){
+    try{ MXTunnel.disconnect(); }catch(e){}
+  }else{
+    try{ MXTunnel.connect(); }catch(e){}
+  }
+});
+
+/* ── Servidor actual ── */
+function actualizarSrvActual(){
+  try{
+    var raw=MXTunnel.getSelectedServer();
+    var d=raw?JSON.parse(raw):null;
+    $('srvName').textContent=(d&&d.name)?d.name:'Seleccionar…';
+    $('srvDesc').textContent=(d&&d.description)?d.description:'—';
+  }catch(e){}
+}
+$('cardServer').addEventListener('click',abrirServidores);
+$('tCambiar').addEventListener('click',abrirServidores);
+
+/* ── Modal de servidores ── */
+var srvData={categories:[],items:[]};
+var srvFilterCat='all', srvFilterTxt='';
+function cargarServidores(){
+  srvData={categories:[],items:[]};
+  try{
+    var raw=MXTunnel.getConfig();
+    if(!raw) return;
+    var d=JSON.parse(raw);
+    srvData.categories=d.categories||[];
+    srvData.items=(d.servers||[]).slice();
+  }catch(e){}
+}
+function abrirServidores(){
+  $('srvList').innerHTML='<div class="srv-loading">Inicializando</div>';
+  $('srvCount').textContent='· …';
+  openModal('srvModal');
+  setTimeout(function(){ cargarServidores(); renderCatTabs(); renderSrvList(); },60);
+}
+function renderCatTabs(){
+  var cont=$('catTabs');
+  var html='<div class="cat-tab'+(srvFilterCat==='all'?' act':'')+'" data-cat="all">TODOS</div>';
+  srvData.categories.forEach(function(c){
+    var count=srvData.items.filter(function(i){ return String(i.category_id)===String(c.id); }).length;
+    if(count===0) return;
+    html+='<div class="cat-tab'+(String(srvFilterCat)===String(c.id)?' act':'')+'" data-cat="'+c.id+'">'+c.name.toUpperCase()+'</div>';
+  });
+  cont.innerHTML=html;
+  cont.querySelectorAll('.cat-tab').forEach(function(t){
+    t.addEventListener('click',function(){
+      srvFilterCat=this.dataset.cat;
+      renderCatTabs(); renderSrvList();
+    });
+  });
+}
+function initialsOf(name){
+  if(!name) return '??';
+  var parts=String(name).split(/[\s\-_]+/).filter(Boolean);
+  if(parts.length>=2) return (parts[0][0]+parts[1][0]).toUpperCase();
+  return String(name).substring(0,2).toUpperCase();
+}
+function renderSrvList(){
+  var list=$('srvList');
+  var items=srvData.items.slice();
+  if(srvFilterCat!=='all') items=items.filter(function(i){ return String(i.category_id)===String(srvFilterCat); });
+  if(srvFilterTxt){
+    var q=srvFilterTxt.toLowerCase();
+    items=items.filter(function(i){
+      return (i.name||'').toLowerCase().indexOf(q)>=0 || (i.description||'').toLowerCase().indexOf(q)>=0;
+    });
+  }
+  $('srvCount').textContent='· '+items.length;
+  if(!items.length){ list.innerHTML='<div class="srv-empty">// SIN SERVIDORES //</div>'; return; }
+  var act;
+  try{ act=JSON.parse(MXTunnel.getSelectedServer()||'null'); }catch(e){ act=null; }
+  var groups={};
+  items.forEach(function(it){ var k=it.category_id||'none'; if(!groups[k]) groups[k]=[]; groups[k].push(it); });
+  var html='';
+  var orderCats=srvFilterCat==='all'?srvData.categories:srvData.categories.filter(function(c){ return String(c.id)===String(srvFilterCat); });
+  orderCats.forEach(function(c){
+    if(!groups[c.id]) return;
+    html+='<div class="cat-section"><div class="cat-section-title">'+c.name.toUpperCase()+'<span class="cat-section-count">['+groups[c.id].length+']</span></div>';
+    groups[c.id].forEach(function(it){
+      var sel=act&&String(act.id)===String(it.id);
+      html+='<div class="srv-item'+(sel?' sel':'')+'" data-id="'+it.id+'">';
+      html+='<div class="srv-icon">'+initialsOf(it.name)+'</div>';
+      html+='<div class="srv-info"><div class="srv-name">'+it.name+'</div>';
+      html+='<div class="srv-sub">'+(it.description||'—')+'</div></div>';
+      html+='<div class="srv-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>';
+      html+='</div>';
+    });
+    html+='</div>';
+  });
+  list.innerHTML=html;
+  list.querySelectorAll('.srv-item').forEach(function(el){
+    el.addEventListener('click',function(){
+      var id=parseInt(this.dataset.id,10);
+      try{ MXTunnel.applyServer(id); }catch(e){}
+      closeModal('srvModal'); srvFilterCat='all'; srvFilterTxt=''; $('srvSearch').value='';
+      toast('Servidor aplicado');
+    });
+  });
+}
+$('srvClose').addEventListener('click',function(){ closeModal('srvModal'); });
+$('srvSearch').addEventListener('input',function(){ srvFilterTxt=this.value; renderSrvList(); });
+
+/* ── Cuenta ── */
+function loadAcct(){
+  try{ $('inpUser').value=MXTunnel.getAccountUser()||''; }catch(e){}
+  try{ $('inpPass').value=MXTunnel.getAccountPass()||''; }catch(e){}
+}
+$('inpUser').addEventListener('input',function(){ try{ MXTunnel.setAccountUser(this.value.trim()); }catch(e){} });
+$('inpPass').addEventListener('input',function(){ try{ MXTunnel.setAccountPass(this.value); }catch(e){} });
+$('btnVerify').addEventListener('click',function(){ try{ MXTunnel.checkUser(); }catch(e){ toast('Error al verificar','err'); } });
+$('eyePass').addEventListener('click',function(){
+  var p=$('inpPass');
+  p.type=(p.type==='password')?'text':'password';
+  this.textContent=(p.type==='password')?'VER':'OCULTAR';
+});
+function actualizarCuenta(){
+  var card=$('cardAcct'); if(!card) return;
+  var has=false;
+  try{
+    var s=JSON.parse(MXTunnel.getSelectedServer()||'null');
+    has=!!(s&&s.sshUser&&s.sshPass);
+  }catch(e){}
+  card.style.display=has?'none':'';
+  try{
+    var u=MXTunnel.getAccountUser()||'—';
+    $('acUser').textContent=u;
+  }catch(e){}
+  try{
+    var sv=JSON.parse(MXTunnel.getSelectedServer()||'null');
+    $('acSrv').textContent=(sv&&sv.name)?sv.name:'—';
+  }catch(e){}
+}
+
+/* ── Herramientas ── */
+$('tUpdate').addEventListener('click',function(){ try{ MXTunnel.update(); }catch(e){} });
+$('tIdioma').addEventListener('click',function(){ try{ MXTunnel.openLanguage(); }catch(e){} });
+$('tDns').addEventListener('click',function(){ try{ MXTunnel.openDns(); }catch(e){} });
+$('tUdp').addEventListener('click',function(){ try{ MXTunnel.openUdp(); }catch(e){} });
+$('tPingCfg').addEventListener('click',function(){ try{ MXTunnel.openPing(); }catch(e){} });
+$('tBatt').addEventListener('click',function(){ try{ MXTunnel.openBattery(); }catch(e){} });
+$('tHwid').addEventListener('click',function(){ try{ MXTunnel.openHwid(); }catch(e){} });
+$('tLogs').addEventListener('click',function(){ openModal('logModal'); cargarLogs(); });
+$('tRestore').addEventListener('click',function(){ try{ MXTunnel.openRestore(); }catch(e){} });
+$('tExit').addEventListener('click',function(){ try{ MXTunnel.openExit(); }catch(e){} });
+
+/* ── Compartir proxy ── */
+$('tShare').addEventListener('click',abrirShare);
+function abrirShare(){
+  var info={enabled:false,running:false,ip:'',port:1081,socks:1080};
+  try{ info=JSON.parse(MXTunnel.getShareProxy()||'{}'); }catch(e){}
+  var addr=(info.ip?info.ip:'—')+':'+(info.port||1081);
+  $('shareAddr').textContent=addr;
+  var warn=$('shareWarn');
+  if(info.enabled&&info.running){
+    warn.textContent='Activo. En el otro dispositivo pon '+addr+' como proxy en los ajustes WiFi.';
+    warn.style.color='#00F0FF';
+    $('shareToggle').textContent='Desactivar';
+  }else if(info.enabled){
+    warn.textContent='Activado, pero el túnel no está conectado. Conéctalo para compartir.';
+    warn.style.color='#FFB800';
+    $('shareToggle').textContent='Desactivar';
+  }else{
+    warn.textContent='Conéctate y activa. En el otro dispositivo pon '+addr+' como proxy en los ajustes WiFi.';
+    warn.style.color='#FFB800';
+    $('shareToggle').textContent='Activar';
+  }
+  openModal('shareModal');
+}
+$('shareToggle').addEventListener('click',function(){
+  var on=false;
+  try{ on=JSON.parse(MXTunnel.getShareProxy()||'{}').enabled; }catch(e){}
+  try{ MXTunnel.setShareProxy(!on); }catch(e){}
+  setTimeout(abrirShare,400);
+});
+$('shareCopy').addEventListener('click',function(){ try{ MXTunnel.copyText($('shareAddr').textContent); }catch(e){} });
+
+/* ── Registro ── */
+function cargarLogs(){
+  var list=$('logList');
+  try{
+    var raw=MXTunnel.getLogs();
+    var arr=raw?JSON.parse(raw):[];
+    if(!arr.length){ list.innerHTML='<div class="empty">Sin logs</div>'; return; }
+    list.innerHTML=arr.map(function(l){ return '<div class="log">'+l+'</div>'; }).join('');
+    list.scrollTop=list.scrollHeight;
+  }catch(e){ list.innerHTML='<div class="empty">Sin logs</div>'; }
+}
+$('logClear').addEventListener('click',function(){ try{ MXTunnel.clearLogs(); }catch(e){} cargarLogs(); });
+$('logClose').addEventListener('click',function(){ closeModal('logModal'); });
+
+/* ── Ping rápido ── */
+$('tPing').addEventListener('click',function(){
+  var p='--';
+  try{ var v=MXTunnel.getPing(); if(v!==null&&v!==undefined&&Number(v)>=0) p=Number(v)+' ms'; }catch(e){}
+  toast('Ping: '+p,'ok');
+});
+
+/* ── Guardados de modales ── */
+$('langClose').addEventListener('click',function(){ closeModal('langModal'); });
+$('dnsClose').addEventListener('click',function(){ closeModal('dnsModal'); });
+$('dnsCancel').addEventListener('click',function(){ closeModal('dnsModal'); });
+$('dnsSave').addEventListener('click',function(){
+  try{ MXTunnel.setDnsConfig(JSON.stringify({primary:$('dnsPrimary').value.trim(),secondary:$('dnsSecondary').value.trim()})); }catch(e){}
+  closeModal('dnsModal');
+});
+$('udpClose').addEventListener('click',function(){ closeModal('udpModal'); });
+$('udpCancel').addEventListener('click',function(){ closeModal('udpModal'); });
+$('udpSave').addEventListener('click',function(){
+  try{ MXTunnel.setUdpConfig(JSON.stringify({udpResolver:$('udpInput').value.trim()})); }catch(e){}
+  closeModal('udpModal');
+});
+$('pingClose').addEventListener('click',function(){ closeModal('pingModal'); });
+$('pingCancel').addEventListener('click',function(){ closeModal('pingModal'); });
+$('pingSave').addEventListener('click',function(){
+  try{ MXTunnel.setPingUrl($('pingInput').value); }catch(e){}
+  closeModal('pingModal');
+});
+$('hwidClose').addEventListener('click',function(){ closeModal('hwidModal'); });
+$('hwidCopy').addEventListener('click',function(){
+  try{ MXTunnel.copyText($('hwidText').textContent); }catch(e){}
+});
+$('shareClose').addEventListener('click',function(){ closeModal('shareModal'); });
+$('restoreCancel').addEventListener('click',function(){ closeModal('restoreModal'); });
+$('restoreNo').addEventListener('click',function(){ closeModal('restoreModal'); });
+$('restoreOk').addEventListener('click',function(){
+  closeModal('restoreModal');
+  try{ MXTunnel.restoreDefault(); }catch(e){}
+});
+$('exitCancel').addEventListener('click',function(){ closeModal('exitModal'); });
+$('exitMin').addEventListener('click',function(){ closeModal('exitModal'); try{ MXTunnel.minimizeApp(); }catch(e){} });
+$('exitOk').addEventListener('click',function(){ closeModal('exitModal'); try{ MXTunnel.exitApp(); }catch(e){} });
+
+onOverlay(['srvModal','logModal','langModal','dnsModal','udpModal','pingModal','hwidModal','shareModal','restoreModal','exitModal']);
+
+/* ── Info ── */
+function cargarInfo(){
+  try{ $('iHwid').textContent=MXTunnel.getHwid()||'—'; }catch(e){}
+  try{
+    var d=JSON.parse(MXTunnel.getConfig()||'{}');
+    $('iCfg').textContent='v'+(d.version||'?');
+    $('iTheme').textContent='v'+(d.themeVersion||'?');
+  }catch(e){}
+  try{ $('iLang').textContent=MXTunnel.getLanguage()||'default'; }catch(e){}
+}
+
+/* ── Init ── */
+try{ MXTunnel.enableThemeModals(); }catch(e){}
+try{ MXTunnel.setStatusBarColor('#05060A'); }catch(e){}
+aplicarEstado('DISCONNECTED');
+loadAcct();
+actualizarSrvActual();
+actualizarCuenta();
+cargarInfo();
+try{
+  var st=MXTunnel.getStatus();
+  if(st) aplicarEstado(st);
+}catch(e){}
+try{ MXTunnel.onReady(); }catch(e){}
+})();
+</script>
+</body>
+</html>

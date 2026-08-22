@@ -44,6 +44,8 @@ export function serializeServer(server: Server) {
     v2rayjson: server.v2ray_json ?? '',
     // Enhanced mode (V2)
     enhanced: server.enhanced,
+    // CheckUser
+    urlCheckUser: server.url_check_user ?? '',
   };
 }
 

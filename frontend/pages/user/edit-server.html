@@ -53,6 +53,7 @@
             <div class="col-md-2"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" value="<%= it.server.ssh_port %>" /></div>
             <div class="col-md-3"><label class="form-label">Usuario</label><input class="form-control" name="ssh_user" value="<%= it.server.ssh_user %>" /></div>
             <div class="col-md-4"><label class="form-label">Contraseña</label><input class="form-control" name="ssh_pass" value="<%= it.server.ssh_pass %>" /></div>
+            <div class="col-12"><label class="form-label">URL Check User <small class="text-muted">(p. ej. http://IP:2052; la app agrega /check/usuario?deviceId=)</small></label><input class="form-control font-monospace" name="url_check_user" value="<%= it.server.url_check_user %>" /></div>
 
             <div class="col-12"><strong class="small text-muted">SSL / Payload / Proxy</strong></div>
             <div class="col-md-3"><label class="form-label">SNI</label><input class="form-control" name="custom_sni" value="<%= it.server.custom_sni %>" /></div>

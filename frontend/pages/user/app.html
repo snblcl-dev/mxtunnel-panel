@@ -31,19 +31,19 @@
 
     <ul class="nav nav-tabs mb-4 fade-in" id="appTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab" aria-controls="tab-settings" aria-selected="true">
+        <button class="nav-link" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab" aria-controls="tab-settings" aria-selected="false">
           <i class="bi bi-sliders me-1"></i>Ajustes de la app
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-themes-btn" data-bs-toggle="tab" data-bs-target="#tab-themes" type="button" role="tab" aria-controls="tab-themes" aria-selected="false">
+        <button class="nav-link active" id="tab-themes-btn" data-bs-toggle="tab" data-bs-target="#tab-themes" type="button" role="tab" aria-controls="tab-themes" aria-selected="true">
           <i class="bi bi-palette me-1"></i>Temas
         </button>
       </li>
     </ul>
 
     <div class="tab-content">
-    <div class="tab-pane fade show active" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn">
+    <div class="tab-pane fade" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn">
 
     <div class="card mb-4 fade-in">
       <div class="card-header"><i class="bi bi-sliders me-2"></i>Ajustes de la app</div>
@@ -110,7 +110,7 @@
 
     </div>
 
-    <div class="tab-pane fade" id="tab-themes" role="tabpanel" aria-labelledby="tab-themes-btn">
+    <div class="tab-pane fade show active" id="tab-themes" role="tabpanel" aria-labelledby="tab-themes-btn">
 
     <div class="card mb-4 fade-in">
       <div class="card-header"><i class="bi bi-palette me-2"></i>Tus temas</div>
@@ -138,7 +138,7 @@
             <% it.themes.forEach(function(t) { %>
               <div class="col-6 col-md-4 col-lg-3">
                 <div class="theme-card <%= it.activeThemeId === t.id ? 'theme-card-active' : '' %>">
-                  <div class="theme-thumb" id="thumb-<%= t.id %>"></div>
+                  <div class="theme-thumb theme-thumb-fill" id="thumb-<%= t.id %>"></div>
                   <div class="theme-card-body">
                     <div class="d-flex align-items-center gap-1 flex-wrap">
                       <strong><%= t.name %></strong>
@@ -227,7 +227,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
       </div>
       <div class="modal-body d-flex justify-content-center">
-        <div class="theme-thumb theme-thumb-lg theme-preview-frame" id="themePreviewFrame"></div>
+        <div class="theme-thumb theme-thumb-lg" id="themePreviewFrame"></div>
       </div>
     </div>
   </div>

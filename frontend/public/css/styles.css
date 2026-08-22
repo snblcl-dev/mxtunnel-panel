@@ -720,9 +720,18 @@ h1, h2, h3, h4, h5, h6 {
   overflow: hidden;
   background: #0B1220;
 }
-.theme-thumb-static { pointer-events: none; }
-.theme-preview-frame { pointer-events: auto; }
-.theme-thumb-lg { max-width: 360px; margin: 0 auto; }
+.theme-thumb iframe { position: absolute; top: 0; left: 0; border: 0; }
+.theme-thumb-fill {
+  height: 460px;
+  overflow-y: auto;
+  pointer-events: auto;
+}
+.theme-thumb-lg {
+  max-width: 360px;
+  margin: 0 auto;
+  overflow-y: auto;
+  pointer-events: auto;
+}
 
 .theme-card-body { padding: 10px 12px 6px; flex: 1; }
 .theme-card-actions { padding: 6px 12px 12px; display: grid; gap: 6px; }

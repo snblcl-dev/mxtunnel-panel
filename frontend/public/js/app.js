@@ -231,7 +231,7 @@
     return THEME_SHIM + html;
   }
 
-  window.renderThemeThumb = function (container, html, interactive) {
+  window.renderThemeThumb = function (container, html) {
     if (!container) return;
     container.innerHTML = '';
     const iframe = document.createElement('iframe');
@@ -243,7 +243,8 @@
     const H = 960;
     const cw = container.clientWidth || 150;
     const scale = cw / W;
-    container.style.height = Math.round(H * scale) + 'px';
+    const fill = container.classList.contains('theme-thumb-fill');
+    if (!fill) container.style.height = Math.round(H * scale) + 'px';
     iframe.style.width = W + 'px';
     iframe.style.height = H + 'px';
     iframe.style.transform = 'scale(' + scale + ')';
@@ -253,12 +254,6 @@
     iframe.style.left = '0';
     iframe.style.border = '0';
     iframe.srcdoc = themePreviewSrc(html);
-
-    if (interactive) {
-      container.classList.add('theme-preview-frame');
-    } else {
-      container.classList.add('theme-thumb-static');
-    }
   };
 
   window.openThemePreview = function (id) {

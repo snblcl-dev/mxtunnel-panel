@@ -5,6 +5,7 @@ import cors from '@fastify/cors';
 import helmet from '@fastify/helmet';
 import fastifyStatic from '@fastify/static';
 import fastifyCookie, { type FastifyCookieOptions } from '@fastify/cookie';
+import fastifyRateLimit from '@fastify/rate-limit';
 
 const dashboard = path.resolve(process.cwd(), 'frontend', 'public');
 const views = path.resolve(process.cwd(), 'frontend', 'views');
@@ -22,6 +23,11 @@ fastify
   .register(fastifyCookie, {
     hook: 'onRequest',
   } as FastifyCookieOptions)
+  .register(fastifyRateLimit, {
+    global: false,
+    max: 20,
+    timeWindow: '1 minute',
+  })
   .register(routes);
 
 export default fastify;

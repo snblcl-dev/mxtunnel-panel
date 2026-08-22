@@ -2,17 +2,17 @@ import prisma from '../../config/prisma-client';
 import SafeCallback from '../../utils/safe-callback';
 import { isExpired } from '../../utils/format-date';
 import { serializeServer, serializeCategory } from '../../utils/serialize';
+import { getApiToken } from '../../utils/api-token';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
-
-type Query = { token?: string };
 
 export default {
   url: '/api/config',
   method: 'GET',
+  config: { rateLimit: { max: 20, timeWindow: '1 minute' } },
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
-    const { token } = req.query as Query;
+    const token = getApiToken(req);
 
-    if (!token || typeof token !== 'string') {
+    if (!token) {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Falta el token.' });
     }
 

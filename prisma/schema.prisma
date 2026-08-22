@@ -23,6 +23,7 @@ model User {
   configs_locked  Boolean    @default(false)
   config_version  Int        @default(1)
   theme_version   Int        @default(1)
+  app_settings    String? // JSON con ajustes controlados por el panel (ver frontend/user/app)
   active_theme_id Int?
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt

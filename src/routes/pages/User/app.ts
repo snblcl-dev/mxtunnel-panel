@@ -14,11 +14,22 @@ export default {
       prisma.user.findUnique({ where: { id: userId } }),
       prisma.theme.findMany({ where: { owner_id: userId }, orderBy: { id: 'desc' } }),
     ]);
+
+    let appSettings: Record<string, any> | null = null;
+    if (user?.app_settings) {
+      try {
+        appSettings = JSON.parse(user.app_settings);
+      } catch {
+        appSettings = null;
+      }
+    }
+
     return Render.page(req, reply, '/user/app.html', {
       active: 'app',
       themes,
       activeThemeId: user?.active_theme_id ?? null,
       MAX_THEMES: 10,
+      appSettings,
     });
   },
 } as RouteOptions;

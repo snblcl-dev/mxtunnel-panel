@@ -51,9 +51,19 @@ export default {
       ),
     ]);
 
+    let settings = null;
+    if (user.app_settings) {
+      try {
+        settings = JSON.parse(user.app_settings);
+      } catch {
+        settings = null;
+      }
+    }
+
     return reply.send({
       version: user.config_version,
       themeVersion: user.theme_version,
+      settings,
       categories: (categories ?? []).map(serializeCategory),
       servers: (servers ?? []).map(serializeServer),
     });

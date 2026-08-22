@@ -24,6 +24,71 @@
       </div>
     </div>
 
+    <%
+      var s = it.appSettings || {};
+      var b = function (key, def) { return typeof s[key] === 'boolean' ? s[key] : def; };
+    %>
+
+    <div class="card mb-4 fade-in">
+      <div class="card-header"><i class="bi bi-sliders me-2"></i>Ajustes de la app</div>
+      <div class="card-body">
+        <div class="alert alert-secondary d-flex align-items-center gap-2">
+          <i class="bi bi-info-circle"></i>
+          <span>Estos valores se aplican a tu app. La próxima vez que la app sincronice, se activan/desactivan aquí. Si no has guardado, la app usa sus valores por defecto.</span>
+        </div>
+
+        <form method="POST" action="/user/app/settings" data-ajax="true">
+          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="data_compression" value="true" id="opt_data_compression" <%= b('data_compression', true) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_data_compression">Compresión de datos</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="wakelock" value="true" id="opt_wakelock" <%= b('wakelock', true) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_wakelock">Activación de CPU (wakelock)</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_vibrate">Vibrar al conectar</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="autoPing" value="true" id="opt_autoPing" <%= b('autoPing', true) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_autoPing">Ping automático</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_hideLog">Ocultar logs</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="disableDelaySSH" value="true" id="opt_disableDelaySSH" <%= b('disableDelaySSH', false) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_disableDelaySSH">Desactivar delay SSH</label>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="opt_motorSocks">Motor Socks</label>
+                <select class="form-select" name="motorSocks" id="opt_motorSocks">
+                  <option value="tun" <%= (s.motorSocks || 'tun') === 'tun' ? 'selected' : '' %>>tun</option>
+                  <option value="hev" <%= (s.motorSocks || 'tun') === 'hev' ? 'selected' : '' %>>hev</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="opt_pingerSSH">Tiempo de ping (segundos)</label>
+                <input class="form-control" type="number" min="0" max="999" name="pingerSSH" id="opt_pingerSSH" value="<%= typeof s.pingerSSH === 'number' ? s.pingerSSH : 3 %>" />
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar ajustes</button>
+        </form>
+      </div>
+    </div>
+
     <div class="card mb-4 fade-in">
       <div class="card-header"><i class="bi bi-palette me-2"></i>Tus temas</div>
       <div class="card-body">

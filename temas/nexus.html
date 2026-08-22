@@ -141,6 +141,36 @@ input::placeholder{color:var(--mut)}
 .modal-sheet{position:absolute;left:0;right:0;bottom:0;max-height:85vh;margin:0 auto;max-width:480px;background:linear-gradient(180deg,#0B0D17 0%,#05060A 100%);border-top:1px solid var(--c);box-shadow:0 -8px 40px rgba(0,240,255,0.2),0 -2px 8px rgba(0,240,255,0.1);transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;overflow:hidden}
 .modal-overlay.open .modal-sheet{transform:translateY(0)}
 .modal-sheet::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.chk-overlay{position:fixed;inset:0;background:rgba(5,6,10,0.78);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:3500;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.25s ease}
+.chk-overlay.open{opacity:1;pointer-events:auto}
+.chk-card{width:min(100%,340px);background:linear-gradient(180deg,#0B0D17 0%,#05060A 100%);border:1px solid rgba(0,240,255,0.25);border-radius:14px;box-shadow:0 0 40px rgba(0,240,255,0.25),0 0 80px rgba(123,44,255,0.15),inset 0 0 30px rgba(0,240,255,0.04);position:relative;overflow:hidden;transform:translateY(18px) scale(0.96);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1);display:flex;flex-direction:column;max-height:80vh}
+.chk-overlay.open .chk-card{transform:translateY(0) scale(1)}
+.chk-card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),var(--p),var(--m),transparent)}
+.chk-card::after{content:"";position:absolute;top:-60%;left:-40%;width:180%;height:120%;background:radial-gradient(circle at 30% 0%,rgba(0,240,255,0.07),transparent 55%);pointer-events:none}
+.chk-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid rgba(0,240,255,0.12);position:relative;z-index:1;flex-shrink:0}
+.chk-title{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:3px;color:var(--c);text-transform:uppercase;text-shadow:0 0 12px rgba(0,240,255,0.4);display:flex;align-items:center;gap:9px}
+.chk-title .dot{width:6px;height:6px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);animation:ledpulse 2s ease-in-out infinite}
+.chk-close{width:30px;height:30px;border-radius:6px;background:transparent;border:1px solid rgba(255,45,111,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--m);transition:all 0.2s;flex-shrink:0}
+.chk-close:active{background:rgba(255,45,111,0.2);transform:scale(0.92)}
+.chk-close svg{width:13px;height:13px}
+.chk-body{padding:16px 18px 18px;position:relative;z-index:1;overflow-y:auto;flex-shrink:1}
+.chk-info{background:linear-gradient(180deg,#0B0D17 0%,#08090F 100%);border:1px solid rgba(0,240,255,0.15);border-radius:10px;padding:4px 14px;position:relative;overflow:hidden}
+.chk-info::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,240,255,0.5),transparent)}
+.chk-info.ok::before{background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.chk-info.err::before{background:linear-gradient(90deg,transparent,var(--m),transparent)}
+.chk-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed rgba(0,240,255,0.08)}
+.chk-row:last-child{border-bottom:none}
+.chk-key{font-family:var(--lbl);font-size:11px;letter-spacing:2px;color:var(--sub);text-transform:uppercase;flex-shrink:0}
+.chk-val{font-family:var(--mono);font-size:12px;color:var(--txt);font-weight:500;text-align:right;word-break:break-all}
+.chk-val em{color:var(--c);font-style:normal;text-shadow:0 0 6px rgba(0,240,255,0.4)}
+.chk-val.muted{color:var(--mut)}
+.chk-loading{display:none;flex-direction:column;align-items:center;gap:14px;padding:30px 18px;position:relative;z-index:1;flex-shrink:0}
+.chk-loading.show{display:flex}
+.chk-spinner{width:40px;height:40px;border:2px solid rgba(0,240,255,0.15);border-top-color:var(--c);border-radius:50%;animation:spin 0.8s linear infinite;box-shadow:0 0 20px rgba(0,240,255,0.15)}
+.chk-loading .txt{font-family:var(--disp);font-size:11px;letter-spacing:3px;color:var(--a);text-transform:uppercase;animation:ledpulse 1s ease-in-out infinite}
+.chk-foot{padding:0 18px 16px;position:relative;z-index:1;flex-shrink:0}
+.chk-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:none;border-radius:8px;font-family:var(--disp);font-weight:700;font-size:12px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s;background:linear-gradient(135deg,var(--c) 0%,#00B8D4 100%);color:#05060A;box-shadow:0 4px 20px rgba(0,240,255,0.3)}
+.chk-btn:active{transform:translateY(1px)}
 .modal-handle{width:36px;height:3px;background:var(--c);box-shadow:0 0 6px var(--c);margin:10px auto 0;opacity:0.5}
 .modal-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;flex-shrink:0;border-bottom:1px solid var(--line)}
 .modal-title{font-family:var(--disp);font-weight:700;font-size:13px;letter-spacing:4px;color:var(--c);text-transform:uppercase}
@@ -641,6 +671,45 @@ input::placeholder{color:var(--mut)}
   </div>
 </div>
 
+<!-- Modal CheckUser -->
+<div class="chk-overlay" id="chkModal">
+  <div class="chk-card">
+    <div class="chk-hdr">
+      <div class="chk-title"><span class="dot"></span><span id="chkTitle">Verificando usuario</span></div>
+      <div class="chk-close" id="chkClose">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+    </div>
+    <div class="chk-loading" id="chkLoading">
+      <div class="chk-spinner"></div>
+      <div class="txt">Verificando…</div>
+    </div>
+    <div class="chk-body" id="chkBody">
+      <div class="chk-info" id="chkInfo">
+        <div class="chk-row">
+          <div class="chk-key">Usuario</div>
+          <div class="chk-val muted" id="chkUser">—</div>
+        </div>
+        <div class="chk-row">
+          <div class="chk-key">Vencimiento</div>
+          <div class="chk-val muted" id="chkExp">—</div>
+        </div>
+        <div class="chk-row">
+          <div class="chk-key">Conexiones</div>
+          <div class="chk-val muted" id="chkConn">—</div>
+        </div>
+        <div class="chk-row">
+          <div class="chk-key">Estado</div>
+          <div class="chk-val muted" id="chkStat">Sin verificar</div>
+        </div>
+      </div>
+    </div>
+    <div class="chk-foot">
+      <button class="chk-btn" id="chkOk">Entendido</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
 'use strict';
@@ -809,29 +878,90 @@ window.mxtunnel={
   onCheckUserStarted:function(){
     $('acStat').innerHTML='<span style="color:#FFB800">VERIFICANDO…</span>';
     $('btnVerify').disabled=true; $('btnVerify').textContent='VERIFICANDO…';
+    abrirChkModal('Verificando usuario');
   },
   onCheckUserResult:function(j){
     var d;
-    try{ d=JSON.parse(j); }catch(e){ $('acStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>'; return; }
-    if(d.username){ $('acUser').textContent=d.username; $('acUser').classList.remove('muted'); }
-    $('acExp').textContent=d.expiration_date||'—';
-    $('acExp').classList.remove('muted');
-    $('acConn').textContent=(d.count_connections||0)+'/'+(d.limit_connections||'?');
-    $('acConn').classList.remove('muted');
-    var days=parseInt(d.expiration_days,10);
-    if(!isNaN(days)){
-      $('acStat').innerHTML=days>0?'<span style="color:#00F0FF">'+days+' DÍAS RESTANTES</span>':'<span style="color:#FF2D6F">VENCIDA</span>';
-    } else {
-      $('acStat').innerHTML='<span style="color:#00F0FF">ACTIVA</span>';
-    }
+    try{ d=JSON.parse(j); }catch(e){ $('acStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>'; $('btnVerify').disabled=false; $('btnVerify').textContent='VERIFICAR CUENTA'; toast('Respuesta inválida del checkuser','err'); errorChkModal('Respuesta inválida'); return; }
+    try{
+      if(d.username){ $('acUser').textContent=d.username; $('acUser').classList.remove('muted'); }
+      $('acExp').textContent=d.expiration_date||'—';
+      $('acExp').classList.remove('muted');
+      $('acConn').textContent=(d.count_connections||0)+'/'+(d.limit_connections||'?');
+      $('acConn').classList.remove('muted');
+      var days=parseInt(d.expiration_days,10);
+      if(!isNaN(days)){
+        $('acStat').innerHTML=days>0?'<span style="color:#00F0FF">'+days+' DÍAS RESTANTES</span>':'<span style="color:#FF2D6F">VENCIDA</span>';
+        toast(days>0?'Cuenta activa · '+days+' días restantes':'Cuenta VENCIDA', days>0?'ok':'err');
+      } else {
+        $('acStat').innerHTML='<span style="color:#00F0FF">ACTIVA</span>';
+        toast('Cuenta verificada','ok');
+      }
+    }catch(e){ toast('Error al mostrar el checkuser','err'); }
     $('btnVerify').disabled=false; $('btnVerify').textContent='VERIFICAR CUENTA';
+    llenarChkModal(d);
   },
   onCheckUserError:function(m){
     $('acStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>';
     $('btnVerify').disabled=false; $('btnVerify').textContent='VERIFICAR CUENTA';
     toast(m||'Error de verificación','err');
+    errorChkModal(m||'Error de verificación');
   }
 };
+
+/* ── Modal CheckUser ── */
+var chkTimer=null;
+function abrirChkModal(titulo){
+  clearTimeout(chkTimer);
+  if(titulo) $('chkTitle').textContent=titulo;
+  $('chkLoading').classList.add('show');
+  $('chkBody').style.display='none';
+  $('chkInfo').classList.remove('ok','err');
+  $('chkModal').classList.add('open');
+}
+function cerrarChkModal(){
+  clearTimeout(chkTimer);
+  $('chkModal').classList.remove('open');
+}
+function llenarChkModal(d){
+  $('chkLoading').classList.remove('show');
+  $('chkBody').style.display='block';
+  $('chkInfo').classList.remove('err');
+  $('chkInfo').classList.add('ok');
+  $('chkTitle').textContent='INFO. DEL USUARIO';
+  $('chkUser').innerHTML='<em>'+(d.username||'—')+'</em>';
+  $('chkUser').classList.remove('muted');
+  $('chkExp').textContent=d.expiration_date||'—';
+  $('chkExp').classList.remove('muted');
+  $('chkConn').innerHTML='<em>'+(d.count_connections||0)+'</em>/'+(d.limit_connections||'?');
+  $('chkConn').classList.remove('muted');
+  var days=parseInt(d.expiration_days,10);
+  if(!isNaN(days)){
+    $('chkStat').innerHTML=days>0?'<span style="color:#00F0FF">'+days+' DÍAS RESTANTES</span>':'<span style="color:#FF2D6F">VENCIDA</span>';
+  } else {
+    $('chkStat').innerHTML='<span style="color:#00F0FF">ACTIVA</span>';
+  }
+  $('chkStat').classList.remove('muted');
+}
+function errorChkModal(msj){
+  clearTimeout(chkTimer);
+  $('chkLoading').classList.remove('show');
+  $('chkBody').style.display='block';
+  $('chkInfo').classList.remove('ok');
+  $('chkInfo').classList.add('err');
+  $('chkTitle').textContent='ERROR DE VERIFICACIÓN';
+  $('chkUser').innerHTML='<em>'+(msj||'—')+'</em>';
+  $('chkUser').classList.remove('muted');
+  $('chkExp').innerHTML='<span style="color:#FF2D6F">NO DISPONIBLE</span>';
+  $('chkExp').classList.remove('muted');
+  $('chkConn').innerHTML='<span style="color:#FF2D6F">—</span>';
+  $('chkConn').classList.remove('muted');
+  $('chkStat').innerHTML='<span style="color:#FF2D6F">ERROR</span>';
+  $('chkStat').classList.remove('muted');
+}
+$('chkClose').addEventListener('click',cerrarChkModal);
+$('chkOk').addEventListener('click',cerrarChkModal);
+$('chkModal').addEventListener('click',function(e){ if(e.target===this) cerrarChkModal(); });
 
 /* ── Modales del menú (tematizados) ── */
 function cargarIdioma(){

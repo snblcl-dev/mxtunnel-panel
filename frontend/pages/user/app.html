@@ -140,27 +140,25 @@
                 <div class="theme-card <%= it.activeThemeId === t.id ? 'theme-card-active' : '' %>">
                   <div class="theme-thumb theme-thumb-fill" id="thumb-<%= t.id %>"></div>
                   <div class="theme-card-body">
-                    <div class="d-flex align-items-center gap-1 flex-wrap">
-                      <strong><%= t.name %></strong>
-                      <% if (it.activeThemeId === t.id) { %><span class="badge bg-success">Activo</span><% } %>
+                    <div class="d-flex align-items-center justify-content-between gap-1">
+                      <strong class="text-truncate"><%= t.name %></strong>
+                      <% if (it.activeThemeId === t.id) { %><span class="badge bg-success flex-shrink-0">Activo</span><% } %>
                     </div>
-                    <div class="text-muted small"><%= t.updated_at.toLocaleDateString('es-ES') %></div>
                   </div>
-                  <div class="theme-card-actions d-grid gap-1">
-                    <button type="button" class="btn btn-sm btn-outline-light w-100" onclick="openThemePreview(<%= t.id %>)"><i class="bi bi-eye me-1"></i>Previsualizar</button>
+                  <div class="theme-card-actions d-flex gap-1">
                     <% if (it.activeThemeId !== t.id) { %>
-                      <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0">
+                      <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0 flex-grow-1">
                         <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                         <input type="hidden" name="action" value="activate" />
                         <input type="hidden" name="id" value="<%= t.id %>" />
-                        <button class="btn btn-sm btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Activar</button>
+                        <button class="btn btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Activar</button>
                       </form>
                     <% } %>
-                    <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0">
+                    <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0 flex-grow-1">
                       <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                       <input type="hidden" name="action" value="delete" />
                       <input type="hidden" name="id" value="<%= t.id %>" />
-                      <button class="btn btn-sm btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Eliminar</button>
+                      <button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Eliminar</button>
                     </form>
                   </div>
                 </div>
@@ -215,19 +213,6 @@
           <input type="hidden" name="action" id="confirmDeleteAction" value="delete" />
           <button type="submit" class="btn btn-danger"><i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer</button>
         </form>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="modal fade" id="themePreviewModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="themePreviewTitle"><i class="bi bi-eye me-2"></i>Vista previa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body d-flex justify-content-center">
-        <div class="theme-thumb theme-thumb-lg" id="themePreviewFrame"></div>
       </div>
     </div>
   </div>

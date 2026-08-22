@@ -255,19 +255,4 @@
     iframe.style.border = '0';
     iframe.srcdoc = themePreviewSrc(html);
   };
-
-  window.openThemePreview = function (id) {
-    const t = (typeof THEMES !== 'undefined' ? THEMES : []).find(x => x.id === id);
-    if (!t) { showToast('Tema no encontrado', 'error'); return; }
-    const modalEl = document.getElementById('themePreviewModal');
-    if (!modalEl || !window.bootstrap) { showToast('No se puede abrir la vista previa', 'error'); return; }
-    document.getElementById('themePreviewTitle').textContent = 'Vista previa — ' + t.name;
-    const frame = document.getElementById('themePreviewFrame');
-    frame.innerHTML = '';
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
-    requestAnimationFrame(function () {
-      renderThemeThumb(frame, t.html, true);
-    });
-  };
 })();

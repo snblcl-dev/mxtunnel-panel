@@ -216,7 +216,8 @@
     'getDnsConfig:function(){return "{}"},setDnsConfig:function(){},getUdpConfig:function(){return "{}"},' +
     'setUdpConfig:function(){},getPingUrl:function(){return ""},setPingUrl:function(){},' +
     'getShareProxy:function(){return "{\\"enabled\\":false,\\"running\\":false,\\"ip\\":\\"\\",\\"port\\":1081,\\"socks\\":1080}"},' +
-    'setShareProxy:function(){},getHwid:function(){return "preview"},copyText:function(){},' +
+    'setShareProxy:function(){},getHwid:function(){return "preview"},getTraffic:function(){return "{\\"rxBytes\\":0,\\"txBytes\\":0}"},' +
+    'getPing:function(){return "-1"},copyText:function(){},' +
     'onReady:function(){},setStatusBarColor:function(){}' +
     '};window.mxtunnel={onStatus:function(){},onServerApplied:function(){},onConfigUpdated:function(){},' +
     'onLog:function(){},onToast:function(){},onOpenMenu:function(){}};<\/script>';

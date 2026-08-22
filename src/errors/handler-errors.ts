@@ -14,6 +14,11 @@ export default function HandlerErrors(
     return reply.status(409).send({ error: 'Conflict', message: 'El registro ya existe.' });
   }
 
+  const statusCode = (error as any).statusCode;
+  if (typeof statusCode === 'number' && statusCode >= 400 && statusCode < 500) {
+    return reply.status(statusCode).send({ error: 'Error', message: error.message });
+  }
+
   console.error('[Error]', error.message);
   return reply.status(500).send({ error: 'InternalServerError', message: error.message });
 }

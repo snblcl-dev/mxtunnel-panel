@@ -20,7 +20,7 @@
     <div class="page-header">
       <div>
         <h3>Aplicación</h3>
-        <div class="text-muted">Tus temas para la app</div>
+        <div class="text-muted">Temas y ajustes para tu app</div>
       </div>
     </div>
 
@@ -28,6 +28,22 @@
       var s = it.appSettings || {};
       var b = function (key, def) { return typeof s[key] === 'boolean' ? s[key] : def; };
     %>
+
+    <ul class="nav nav-tabs mb-4 fade-in" id="appTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab" aria-controls="tab-settings" aria-selected="true">
+          <i class="bi bi-sliders me-1"></i>Ajustes de la app
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="tab-themes-btn" data-bs-toggle="tab" data-bs-target="#tab-themes" type="button" role="tab" aria-controls="tab-themes" aria-selected="false">
+          <i class="bi bi-palette me-1"></i>Temas
+        </button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+    <div class="tab-pane fade show active" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn">
 
     <div class="card mb-4 fade-in">
       <div class="card-header"><i class="bi bi-sliders me-2"></i>Ajustes de la app</div>
@@ -59,7 +75,7 @@
               </div>
               <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_hideLog">Ocultar logs</label>
+                <label class="form-check-label" for="opt_hideLog">Mostrar Logs al Conectar</label>
               </div>
             </div>
             <div class="col-md-6">
@@ -74,8 +90,8 @@
               <div class="mb-3">
                 <label class="form-label" for="opt_motorSocks">Motor Socks</label>
                 <select class="form-select" name="motorSocks" id="opt_motorSocks">
-                  <option value="tun" <%= (s.motorSocks || 'tun') === 'tun' ? 'selected' : '' %>>tun</option>
-                  <option value="hev" <%= (s.motorSocks || 'tun') === 'hev' ? 'selected' : '' %>>hev</option>
+                  <option value="tun" <%= (s.motorSocks || 'tun') === 'tun' ? 'selected' : '' %>>TUN2SOCKS (BADVPN)</option>
+                  <option value="hev" <%= (s.motorSocks || 'tun') === 'hev' ? 'selected' : '' %>>HEVSOCKS5TUNNEL</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -91,6 +107,10 @@
         </form>
       </div>
     </div>
+
+    </div>
+
+    <div class="tab-pane fade" id="tab-themes" role="tabpanel" aria-labelledby="tab-themes-btn">
 
     <div class="card mb-4 fade-in">
       <div class="card-header"><i class="bi bi-palette me-2"></i>Tus temas</div>
@@ -169,6 +189,9 @@
           </form>
         <% } %>
       </div>
+    </div>
+
+    </div>
     </div>
   </main>
 </div>

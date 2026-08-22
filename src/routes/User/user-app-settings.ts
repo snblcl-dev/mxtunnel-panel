@@ -19,6 +19,20 @@ const schema = z.object({
   pingerSSH: z.number().int().min(0).max(999),
 });
 
+// Valores por defecto que usa la app (Settings.java / app_preferences.xml).
+// El reset guarda estos valores para que la app los re-aplique.
+const DEFAULT_SETTINGS = {
+  data_compression: true,
+  motorSocks: 'tun',
+  hideLog: false,
+  wakelock: true,
+  vibrate: true,
+  autoPing: true,
+  tetherSubnet: false,
+  disableDelaySSH: false,
+  pingerSSH: 3,
+};
+
 function toBool(v: any): boolean {
   return v === true || v === 'true' || v === 'on' || v === '1';
 }
@@ -36,6 +50,15 @@ export default {
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
     const userId = (req as any).user.id;
     const body = req.body as Record<string, any>;
+
+    if (body.action === 'reset') {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { app_settings: JSON.stringify(DEFAULT_SETTINGS) },
+      });
+      await bumpConfigVersion(userId);
+      return ajaxOrRedirect(req, reply, '/user/app', 'Ajustes restablecidos a por defecto');
+    }
 
     // Los checkboxes desmarcados no llegan en el body: se reconstruye con
     // valores explícitos y se guardan SIEMPRE las 9 claves (comportamiento determinista).

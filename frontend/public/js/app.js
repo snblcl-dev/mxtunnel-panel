@@ -155,7 +155,7 @@
   });
 
   // ----- Delete confirmation -----
-  window.confirmDelete = function (url, csrf, message) {
+  window.confirmDelete = function (url, csrf, message, action) {
     const m = document.getElementById('confirmDeleteModal');
     if (!m) return;
     document.getElementById('confirmDeleteMessage').textContent = message || '¿Eliminar? Esta acción no se puede deshacer.';
@@ -163,6 +163,8 @@
     form.action = url;
     const csrfInput = document.getElementById('confirmDeleteCsrf');
     if (csrfInput) csrfInput.value = csrf;
+    const actionInput = document.getElementById('confirmDeleteAction');
+    if (actionInput) actionInput.value = action || 'delete';
     if (window.bootstrap) new bootstrap.Modal(m).show();
   };
 

@@ -27,6 +27,7 @@ export default {
     return Render.page(req, reply, '/user/app.html', {
       active: 'app',
       themes,
+      themesJson: JSON.stringify(themes).replace(/<\//g, '<\\/'),
       activeThemeId: user?.active_theme_id ?? null,
       MAX_THEMES: 10,
       appSettings,

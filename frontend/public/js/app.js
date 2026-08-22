@@ -198,4 +198,81 @@
       fallbackCopy(text);
     }
   };
+
+  // ----- Vista previa de temas (miniaturas + modal) -----
+  // Mock del puente MXTunnel para que los temas rendericen en el preview.
+  const THEME_SHIM =
+    '<script>window.MXTunnel={' +
+    'connect:function(){},disconnect:function(){},isConnected:function(){return false},' +
+    'getStatus:function(){return "DISCONNECTED"},getConfig:function(){return "{}"},' +
+    'getSelectedServer:function(){return ""},applyServer:function(){},' +
+    'getAccountUser:function(){return ""},getAccountPass:function(){return ""},' +
+    'setAccountUser:function(){},setAccountPass:function(){},update:function(){},' +
+    'getLogs:function(){return "[]"},clearLogs:function(){},' +
+    'openBattery:function(){},openLanguage:function(){},openDns:function(){},openUdp:function(){},' +
+    'openPing:function(){},openHwid:function(){},openRestore:function(){},openExit:function(){},' +
+    'restoreDefault:function(){},exitApp:function(){},minimizeApp:function(){},' +
+    'enableThemeModals:function(){},getLanguage:function(){return "default"},setLanguage:function(){},' +
+    'getDnsConfig:function(){return "{}"},setDnsConfig:function(){},getUdpConfig:function(){return "{}"},' +
+    'setUdpConfig:function(){},getPingUrl:function(){return ""},setPingUrl:function(){},' +
+    'getShareProxy:function(){return "{\\"enabled\\":false,\\"running\\":false,\\"ip\\":\\"\\",\\"port\\":1081,\\"socks\\":1080}"},' +
+    'setShareProxy:function(){},getHwid:function(){return "preview"},copyText:function(){},' +
+    'onReady:function(){},setStatusBarColor:function(){}' +
+    '};window.mxtunnel={onStatus:function(){},onServerApplied:function(){},onConfigUpdated:function(){},' +
+    'onLog:function(){},onToast:function(){},onOpenMenu:function(){}};<\/script>';
+
+  function themePreviewSrc(html) {
+    html = html || '';
+    const headIdx = html.toLowerCase().indexOf('<head');
+    if (headIdx !== -1) {
+      const end = html.indexOf('>', headIdx);
+      if (end !== -1) return html.slice(0, end + 1) + THEME_SHIM + html.slice(end + 1);
+    }
+    return THEME_SHIM + html;
+  }
+
+  window.renderThemeThumb = function (container, html, interactive) {
+    if (!container) return;
+    container.innerHTML = '';
+    const iframe = document.createElement('iframe');
+    iframe.setAttribute('sandbox', 'allow-scripts');
+    iframe.style.background = '#0B1220';
+    container.appendChild(iframe);
+
+    const W = 480;
+    const H = 960;
+    const cw = container.clientWidth || 150;
+    const scale = cw / W;
+    container.style.height = Math.round(H * scale) + 'px';
+    iframe.style.width = W + 'px';
+    iframe.style.height = H + 'px';
+    iframe.style.transform = 'scale(' + scale + ')';
+    iframe.style.transformOrigin = 'top left';
+    iframe.style.position = 'absolute';
+    iframe.style.top = '0';
+    iframe.style.left = '0';
+    iframe.style.border = '0';
+    iframe.srcdoc = themePreviewSrc(html);
+
+    if (interactive) {
+      container.classList.add('theme-preview-frame');
+    } else {
+      container.classList.add('theme-thumb-static');
+    }
+  };
+
+  window.openThemePreview = function (id) {
+    const t = (typeof THEMES !== 'undefined' ? THEMES : []).find(x => x.id === id);
+    if (!t) { showToast('Tema no encontrado', 'error'); return; }
+    const modalEl = document.getElementById('themePreviewModal');
+    if (!modalEl || !window.bootstrap) { showToast('No se puede abrir la vista previa', 'error'); return; }
+    document.getElementById('themePreviewTitle').textContent = 'Vista previa — ' + t.name;
+    const frame = document.getElementById('themePreviewFrame');
+    frame.innerHTML = '';
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    requestAnimationFrame(function () {
+      renderThemeThumb(frame, t.html, true);
+    });
+  };
 })();

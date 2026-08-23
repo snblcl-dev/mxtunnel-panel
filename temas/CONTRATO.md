@@ -51,7 +51,7 @@ try { MXTunnel.setStatusBarColor('#0B1220'); } catch(e) {}
 | `minimizeApp()` | Minimiza la app (equivale al botón home). |
 | `restoreDefault()` | Borra todos los datos de la app **sin confirmación** (el tema la hace). |
 | `exitApp()` | Cierra la app **sin confirmación** (el tema la hace). |
-| `checkUser()` | Consulta la cuenta actual en el servidor SSH activo (usuario + `deviceId`) usando la **URL Check User** configurada en el servidor (`urlCheckUser`, p. ej. `http://IP:2052`). El GET lo hace la app de forma nativa. Resultado por eventos `onCheckUserStarted` / `onCheckUserResult` / `onCheckUserError` (ver "Eventos"). Si el tema **no** define `onCheckUserResult`, la app muestra un **diálogo nativo** con el resultado. También se dispara automáticamente al conectar (si el servidor trae URL). |
+| `checkUser()` | Consulta la cuenta actual en el servidor SSH activo (usuario + `deviceId`) usando la **URL Check User** configurada en el servidor (`urlCheckUser`, p. ej. `http://IP:2052`). El GET lo hace la app de forma nativa. Resultado por eventos `onCheckUserStarted` / `onCheckUserResult` / `onCheckUserError` (ver "Eventos" y "Modal personalizado de CheckUser"). Regla de diálogo nativo: si el tema **no** define `onCheckUserResult`, la app muestra el diálogo nativo en éxito; en **errores** lo muestra **siempre**. También se dispara automáticamente al conectar (si el servidor trae URL). |
 | `onReady()` | **Handshake obligatorio.** |
 
 ### El menú y sus opciones
@@ -297,6 +297,49 @@ window.mxtunnel = {
   { "username": "tucuenta", "expiration_date": "24/08/2026", "expiration_days": 15, "limit_connections": 2, "count_connections": 1 }
   ```
   El tema puede mostrar `expiration_date`, `expiration_days` ("X días restantes" / "VENCIDA") y `count_connections`/`limit_connections`. Si el tema **no** define `onCheckUserResult`, la app muestra un diálogo nativo (así que puedes omitir la UI y solo tener el botón que llama `checkUser()`, o incluso dejar que se dispare solo al conectar).
+
+### Modal personalizado de CheckUser (cómo hacerlo bien)
+
+El checkuser tiene un **diálogo nativo de respaldo** que la app muestra automáticamente cuando el tema **no** lo maneja. La regla exacta es:
+
+- **Si NO defines `onCheckUserResult`** → la app muestra el diálogo nativo con el resultado (o el error). No necesitas hacer nada más; hasta puedes dejar que se dispare solo al conectar.
+- **Si SÍ defines `onCheckUserResult`** → la app entiende que "el tema se encarga" y **suprime el diálogo nativo** en el caso de éxito. El tema es **100% responsable** de mostrar algo visible.
+- **Errores (`onCheckUserError`)** → la app muestra el diálogo nativo **siempre**, aunque el tema tenga handlers (así un error nunca queda en silencio).
+
+⚠️ **El conflicto a evitar (por qué antes no salía ni el nativo ni el personalizado):** si defines `onCheckUserResult` pero tu handler **solo actualiza la tarjeta de Cuenta** (o hace algo poco visible) y no abre ningún modal, la app suprime el nativo (porque "el tema lo maneja") y el usuario **no ve nada destacado**: ni diálogo nativo ni modal del tema. Para hacerlo bien, los tres eventos deben trabajar juntos:
+
+1. `onCheckUserStarted` → **abre tu modal en estado de carga** ("Verificando…" + spinner) y deshabilita el botón Verificar.
+2. `onCheckUserResult(json)` → rellena tu modal con los datos (`username`, `expiration_date`, `expiration_days`, `limit_connections`, `count_connections`) y muéstralo (cambia el título a p. ej. "INFO. DEL USUARIO", estado verde/rojo).
+3. `onCheckUserError(msg)` → muestra el error dentro de tu modal (título "ERROR DE VERIFICACIÓN", valores en rojo) y un toast.
+
+Ejemplo mínimo correcto:
+
+```js
+function abrirChkModal(){ /* añade .open a tu overlay + spinner */ }
+function llenarChkModal(d){ /* rellena campos y muestra el resultado */ }
+function errorChkModal(m){ /* muestra el error */ }
+
+window.mxtunnel = {
+  onCheckUserStarted: function(){
+    if($('btnVerify')){ $('btnVerify').disabled = true; }
+    abrirChkModal();
+  },
+  onCheckUserResult: function(json){
+    var d = JSON.parse(json);
+    llenarChkModal(d);
+    if($('btnVerify')){ $('btnVerify').disabled = false; }
+  },
+  onCheckUserError: function(msg){
+    errorChkModal(msg || 'Error de verificación');
+    if($('btnVerify')){ $('btnVerify').disabled = false; }
+  }
+};
+```
+
+Reglas de oro:
+- **Todo o nada**: si defines `onCheckUserResult`, define también `onCheckUserStarted` y `onCheckUserError` y que **siempre** haya feedback visible (modal o toast). Nunca definas el handler y "no hagas nada visible" — te quedas sin nativo y sin personalizado.
+- Envuelve el cuerpo del handler en `try/catch`: si algo falla dentro, muestra un toast y el estado ERROR (nunca fallar en silencio).
+- Referencia funcional: `temas/nexus.html` (modal flotante estilo LUVPN con spinner, filas Usuario/Vencimiento/Conexiones/Estado y botón "Entendido").
 
 ## Reglas de seguridad
 

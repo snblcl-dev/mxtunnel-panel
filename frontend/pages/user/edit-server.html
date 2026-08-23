@@ -48,6 +48,8 @@
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="<%= it.server.sorter %>" /></div>
 
+            <div class="col-12"><label class="form-label">Descripción <small class="text-muted">(opcional, se muestra en la app bajo el nombre)</small></label><input class="form-control" name="description" value="<%= it.server.description %>" placeholder="Ej. 10 GB, velocidad 3×, ciudad…" /></div>
+
             <div class="col-12"><strong class="small text-muted">SSH</strong></div>
             <div class="col-md-3"><label class="form-label">Host</label><input class="form-control" name="ssh_server" value="<%= it.server.ssh_server %>" /></div>
             <div class="col-md-2"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" value="<%= it.server.ssh_port %>" /></div>

@@ -151,6 +151,7 @@
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="0" /></div>
+            <div class="col-12"><label class="form-label">Descripción <small class="text-muted">(opcional, se muestra en la app bajo el nombre)</small></label><input class="form-control" name="description" placeholder="Ej. 10 GB, velocidad 3×, ciudad…" /></div>
             <div class="col-12 section-divider"><i class="bi bi-terminal"></i><strong>SSH</strong></div>
             <div class="col-md-5"><label class="form-label">Host</label><input class="form-control" name="ssh_server" /></div>
             <div class="col-md-3"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" /></div>
@@ -264,7 +265,7 @@
     document.getElementById('editServerTitle').innerHTML = '<i class="bi bi-pencil me-2"></i>Editar servidor';
     document.getElementById('editServerBtnText').textContent = 'Guardar';
     const set = (n, v) => { const el = form.elements[n]; if (el) el.value = v ?? ''; };
-    set('name', s.name); set('sorter', s.sorter); set('tunnel_type', s.tunnel_type);
+    set('name', s.name); set('description', s.description); set('sorter', s.sorter); set('tunnel_type', s.tunnel_type);
     set('ssh_server', s.ssh_server); set('ssh_port', s.ssh_port);
     set('ssh_user', s.ssh_user); set('ssh_pass', s.ssh_pass);
     set('url_check_user', s.url_check_user);

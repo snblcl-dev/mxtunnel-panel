@@ -17,6 +17,8 @@ const schema = z.object({
   tetherSubnet: z.boolean(),
   disableDelaySSH: z.boolean(),
   pingerSSH: z.number().int().min(0).max(999),
+  limiterEnabled: z.boolean().optional(),
+  limiterMessage: z.string().optional(),
 });
 
 // Valores por defecto que usa la app (Settings.java / app_preferences.xml).
@@ -31,6 +33,8 @@ const DEFAULT_SETTINGS = {
   tetherSubnet: false,
   disableDelaySSH: false,
   pingerSSH: 3,
+  limiterEnabled: false,
+  limiterMessage: 'Has alcanzado el número máximo de conexiones permitidas. Cierra la app en otro dispositivo o contacta al soporte.',
 };
 
 function toBool(v: any): boolean {
@@ -72,6 +76,10 @@ export default {
       tetherSubnet: toBool(body.tetherSubnet),
       disableDelaySSH: toBool(body.disableDelaySSH),
       pingerSSH: toNum(body.pingerSSH),
+      limiterEnabled: toBool(body.limiterEnabled),
+      limiterMessage: typeof body.limiterMessage === 'string' && body.limiterMessage.trim()
+        ? body.limiterMessage.trim()
+        : DEFAULT_SETTINGS.limiterMessage,
     };
 
     const parsed = schema.safeParse(data);

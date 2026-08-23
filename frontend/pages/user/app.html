@@ -98,6 +98,14 @@
                 <label class="form-label" for="opt_pingerSSH">Tiempo de ping (segundos)</label>
                 <input class="form-control" type="number" min="0" max="999" name="pingerSSH" id="opt_pingerSSH" value="<%= typeof s.pingerSSH === 'number' ? s.pingerSSH : 3 %>" />
               </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" name="limiterEnabled" value="true" id="opt_limiterEnabled" <%= b('limiterEnabled', false) ? 'checked' : '' %> />
+                <label class="form-check-label" for="opt_limiterEnabled">Limitar conexiones (CheckUser)</label>
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="opt_limiterMessage">Mensaje al alcanzar el límite</label>
+                <input class="form-control" type="text" name="limiterMessage" id="opt_limiterMessage" value="<%= s.limiterMessage || '' %>" placeholder="Has alcanzado el número máximo de conexiones permitidas…" />
+              </div>
             </div>
           </div>
           <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar ajustes</button>

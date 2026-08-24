@@ -6,7 +6,7 @@
   <title>MXTunnel — Aplicación</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
   <link href="/css/styles.css" rel="stylesheet" />
@@ -31,181 +31,236 @@
 
     <ul class="nav nav-tabs mb-4 fade-in" id="appTabs" role="tablist">
       <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab" aria-controls="tab-settings" aria-selected="false">
+        <button class="nav-link active" id="tab-settings-btn" data-bs-toggle="tab" data-bs-target="#tab-settings" type="button" role="tab" aria-controls="tab-settings" aria-selected="true">
           <i class="bi bi-sliders me-1"></i>Ajustes de la app
         </button>
       </li>
       <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-themes-btn" data-bs-toggle="tab" data-bs-target="#tab-themes" type="button" role="tab" aria-controls="tab-themes" aria-selected="true">
+        <button class="nav-link" id="tab-themes-btn" data-bs-toggle="tab" data-bs-target="#tab-themes" type="button" role="tab" aria-labelledby="tab-themes-btn">
           <i class="bi bi-palette me-1"></i>Temas
         </button>
       </li>
     </ul>
 
     <div class="tab-content">
-    <div class="tab-pane fade" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn">
 
-    <div class="card mb-4 fade-in">
-      <div class="card-header"><i class="bi bi-sliders me-2"></i>Ajustes de la app</div>
-      <div class="card-body">
-        <div class="alert alert-secondary d-flex align-items-center gap-2">
-          <i class="bi bi-info-circle"></i>
-          <span>Estos valores se aplican a tu app. La próxima vez que la app sincronice, se activan/desactivan aquí. Si no has guardado, la app usa sus valores por defecto.</span>
-        </div>
+    <div class="tab-pane fade show active" id="tab-settings" role="tabpanel" aria-labelledby="tab-settings-btn">
 
-        <form method="POST" action="/user/app/settings" data-ajax="true">
-          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="data_compression" value="true" id="opt_data_compression" <%= b('data_compression', true) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_data_compression">Compresión de datos</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="wakelock" value="true" id="opt_wakelock" <%= b('wakelock', true) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_wakelock">Activación de CPU (wakelock)</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_vibrate">Vibrar al conectar</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="autoPing" value="true" id="opt_autoPing" <%= b('autoPing', true) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_autoPing">Ping automático</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_hideLog">Mostrar Logs al Conectar</label>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
-              </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="disableDelaySSH" value="true" id="opt_disableDelaySSH" <%= b('disableDelaySSH', false) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_disableDelaySSH">Desactivar delay SSH</label>
-              </div>
-              <div class="mb-3">
-                <label class="form-label" for="opt_motorSocks">Motor Socks</label>
+      <form method="POST" action="/user/app/settings" data-ajax="true">
+        <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+
+        <details class="cfg-group" open>
+          <summary>Conexión <span class="cfg-count">motor, ping, subred</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+          <div class="cfg-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <label class="form-label" for="opt_motorSocks">Motor SOCKS</label>
                 <select class="form-select" name="motorSocks" id="opt_motorSocks">
                   <option value="tun" <%= (s.motorSocks || 'tun') === 'tun' ? 'selected' : '' %>>TUN2SOCKS (BADVPN)</option>
                   <option value="hev" <%= (s.motorSocks || 'tun') === 'hev' ? 'selected' : '' %>>HEVSOCKS5TUNNEL</option>
                 </select>
+                <div class="form-hint">TUN redirige todo el tráfico; HEV solo lo que la app necesita.</div>
               </div>
-              <div class="mb-3">
-                <label class="form-label" for="opt_pingerSSH">Tiempo de ping (segundos)</label>
+              <div class="col-md-3">
+                <label class="form-label" for="opt_pingerSSH">Ping (segundos)</label>
                 <input class="form-control" type="number" min="0" max="999" name="pingerSSH" id="opt_pingerSSH" value="<%= typeof s.pingerSSH === 'number' ? s.pingerSSH : 3 %>" />
+                <div class="form-hint">Frecuencia con la que la app prueba el servidor.</div>
               </div>
-              <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" name="limiterEnabled" value="true" id="opt_limiterEnabled" <%= b('limiterEnabled', false) ? 'checked' : '' %> />
-                <label class="form-check-label" for="opt_limiterEnabled">Limitar conexiones (CheckUser)</label>
+              <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="autoPing" value="true" id="opt_autoPing" <%= b('autoPing', true) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_autoPing">Ping automático</label>
+                </div>
               </div>
-              <div class="mb-3">
-                <label class="form-label" for="opt_limiterMessage">Mensaje al alcanzar el límite</label>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="data_compression" value="true" id="opt_data_compression" <%= b('data_compression', true) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_data_compression">Compresión SSH</label>
+                </div>
+                <div class="form-hint">Reduce el ancho de banda del túnel SSH.</div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="disableDelaySSH" value="true" id="opt_disableDelaySSH" <%= b('disableDelaySSH', false) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_disableDelaySSH">Desactivar delay SSH</label>
+                </div>
+                <div class="form-hint">Conexión más rápida al iniciar (desactiva espera).</div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
+                </div>
+                <div class="form-hint">Permite compartir internet del móvil a través del VPN.</div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="cfg-group" open>
+          <summary>Apariencia <span class="cfg-count">logs, wakelock, vibración</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+          <div class="cfg-body">
+            <div class="row g-2">
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_hideLog">Ocultar logs al conectar</label>
+                </div>
+                <div class="form-hint">No muestra la ventana de logs al iniciar el VPN.</div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_vibrate">Vibrar al conectar</label>
+                </div>
+                <div class="form-hint">Feedback háptico cuando el VPN se conecta.</div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="wakelock" value="true" id="opt_wakelock" <%= b('wakelock', true) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_wakelock">Mantener CPU activa (wakelock)</label>
+                </div>
+                <div class="form-hint">Evita que el sistema duerma la app durante el VPN.</div>
+              </div>
+            </div>
+          </div>
+        </details>
+
+        <details class="cfg-group">
+          <summary>Límite de conexiones <span class="cfg-count">CheckUser (opcional)</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+          <div class="cfg-body">
+            <div class="row g-2">
+              <div class="col-md-12">
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" name="limiterEnabled" value="true" id="opt_limiterEnabled" <%= b('limiterEnabled', false) ? 'checked' : '' %> />
+                  <label class="form-check-label" for="opt_limiterEnabled">Limitar conexiones por usuario</label>
+                </div>
+                <div class="form-hint">Muestra el mensaje al alcanzar el número máximo de dispositivos conectados.</div>
+              </div>
+              <div class="col-md-12">
+                <label class="form-label" for="opt_limiterMessage">Mensaje del límite</label>
                 <input class="form-control" type="text" name="limiterMessage" id="opt_limiterMessage" value="<%= s.limiterMessage || '' %>" placeholder="Has alcanzado el número máximo de conexiones permitidas…" />
               </div>
             </div>
           </div>
+        </details>
+
+        <div class="mt-3 d-flex align-items-center gap-2 flex-wrap">
           <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar ajustes</button>
           <button type="button" class="btn btn-outline-danger" onclick="confirmDelete('/user/app/settings', '<%= it.csrfToken %>', '¿Restablecer los ajustes de la app a los valores por defecto?', 'reset')">
-            <i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer a por defecto
+            <i class="bi bi-arrow-counterclockwise me-1"></i>Restablecer
           </button>
-        </form>
-      </div>
-    </div>
-
-    </div>
-
-    <div class="tab-pane fade show active" id="tab-themes" role="tabpanel" aria-labelledby="tab-themes-btn">
-
-    <div class="card mb-4 fade-in">
-      <div class="card-header"><i class="bi bi-palette me-2"></i>Tus temas</div>
-      <div class="card-body">
-        <div class="alert alert-secondary d-flex align-items-center gap-2">
-          <i class="bi bi-info-circle"></i>
-          <span>
-            Tema activo:
-            <% if (it.activeThemeId) { %>
-              <strong><%= (it.themes.find(t => t.id === it.activeThemeId) || {}).name || '—' %></strong>
-            <% } else { %>
-              <strong>Tema por defecto de la app</strong>
-            <% } %>
-          </span>
         </div>
+      </form>
 
-        <% if (it.themes.length === 0) { %>
-          <div class="empty-state py-3">
-            <i class="bi bi-palette"></i>
-            <h6>No tienes temas propios</h6>
-            <p>Sube hasta <%= it.MAX_THEMES %> temas y activa el que quieras. Si no activas ninguno, la app usa su tema por defecto.</p>
+    </div>
+
+    <div class="tab-pane fade" id="tab-themes" role="tabpanel" aria-labelledby="tab-themes-btn">
+
+      <div class="card fade-in">
+        <div class="card-header d-flex align-items-center justify-content-between gap-2">
+          <span><i class="bi bi-palette me-2"></i>Tus temas</span>
+          <button class="btn btn-primary btn-sm" onclick="openThemeUploadModal()" id="uploadThemeBtn"<%= it.themes.length >= it.MAX_THEMES ? ' disabled' : '' %>>
+            <i class="bi bi-cloud-arrow-up me-1"></i>Subir tema
+          </button>
+        </div>
+        <div class="card-body">
+          <div class="alert alert-secondary d-flex align-items-center gap-2">
+            <i class="bi bi-info-circle"></i>
+            <span>
+              Tema activo:
+              <% if (it.activeThemeId) { %>
+                <strong><%= (it.themes.find(t => t.id === it.activeThemeId) || {}).name || '—' %></strong>
+              <% } else { %>
+                <strong>Tema por defecto de la app</strong>
+              <% } %>
+            </span>
           </div>
-        <% } else { %>
-          <div class="row g-3">
-            <% it.themes.forEach(function(t) { %>
-              <div class="col-6 col-md-4 col-lg-3">
-                <div class="theme-card <%= it.activeThemeId === t.id ? 'theme-card-active' : '' %>">
-                  <div class="theme-thumb theme-thumb-fill" id="thumb-<%= t.id %>"></div>
-                  <div class="theme-card-body">
-                    <div class="d-flex align-items-center justify-content-between gap-1">
-                      <strong class="text-truncate"><%= t.name %></strong>
-                      <% if (it.activeThemeId === t.id) { %><span class="badge bg-success flex-shrink-0">Activo</span><% } %>
+
+          <% if (it.themes.length === 0) { %>
+            <div class="empty-state py-3">
+              <i class="bi bi-palette"></i>
+              <h6>No tienes temas propios</h6>
+              <p>Pulsa <strong>Subir tema</strong> arriba para añadir uno. Máximo <%= it.MAX_THEMES %>.</p>
+            </div>
+          <% } else { %>
+            <div class="row g-3">
+              <% it.themes.forEach(function(t) { %>
+                <div class="col-6 col-md-4 col-lg-3">
+                  <div class="theme-card <%= it.activeThemeId === t.id ? 'theme-card-active' : '' %>">
+                    <div class="theme-thumb theme-thumb-fill" id="thumb-<%= t.id %>"></div>
+                    <div class="theme-card-body">
+                      <div class="d-flex align-items-center justify-content-between gap-1">
+                        <strong class="text-truncate"><%= t.name %></strong>
+                        <% if (it.activeThemeId === t.id) { %><span class="badge bg-success flex-shrink-0">Activo</span><% } %>
+                      </div>
                     </div>
-                  </div>
-                  <div class="theme-card-actions d-flex gap-1">
-                    <% if (it.activeThemeId !== t.id) { %>
+                    <div class="theme-card-actions d-flex gap-1">
+                      <% if (it.activeThemeId !== t.id) { %>
+                        <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0 flex-grow-1">
+                          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+                          <input type="hidden" name="action" value="activate" />
+                          <input type="hidden" name="id" value="<%= t.id %>" />
+                          <button class="btn btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Activar</button>
+                        </form>
+                      <% } %>
                       <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0 flex-grow-1">
                         <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-                        <input type="hidden" name="action" value="activate" />
+                        <input type="hidden" name="action" value="delete" />
                         <input type="hidden" name="id" value="<%= t.id %>" />
-                        <button class="btn btn-primary w-100"><i class="bi bi-check-lg me-1"></i>Activar</button>
+                        <button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Eliminar</button>
                       </form>
-                    <% } %>
-                    <form method="POST" action="/user/app/theme" data-ajax="true" class="m-0 flex-grow-1">
-                      <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-                      <input type="hidden" name="action" value="delete" />
-                      <input type="hidden" name="id" value="<%= t.id %>" />
-                      <button class="btn btn-outline-danger w-100"><i class="bi bi-trash me-1"></i>Eliminar</button>
-                    </form>
+                    </div>
                   </div>
                 </div>
-              </div>
-            <% }) %>
-          </div>
-        <% } %>
-      </div>
-    </div>
-
-    <div class="card fade-in">
-      <div class="card-header"><i class="bi bi-plus-circle me-2"></i>Nuevo tema</div>
-      <div class="card-body">
-        <% if (it.themes.length >= it.MAX_THEMES) { %>
-          <div class="alert alert-warning">Alcanzaste el máximo de <%= it.MAX_THEMES %> temas. Elimina uno para subir otro.</div>
-        <% } else { %>
-          <form method="POST" action="/user/app/theme" data-ajax="true" id="themeUploadForm">
-            <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-            <div class="mb-2"><label class="form-label">Nombre del tema</label><input class="form-control" name="name" placeholder="Ej. Arctic, Dark, Verde…" required /></div>
-            <div class="mb-2">
-              <label class="form-label">Archivo HTML del tema</label>
-              <input class="form-control" type="file" id="themeFile" accept=".html,text/html" />
-              <div class="form-text">Sube un archivo .html (CSS y JS inline, como pide el contrato de temas).</div>
-              <input type="hidden" name="html" id="themeHtml" />
+              <% }) %>
             </div>
-            <div id="themeFileInfo" class="d-none mb-3">
-              <div class="alert alert-secondary py-2 mb-2" id="themeFileName"></div>
-              <div class="theme-thumb theme-thumb-lg" id="themeFileThumb"></div>
-            </div>
-            <button class="btn btn-primary" id="themeUploadBtn" disabled><i class="bi bi-cloud-arrow-up me-1"></i>Subir tema</button>
-          </form>
-        <% } %>
+          <% } %>
+        </div>
       </div>
-    </div>
 
     </div>
+
     </div>
   </main>
 </div>
+
+<!-- Modal: Subir tema -->
+<div class="modal fade" id="themeUploadModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-cloud-arrow-up me-2"></i>Subir tema</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form method="POST" action="/user/app/theme" data-ajax="true" id="themeUploadForm">
+        <div class="modal-body">
+          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+          <div class="mb-3">
+            <label class="form-label">Nombre del tema</label>
+            <input class="form-control" name="name" placeholder="Ej. Arctic, Dark, Verde…" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Archivo HTML del tema</label>
+            <input class="form-control" type="file" id="themeFile" accept=".html,text/html" />
+            <div class="form-hint">Sube un archivo .html (CSS y JS inline, como pide el contrato de temas).</div>
+            <input type="hidden" name="html" id="themeHtml" />
+          </div>
+          <div id="themeFileInfo" class="d-none">
+            <div class="alert alert-secondary py-2 mb-2" id="themeFileName"></div>
+            <div class="theme-thumb theme-thumb-lg mx-auto" id="themeFileThumb"></div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary" id="themeUploadBtn" disabled><i class="bi bi-cloud-arrow-up me-1"></i>Subir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirmar -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -225,6 +280,7 @@
     </div>
   </div>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/app.js"></script>
 <script id="themes-data" type="application/json"><%~ it.themesJson %></script>
@@ -236,8 +292,21 @@
     if (el) renderThemeThumb(el, t.html);
   });
 
+  const themeModalEl = document.getElementById('themeUploadModal');
+  const themeModal = themeModalEl ? new bootstrap.Modal(themeModalEl) : null;
   const themeFileInput = document.getElementById('themeFile');
   const themeUploadBtn = document.getElementById('themeUploadBtn');
+  const themeHtmlInput = document.getElementById('themeHtml');
+  const themeFileName = document.getElementById('themeFileName');
+  const themeFileInfo = document.getElementById('themeFileInfo');
+  const themeFileThumb = document.getElementById('themeFileThumb');
+  const themeForm = document.getElementById('themeUploadForm');
+
+  window.openThemeUploadModal = function () {
+    if (themeUploadBtn && themeUploadBtn.disabled) return; // max alcanzado
+    if (themeModal) themeModal.show();
+  };
+
   if (themeFileInput) {
     themeFileInput.addEventListener('change', function () {
       const f = this.files && this.files[0];
@@ -250,14 +319,23 @@
       const reader = new FileReader();
       reader.onload = function (e) {
         const html = String(e.target.result);
-        document.getElementById('themeHtml').value = html;
-        document.getElementById('themeFileName').textContent = f.name + ' · ' + (html.length / 1024).toFixed(1) + ' KB';
-        const info = document.getElementById('themeFileInfo');
-        info.classList.remove('d-none');
-        renderThemeThumb(document.getElementById('themeFileThumb'), html);
+        themeHtmlInput.value = html;
+        themeFileName.textContent = f.name + ' · ' + (html.length / 1024).toFixed(1) + ' KB';
+        themeFileInfo.classList.remove('d-none');
+        renderThemeThumb(themeFileThumb, html);
         themeUploadBtn.disabled = false;
       };
       reader.readAsText(f);
+    });
+  }
+
+  // Al cerrar el modal, resetear el form
+  if (themeModalEl) {
+    themeModalEl.addEventListener('hidden.bs.modal', function () {
+      themeForm.reset();
+      themeFileInfo.classList.add('d-none');
+      themeUploadBtn.disabled = true;
+      themeFileThumb.innerHTML = '';
     });
   }
 </script>

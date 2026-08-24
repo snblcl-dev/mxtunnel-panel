@@ -538,6 +538,15 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 .form-control[type="color"] { padding: .25rem; height: 38px; }
 .font-monospace { font-family: var(--f-mono) !important; }
 
+.form-hint {
+  font-size: .72rem;
+  color: var(--ink-3);
+  margin-top: .3rem;
+  font-family: var(--f-mono);
+  letter-spacing: .01em;
+}
+.form-hint::before { content: '$ '; color: var(--accent); opacity: .7; }
+
 .form-check-label { color: var(--ink-2); font-size: .85rem; }
 .form-check-input { background-color: var(--bg-3); border-color: var(--border-hi); }
 .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }

@@ -70,7 +70,7 @@
         <div class="card fade-in">
           <div class="table-responsive">
             <table class="table table-hover align-middle mb-0">
-              <thead><tr><th>Nombre</th><th>Categoría</th><th>Tipo</th><th>Host</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <thead><tr><th>Nombre</th><th>Categoría</th><th>Tipo de conexión</th><th>Orden</th><th>Estado</th><th>Acciones</th></tr></thead>
               <tbody>
               <% if (it.servers.length === 0) { %>
                 <tr><td colspan="6"><div class="empty-state"><i class="bi bi-hdd-rack"></i><p class="m-0">Sin servidores</p></div></td></tr>
@@ -79,8 +79,8 @@
                 <tr>
                   <td><strong><%= s.name %></strong></td>
                   <td><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
-                  <td><span class="badge bg-primary"><%= s.tunnel_type %></span></td>
-                  <td><code><%= s.ssh_server || s.udp_server || '—' %></code></td>
+                  <td><span class="badge bg-primary"><%= it.tunnelTypeName(s.tunnel_type) %></span></td>
+                  <td><span class="badge bg-secondary"><%= s.sorter %></span></td>
                   <td><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
                   <td>
                     <div class="d-flex align-items-center gap-2">

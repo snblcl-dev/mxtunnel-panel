@@ -250,15 +250,17 @@
     container.innerHTML = '';
     const iframe = document.createElement('iframe');
     iframe.setAttribute('sandbox', 'allow-scripts');
-    iframe.style.background = '#0B1220';
+    iframe.style.background = '#0B0B0B';
     container.appendChild(iframe);
 
     const W = 480;
     const H = 960;
-    const cw = container.clientWidth || 150;
+    // Tomamos el ancho real del contenedor y escalamos proporcionalmente.
+    // La altura del contenedor pasa a ser H * scale (alto natural del preview),
+    // y si la card lo limita, el thumb hace scroll vertical para mostrarlo entero.
+    const cw = container.clientWidth || 240;
     const scale = cw / W;
-    const fill = container.classList.contains('theme-thumb-fill');
-    if (!fill) container.style.height = Math.round(H * scale) + 'px';
+    const height = Math.round(H * scale);
     iframe.style.width = W + 'px';
     iframe.style.height = H + 'px';
     iframe.style.transform = 'scale(' + scale + ')';
@@ -268,5 +270,15 @@
     iframe.style.left = '0';
     iframe.style.border = '0';
     iframe.srcdoc = themePreviewSrc(html);
+
+    const fill = container.classList.contains('theme-thumb-fill');
+    if (!fill) {
+      // En modo 'no fill' (preview externo), fija la altura exacta
+      container.style.height = height + 'px';
+    }
+    // En modo 'fill' (card), la altura la maneja CSS con flex:1 + min-height
+    // y el thumb hace scroll vertical si el iframe escalado excede el espacio.
+    // Aseguramos que el iframe absoluto pueda "sobresalir" sin recortar visualmente:
+    container.style.minHeight = Math.max(height, 320) + 'px';
   };
 })();

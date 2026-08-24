@@ -547,6 +547,12 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 }
 .form-hint::before { content: '$ '; color: var(--accent); opacity: .7; }
 
+/* Bloque de switches: 2 columnas en lg, 1 en md- */
+.cfg-switches { display: grid; gap: .55rem; grid-template-columns: 1fr; }
+@media (min-width: 992px) {
+  .cfg-switches { grid-template-columns: 1fr 1fr; }
+}
+
 .form-check-label { color: var(--ink-2); font-size: .85rem; }
 .form-check-input { background-color: var(--bg-3); border-color: var(--border-hi); }
 .form-check-input:checked { background-color: var(--accent); border-color: var(--accent); }
@@ -870,10 +876,11 @@ details.cfg-group .cfg-body {
 .theme-card:hover { border-color: rgba(0,255,136,.35); transform: translateY(-2px); box-shadow: var(--glow-accent); }
 .theme-card-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
 .theme-thumb { position: relative; width: 100%; overflow: hidden; background: #0B0B0B; }
-.theme-thumb iframe { position: absolute; top: 0; left: 0; border: 0; }
-.theme-thumb-fill { height: 460px; overflow-y: auto; pointer-events: auto; }
+.theme-thumb iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; }
+/* Thumb que ocupa todo el alto disponible de la card, con scroll interno si hace falta */
+.theme-thumb-fill { flex: 1; min-height: 320px; overflow-y: auto; pointer-events: auto; overflow-x: hidden; }
 .theme-thumb-lg { max-width: 360px; margin: 0 auto; overflow-y: auto; pointer-events: auto; }
-.theme-card-body { padding: 8px 12px; flex: 1; }
+.theme-card-body { padding: 8px 12px; }
 .theme-card-actions { padding: 0 12px 10px; display: flex; gap: 6px; }
 .theme-card-actions .btn { font-size: .7rem; line-height: 1.2; padding: .2rem .4rem; }
 .theme-card-actions .btn i { font-size: .68rem; }

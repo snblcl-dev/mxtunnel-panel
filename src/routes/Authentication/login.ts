@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma-client';
 import JWTConfig from '../../config/jwt-config';
 import bcrypt from 'bcrypt';
+import { Render } from '../../config/render-config';
 import { comparePassword } from '../../utils/bcrypt';
 import { setAuthCookies } from '../../utils/cookie-manager';
 import RequireCSRF from '../../middlewares/require-csrf';
@@ -12,6 +13,11 @@ type Body = { email?: string; password?: string };
 // evitar la enumeración de cuentas por diferencia de tiempo de respuesta.
 const DUMMY_HASH = bcrypt.hashSync('mxtunnel-timing-dummy-password', 10);
 
+// Re-renderiza el login con un aviso de error en la propia página.
+function renderLoginError(req: FastifyRequest, reply: FastifyReply, message: string) {
+  return Render.page(req, reply, '/login/index.html', { error: message });
+}
+
 export default {
   url: '/login',
   method: 'POST',
@@ -21,18 +27,18 @@ export default {
     const { email, password } = req.body as Body;
 
     if (!email || !password) {
-      return reply.status(400).send({ error: 'ValidationError', message: 'Email y contraseña requeridos.' });
+      return renderLoginError(req, reply, 'Ingresa tu email y contraseña.');
     }
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     const passwordOk = await comparePassword(password, user?.password ?? DUMMY_HASH);
     if (!user || !user.password || !passwordOk) {
-      return reply.status(401).send({ error: 'Unauthorized', message: 'Credenciales inválidas.' });
+      return renderLoginError(req, reply, 'Usuario o contraseña incorrectos.');
     }
 
     if (user.banned) {
-      return reply.status(403).send({ error: 'Banned', message: 'Cuenta suspendida.' });
+      return renderLoginError(req, reply, 'Tu cuenta está suspendida.');
     }
 
     const accessToken = JWTConfig.sign(user.id, user.email, user.role, user.token_version);

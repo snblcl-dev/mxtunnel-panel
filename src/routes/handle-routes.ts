@@ -1,4 +1,4 @@
-import { createCSRFToken } from '../utils/csrf-protection';
+import { createCSRFToken, validateCSRFToken } from '../utils/csrf-protection';
 import { Render } from '../config/render-config';
 import GetFilesDir from '../utils/get-files-dir';
 import HandlerErrors from '../errors/handler-errors';
@@ -7,7 +7,10 @@ import { FastifyInstance, RouteOptions } from 'fastify';
 export default function handler(fastify: FastifyInstance, _: any, done: () => void) {
   fastify.addHook('onRequest', async (req, reply) => {
     if (req.raw.url?.startsWith('/api')) return;
-    if (!req.cookies.csrfToken) {
+    const existing = req.cookies.csrfToken;
+    // Rota la cookie si está ausente O si es inválida (formato antiguo, firma
+    // incorrecta o CSRF_SECRET distinto). Evita 403 de CSRF tras un deploy.
+    if (!existing || !validateCSRFToken(existing)) {
       const token = createCSRFToken();
       reply.setCookie('csrfToken', token, {
         path: '/',
@@ -18,7 +21,7 @@ export default function handler(fastify: FastifyInstance, _: any, done: () => vo
       });
       (req as any).csrfToken = token;
     } else {
-      (req as any).csrfToken = req.cookies.csrfToken;
+      (req as any).csrfToken = existing;
     }
   });
 

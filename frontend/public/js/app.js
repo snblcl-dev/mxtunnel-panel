@@ -248,37 +248,59 @@
   window.renderThemeThumb = function (container, html) {
     if (!container) return;
     container.innerHTML = '';
-    const iframe = document.createElement('iframe');
-    iframe.setAttribute('sandbox', 'allow-scripts');
-    iframe.style.background = '#0B0B0B';
-    container.appendChild(iframe);
 
     const W = 480;
     const H = 960;
-    // Tomamos el ancho real del contenedor y escalamos proporcionalmente.
-    // La altura del contenedor pasa a ser H * scale (alto natural del preview),
-    // y si la card lo limita, el thumb hace scroll vertical para mostrarlo entero.
-    const cw = container.clientWidth || 240;
-    const scale = cw / W;
-    const height = Math.round(H * scale);
-    iframe.style.width = W + 'px';
-    iframe.style.height = H + 'px';
-    iframe.style.transform = 'scale(' + scale + ')';
-    iframe.style.transformOrigin = 'top left';
-    iframe.style.position = 'absolute';
-    iframe.style.top = '0';
-    iframe.style.left = '0';
-    iframe.style.border = '0';
-    iframe.srcdoc = themePreviewSrc(html);
 
-    const fill = container.classList.contains('theme-thumb-fill');
-    if (!fill) {
-      // En modo 'no fill' (preview externo), fija la altura exacta
-      container.style.height = height + 'px';
+    // Funcion reutilizable: mide el ancho real del thumb y aplica la escala
+    // exacta al iframe. Se llama tanto en el primer frame como en cada
+    // resize del thumb (cambio de viewport, sidebar, etc).
+    const apply = function () {
+      const cw = container.clientWidth || 240;
+      const scale = cw / W;
+      const height = Math.round(H * scale);
+      const fill = container.classList.contains('theme-thumb-fill');
+      if (!fill) container.style.height = height + 'px';
+
+      // El iframe ya esta en el DOM desde la primera llamada; reaplicamos
+      // estilos si existen, o creamos uno nuevo si es el primer render.
+      let iframe = container.querySelector('iframe');
+      if (!iframe) {
+        iframe = document.createElement('iframe');
+        iframe.setAttribute('sandbox', 'allow-scripts');
+        iframe.style.background = '#0B0B0B';
+        iframe.style.position = 'absolute';
+        iframe.style.top = '0';
+        iframe.style.left = '0';
+        iframe.style.border = '0';
+        iframe.style.transformOrigin = 'top left';
+        container.appendChild(iframe);
+      }
+      iframe.style.width = W + 'px';
+      iframe.style.height = H + 'px';
+      iframe.style.transform = 'scale(' + scale + ')';
+      // min-height del thumb para que el scroll vertical muestre el tema completo
+      container.style.minHeight = Math.max(height, 320) + 'px';
+    };
+
+    // Primer render: aplicamos en el siguiente frame para que el thumb ya
+    // tenga su ancho definitivo (importante dentro de rows flex de Bootstrap
+    // donde el ancho real se calcula tras aplicar gutters).
+    requestAnimationFrame(function () {
+      apply();
+      // Despues de aplicar estilos, cargamos el contenido del iframe.
+      const iframe = container.querySelector('iframe');
+      if (iframe && !iframe.srcdoc) iframe.srcdoc = themePreviewSrc(html);
+      // Si el contenedor ya tenia srcdoc previo, lo reescribimos.
+      else if (iframe) iframe.srcdoc = themePreviewSrc(html);
+    });
+
+    // Reaplicar en resize para que el iframe siga cubriendo el thumb tras
+    // cambios de viewport o de la sidebar.
+    if (!container._resizeObs) {
+      const ro = new ResizeObserver(apply);
+      ro.observe(container);
+      container._resizeObs = ro;
     }
-    // En modo 'fill' (card), la altura la maneja CSS con flex:1 + min-height
-    // y el thumb hace scroll vertical si el iframe escalado excede el espacio.
-    // Aseguramos que el iframe absoluto pueda "sobresalir" sin recortar visualmente:
-    container.style.minHeight = Math.max(height, 320) + 'px';
   };
 })();

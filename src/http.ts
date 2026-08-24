@@ -18,7 +18,14 @@ const allowedOrigins = (process.env.CORS_ALLOWED_ORIGINS || '')
   .map((o) => o.trim())
   .filter(Boolean);
 
-const fastify = Fastify({ ignoreTrailingSlash: true });
+// trustProxy: solo confía en X-Forwarded-* cuando la conexión directa viene de
+// nginx en localhost. Así se detecta el protocolo real (https detrás de nginx)
+// sin permitir que clientes externos falseen cabeceras.
+const fastify = Fastify({
+  ignoreTrailingSlash: true,
+  trustProxy: (address: string) =>
+    address === '127.0.0.1' || address === '::1' || address === '::ffff:127.0.0.1',
+});
 export const eta = new Eta({ views, cache: false });
 
 import routes from './routes/handle-routes';
@@ -48,6 +55,11 @@ fastify
         // Los iframes srcdoc de la vista previa de temas (admin) usan contenido local.
         frameSrc: ["'self'", 'about:', 'data:'],
         frameAncestors: ["'none'"],
+        // El panel usa onclick/onsubmit inline en sus plantillas: se permite
+        // que caigan bajo script-src (que ya incluye 'unsafe-inline').
+        scriptSrcAttr: null,
+        // No forzar HTTPS en subrecursos: rompe CSS/JS si se accede por HTTP.
+        upgradeInsecureRequests: null,
       },
     },
   })

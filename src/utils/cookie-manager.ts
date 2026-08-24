@@ -5,7 +5,9 @@ export function setAuthCookies(
   accessToken: string,
   refreshToken: string
 ) {
-  const secure = process.env.NODE_ENV === 'production';
+  // secure solo si la petición llegó por HTTPS (detectado vía trustProxy).
+  // Así el acceso por HTTP (LAN/IP, pruebas) sigue funcionando.
+  const secure = reply.request.protocol === 'https';
   reply.setCookie('accessToken', accessToken, {
     path: '/',
     httpOnly: true,

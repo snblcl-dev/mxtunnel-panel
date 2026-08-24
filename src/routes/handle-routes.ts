@@ -13,7 +13,8 @@ export default function handler(fastify: FastifyInstance, _: any, done: () => vo
         path: '/',
         httpOnly: false,
         sameSite: 'lax',
-        secure: process.env.NODE_ENV === 'production',
+        // secure solo si la petición llegó por HTTPS (acceso HTTP funcional).
+        secure: req.protocol === 'https',
       });
       (req as any).csrfToken = token;
     } else {

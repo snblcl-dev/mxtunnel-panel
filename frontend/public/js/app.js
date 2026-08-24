@@ -279,8 +279,10 @@
       iframe.style.width = W + 'px';
       iframe.style.height = H + 'px';
       iframe.style.transform = 'scale(' + scale + ')';
-      // min-height del thumb para que el scroll vertical muestre el tema completo
-      container.style.minHeight = Math.max(height, 320) + 'px';
+      // Capamos la altura visible del thumb para que las cards no queden
+      // excesivamente largas. El tema se navega con scroll interno.
+      const visibleH = Math.min(Math.round(H * scale), 280);
+      container.style.minHeight = visibleH + 'px';
     };
 
     // Primer render: aplicamos en el siguiente frame para que el thumb ya

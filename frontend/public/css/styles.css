@@ -878,7 +878,7 @@ details.cfg-group .cfg-body {
 .theme-thumb { position: relative; width: 100%; overflow: hidden; background: #0B0B0B; }
 .theme-thumb iframe { position: absolute; top: 0; left: 0; border: 0; transform-origin: top left; }
 /* Thumb que ocupa todo el alto disponible de la card, con scroll interno si hace falta */
-.theme-thumb-fill { flex: 1; min-height: 300px; max-height: 340px; overflow-y: auto; pointer-events: auto; overflow-x: hidden; }
+.theme-thumb-fill { flex: 1; min-height: 340px; max-height: 380px; overflow-y: auto; pointer-events: auto; overflow-x: hidden; }
 .theme-thumb-lg { max-width: 360px; margin: 0 auto; overflow-y: auto; pointer-events: auto; }
 .theme-card-body { padding: 8px 12px; }
 .theme-card-actions { padding: 0 12px 10px; display: flex; gap: 6px; }

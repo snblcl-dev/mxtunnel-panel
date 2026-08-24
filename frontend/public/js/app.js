@@ -281,7 +281,7 @@
       iframe.style.transform = 'scale(' + scale + ')';
       // Capamos la altura visible del thumb para que las cards no queden
       // excesivamente largas. El tema se navega con scroll interno.
-      const visibleH = Math.min(Math.round(H * scale), 340);
+      const visibleH = Math.min(Math.round(H * scale), 380);
       container.style.minHeight = visibleH + 'px';
     };
 

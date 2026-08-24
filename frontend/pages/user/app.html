@@ -67,23 +67,34 @@
                 <div class="form-hint">Frecuencia con la que la app prueba el servidor.</div>
               </div>
               <div class="col-md-12 cfg-switches">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="autoPing" value="true" id="opt_autoPing" <%= b('autoPing', true) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_autoPing">Ping automático</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="autoPing" value="true" id="opt_autoPing" <%= b('autoPing', true) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_autoPing">Ping automático</label>
+                  </div>
+                  <div class="form-hint">Activa el ping continuo a servidores para mantener conexión.</div>
                 </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="data_compression" value="true" id="opt_data_compression" <%= b('data_compression', true) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_data_compression">Compresión SSH</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="data_compression" value="true" id="opt_data_compression" <%= b('data_compression', true) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_data_compression">Compresión SSH</label>
+                  </div>
+                  <div class="form-hint">Reduce el ancho de banda del túnel SSH.</div>
                 </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="disableDelaySSH" value="true" id="opt_disableDelaySSH" <%= b('disableDelaySSH', false) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_disableDelaySSH">Desactivar delay SSH</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="disableDelaySSH" value="true" id="opt_disableDelaySSH" <%= b('disableDelaySSH', false) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_disableDelaySSH">Desactivar delay SSH</label>
+                  </div>
+                  <div class="form-hint">Conexión más rápida al iniciar (desactiva espera).</div>
                 </div>
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
+                  </div>
+                  <div class="form-hint">Permite compartir internet del móvil a través del VPN.</div>
                 </div>
-              </div>
             </div>
           </div>
         </details>
@@ -92,27 +103,28 @@
           <summary>Apariencia <span class="cfg-count">logs, wakelock, vibración</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
           <div class="cfg-body">
             <div class="row g-2">
-              <div class="col-md-6">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_hideLog">Ocultar logs al conectar</label>
+              <div class="col-md-12 cfg-switches">
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_hideLog">Mostrar logs al conectar</label>
+                  </div>
+                  <div class="form-hint">Muestra la ventana de logs al iniciar el VPN.</div>
                 </div>
-                <div class="form-hint">No muestra la ventana de logs al iniciar el VPN.</div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_vibrate">Vibrar al conectar</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_vibrate">Vibrar al conectar</label>
+                  </div>
+                  <div class="form-hint">Feedback háptico cuando el VPN se conecta.</div>
                 </div>
-                <div class="form-hint">Feedback háptico cuando el VPN se conecta.</div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-check form-switch">
-                  <input class="form-check-input" type="checkbox" name="wakelock" value="true" id="opt_wakelock" <%= b('wakelock', true) ? 'checked' : '' %> />
-                  <label class="form-check-label" for="opt_wakelock">Mantener CPU activa (wakelock)</label>
+                <div>
+                  <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" name="wakelock" value="true" id="opt_wakelock" <%= b('wakelock', true) ? 'checked' : '' %> />
+                    <label class="form-check-label" for="opt_wakelock">Mantener CPU activa (wakelock)</label>
+                  </div>
+                  <div class="form-hint">Evita que el sistema duerma la app durante el VPN.</div>
                 </div>
-                <div class="form-hint">Evita que el sistema duerma la app durante el VPN.</div>
-              </div>
             </div>
           </div>
         </details>

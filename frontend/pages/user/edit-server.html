@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MXTunnel — Editar servidor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-<div class="d-flex">
+<div class="app-layout">
+  <div class="bg-glow bg-glow-1"></div>
+  <div class="bg-glow bg-glow-2"></div>
   <%~ include('sidebar', it) %>
-  <main class="flex-grow-1 p-4">
-    <div class="d-flex justify-content-between align-items-center">
-      <h3>Editar servidor: <%= it.server.name %></h3>
-      <a href="/user/servers" class="btn btn-outline-secondary btn-sm">Volver</a>
+
+  <main class="app-main">
+    <div class="page-header">
+      <div>
+        <h3>Editar servidor</h3>
+        <div class="text-muted"><code><%= it.server.name %></code></div>
+      </div>
+      <a href="/user/servers" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Volver</a>
     </div>
 
-    <div class="card mt-3">
-      <div class="card-body">
-        <form method="POST" action="/user/servers/<%= it.server.id %>">
-          <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-          <input type="hidden" name="action" value="update" />
+    <form method="POST" action="/user/servers/<%= it.server.id %>">
+      <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
+      <input type="hidden" name="action" value="update" />
+
+      <details class="cfg-group" open>
+        <summary>General <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
           <div class="row g-2">
             <div class="col-md-4"><label class="form-label">Nombre</label><input class="form-control" name="name" value="<%= it.server.name %>" required /></div>
             <div class="col-md-4">
@@ -47,54 +60,89 @@
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="<%= it.server.sorter %>" /></div>
-
             <div class="col-12"><label class="form-label">Descripción <small class="text-muted">(opcional, se muestra en la app bajo el nombre)</small></label><input class="form-control" name="description" value="<%= it.server.description %>" placeholder="Ej. 10 GB, velocidad 3×, ciudad…" /></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">SSH</strong></div>
+      <details class="cfg-group" open>
+        <summary>SSH <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
             <div class="col-md-3"><label class="form-label">Host</label><input class="form-control" name="ssh_server" value="<%= it.server.ssh_server %>" /></div>
             <div class="col-md-2"><label class="form-label">Puerto</label><input class="form-control" name="ssh_port" value="<%= it.server.ssh_port %>" /></div>
             <div class="col-md-3"><label class="form-label">Usuario</label><input class="form-control" name="ssh_user" value="<%= it.server.ssh_user %>" /></div>
             <div class="col-md-4"><label class="form-label">Contraseña</label><input class="form-control" name="ssh_pass" value="<%= it.server.ssh_pass %>" /></div>
             <div class="col-12"><label class="form-label">URL Check User <small class="text-muted">(p. ej. http://IP:2052; la app agrega /check/usuario?deviceId=)</small></label><input class="form-control font-monospace" name="url_check_user" value="<%= it.server.url_check_user %>" /></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">SSL / Payload / Proxy</strong></div>
+      <details class="cfg-group">
+        <summary>SSL / Payload / Proxy <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
             <div class="col-md-3"><label class="form-label">SNI</label><input class="form-control" name="custom_sni" value="<%= it.server.custom_sni %>" /></div>
             <div class="col-md-6"><label class="form-label">Payload</label><input class="form-control" name="proxy_payload" value="<%= it.server.proxy_payload %>" /></div>
             <div class="col-md-3"><label class="form-label">Puerto local</label><input class="form-control" name="local_port" value="<%= it.server.local_port %>" /></div>
             <div class="col-md-3"><label class="form-label">Proxy IP</label><input class="form-control" name="proxy_ip" value="<%= it.server.proxy_ip %>" /></div>
             <div class="col-md-2"><label class="form-label">Proxy puerto</label><input class="form-control" name="proxy_port" value="<%= it.server.proxy_port %>" /></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">DNS</strong></div>
+      <details class="cfg-group">
+        <summary>DNS <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
             <div class="col-md-4"><label class="form-label">DNS 1</label><input class="form-control" name="dns_resolver1" value="<%= it.server.dns_resolver1 %>" /></div>
             <div class="col-md-4"><label class="form-label">DNS 2</label><input class="form-control" name="dns_resolver2" value="<%= it.server.dns_resolver2 %>" /></div>
             <div class="col-md-4"><label class="form-label">UDP resolver</label><input class="form-control" name="udp_resolver" value="<%= it.server.udp_resolver %>" /></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">DNSTT / UDP</strong></div>
+      <details class="cfg-group">
+        <summary>DNSTT / UDP <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
             <div class="col-md-3"><label class="form-label">UDP server</label><input class="form-control" name="udp_server" value="<%= it.server.udp_server %>" /></div>
             <div class="col-md-3"><label class="form-label">UDP puerto</label><input class="form-control" name="udp_port" value="<%= it.server.udp_port %>" /></div>
             <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" value="<%= it.server.udp_sni %>" /></div>
             <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" value="<%= it.server.udp_version %>" /></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">V2Ray</strong></div>
-            <div class="col-md-6"><label class="form-label">v2ray JSON</label><textarea class="form-control" name="v2ray_json" rows="2"><%= it.server.v2ray_json %></textarea></div>
+      <details class="cfg-group">
+        <summary>V2Ray <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
+            <div class="col-md-12"><label class="form-label">v2ray JSON <small class="text-muted">(arrastra la esquina para expandir)</small></label><textarea class="form-control font-monospace" name="v2ray_json" rows="3"><%= it.server.v2ray_json %></textarea></div>
+          </div>
+        </div>
+      </details>
 
-            <div class="col-12"><strong class="small text-muted">Opciones (V2)</strong></div>
-            <div class="col-md-3">
+      <details class="cfg-group">
+        <summary>Opciones <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
+            <div class="col-md-4">
               <label class="form-label">Enhanced</label>
               <select class="form-select" name="enhanced">
                 <option value="1" <%= it.server.enhanced === false ? '' : 'selected' %>>Activado</option>
                 <option value="0" <%= it.server.enhanced === false ? 'selected' : '' %>>Desactivado</option>
               </select>
             </div>
-
-            <div class="col-12">
-              <button class="btn btn-primary">Guardar cambios</button>
-              <a href="/user/servers" class="btn btn-link">Cancelar</a>
-            </div>
           </div>
-        </form>
+        </div>
+      </details>
+
+      <div class="mt-3">
+        <button class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Guardar cambios</button>
+        <a href="/user/servers" class="btn btn-link">Cancelar</a>
       </div>
-    </div>
+    </form>
   </main>
 </div>
 </body>

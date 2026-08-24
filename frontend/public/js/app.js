@@ -10,21 +10,34 @@
     let c = document.querySelector('.toast-container');
     if (!c) {
       c = document.createElement('div');
-      c.className = 'toast-container position-fixed top-0 end-0 p-3';
+      c.className = 'toast-container position-fixed bottom-0 end-0 p-3';
       document.body.appendChild(c);
     }
     return c;
   }
 
-  const ICONS = { success: 'bi-check-circle-fill', error: 'bi-x-circle-fill', info: 'bi-info-circle-fill' };
+  const ICONS = {
+    success: 'bi-check-circle-fill',
+    error: 'bi-x-circle-fill',
+    info: 'bi-info-circle-fill',
+    warning: 'bi-exclamation-triangle-fill',
+  };
 
   window.showToast = function (message, type = 'info', delay = 3500) {
     try {
       const c = ensureToastContainer();
       const el = document.createElement('div');
-      el.className = 'toast toast-' + type + ' fade-in';
+      el.className = 'toast toast-' + type;
       el.role = 'alert';
-      el.innerHTML = '<div class="toast-body"><i class="bi ' + ICONS[type] + '"></i><span>' + message + '</span></div>';
+      el.style.setProperty('--toast-delay', delay + 'ms');
+      const icon = ICONS[type] || ICONS.info;
+      const safe = String(message).replace(/[<&>]/g, c => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+      el.innerHTML =
+        '<div class="toast-body">' +
+          '<i class="bi ' + icon + '"></i>' +
+          '<span>' + safe + '</span>' +
+        '</div>' +
+        '<div class="toast-progress"></div>';
       c.appendChild(el);
       const t = new bootstrap.Toast(el, { delay, autohide: true });
       t.show();

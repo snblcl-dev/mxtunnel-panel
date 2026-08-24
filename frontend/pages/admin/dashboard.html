@@ -78,15 +78,15 @@
       labels: ['Usuarios', 'Servidores', 'Categorías'],
       datasets: [{
         data: [<%= it.stats.users %>, <%= it.stats.servers %>, <%= it.stats.categories %>],
-        backgroundColor: ['#818CF8', '#10B981', '#F59E0B'],
-        borderColor: '#1E293B',
+        backgroundColor: ['#00ff88', '#5ee7ff', '#ffb000'],
+        borderColor: '#161616',
         borderWidth: 3,
       }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: {
-        legend: { position: 'bottom', labels: { color: '#94A3B8', font: { size: 12 }, padding: 16 } },
+        legend: { position: 'bottom', labels: { color: '#6e6e6e', font: { size: 11 }, padding: 16 } },
       },
       cutout: '65%',
     }

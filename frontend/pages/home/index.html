@@ -1,45 +1,64 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MXTunnel Panel — Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link href="/css/styles.css" rel="stylesheet" />
 </head>
 <body>
-  <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <div class="container">
-      <span class="navbar-brand">MXTunnel Panel</span>
-      <div class="d-flex align-items-center gap-3">
-        <a class="nav-link" href="/admin/users">Usuarios</a>
-        <form method="POST" action="/logout" class="mb-0">
+  <div class="app-layout">
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <div class="app-sidebar">
+      <div class="brand">
+        <span class="brand-mark"><i class="bi bi-shield-lock"></i></span>
+        <span>MXTunnel</span>
+      </div>
+      <div class="user-tag">panel</div>
+      <div class="sidebar-footer">
+        <form method="POST" action="/logout" class="m-0">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
-          <button class="btn btn-outline-light btn-sm" type="submit">Salir</button>
+          <button class="btn btn-secondary" type="submit"><i class="bi bi-box-arrow-right me-2"></i>Salir</button>
         </form>
       </div>
     </div>
-  </nav>
 
-  <div class="container mt-4">
-    <h4>Resumen</h4>
-    <div class="row g-3 mt-1">
-      <div class="col-md-4">
-        <div class="card text-bg-primary"><div class="card-body"><h5 class="card-title">Usuarios</h5><p class="display-6 mb-0"><%= it.stats.users %></p></div></div>
+    <main class="app-main">
+      <div class="page-header">
+        <div>
+          <h3>Inicio</h3>
+          <div class="text-muted">Resumen general del panel</div>
+        </div>
+        <a href="/admin/users" class="btn btn-primary"><i class="bi bi-people me-2"></i>Gestionar usuarios</a>
       </div>
-      <div class="col-md-4">
-        <div class="card text-bg-success"><div class="card-body"><h5 class="card-title">Servidores</h5><p class="display-6 mb-0"><%= it.stats.servers %></p></div></div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-bg-warning"><div class="card-body"><h5 class="card-title">Categorías</h5><p class="display-6 mb-0"><%= it.stats.categories %></p></div></div>
-      </div>
-    </div>
 
-    <div class="mt-4">
-      <a href="/admin/users" class="btn btn-primary">Gestionar usuarios</a>
-    </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <div class="stat-card fade-in">
+            <div class="icon-box"><i class="bi bi-people-fill"></i></div>
+            <div><div class="label">Usuarios</div><div class="value"><%= it.stats.users %></div><div class="sub">cuentas registradas</div></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card fade-in">
+            <div class="icon-box success"><i class="bi bi-hdd-rack-fill"></i></div>
+            <div><div class="label">Servidores</div><div class="value"><%= it.stats.servers %></div><div class="sub">configs activas</div></div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="stat-card fade-in">
+            <div class="icon-box warning"><i class="bi bi-folder-fill"></i></div>
+            <div><div class="label">Categorías</div><div class="value"><%= it.stats.categories %></div><div class="sub">agrupaciones</div></div>
+          </div>
+        </div>
+      </div>
+    </main>
   </div>
 </body>
 </html>

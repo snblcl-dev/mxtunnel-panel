@@ -1,4 +1,4 @@
-import { generateCSRFToken } from '../utils/csrf-protection';
+import { createCSRFToken } from '../utils/csrf-protection';
 import { Render } from '../config/render-config';
 import GetFilesDir from '../utils/get-files-dir';
 import HandlerErrors from '../errors/handler-errors';
@@ -8,11 +8,12 @@ export default function handler(fastify: FastifyInstance, _: any, done: () => vo
   fastify.addHook('onRequest', async (req, reply) => {
     if (req.raw.url?.startsWith('/api')) return;
     if (!req.cookies.csrfToken) {
-      const token = generateCSRFToken();
+      const token = createCSRFToken();
       reply.setCookie('csrfToken', token, {
         path: '/',
         httpOnly: false,
         sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
       });
       (req as any).csrfToken = token;
     } else {

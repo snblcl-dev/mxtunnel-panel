@@ -5,6 +5,7 @@ import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
 import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
+import { isValidHttpUrl, isValidV2rayJson } from '../../utils/validation';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 type Params = { sid: string };
@@ -41,9 +42,9 @@ const schema = z.object({
   udp_version: z.string().optional(),
   udp_line_input: z.string().optional(),
   config_line_input: z.string().optional(),
-  v2ray_json: z.string().optional(),
+  v2ray_json: z.string().optional().refine(isValidV2rayJson, { message: 'JSON V2Ray no válido.' }),
   enhanced: z.string().optional(),
-  url_check_user: z.string().optional(),
+  url_check_user: z.string().optional().refine(isValidHttpUrl, { message: 'URL no válida.' }),
 });
 
 const orEmpty = (v?: string) => v ?? '';
@@ -65,9 +66,12 @@ export default {
     if (!server) return ajaxFail(reply, 'No encontrado', 404);
 
     if (action === 'toggle') {
-      await prisma.server.update({
-        where: { id: server.id },
-        data: { status: server.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
+      await prisma.$transaction(async (tx) => {
+        const current = await tx.server.findUnique({ where: { id: server.id } });
+        await tx.server.update({
+          where: { id: server.id },
+          data: { status: current?.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
+        });
       });
       await bumpConfigVersion(userId);
       return ajaxOrRedirect(req, reply, '/user/servers', 'Estado actualizado');

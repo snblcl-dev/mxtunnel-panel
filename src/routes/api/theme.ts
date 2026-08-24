@@ -1,5 +1,4 @@
 import prisma from '../../config/prisma-client';
-import SafeCallback from '../../utils/safe-callback';
 import { isExpired } from '../../utils/format-date';
 import { getApiToken } from '../../utils/api-token';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
@@ -15,9 +14,7 @@ export default {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Falta el token.' });
     }
 
-    const user = await SafeCallback(() =>
-      prisma.user.findUnique({ where: { id: token } })
-    );
+    const user = await prisma.user.findUnique({ where: { id: token } });
 
     if (!user) {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Token inválido.' });
@@ -35,9 +32,7 @@ export default {
     let theme = null;
     const activeId = user.active_theme_id;
     if (activeId) {
-      theme = await SafeCallback(() =>
-        prisma.theme.findFirst({ where: { id: activeId, owner_id: user.id } })
-      );
+      theme = await prisma.theme.findFirst({ where: { id: activeId, owner_id: user.id } });
     }
 
     return reply.send({

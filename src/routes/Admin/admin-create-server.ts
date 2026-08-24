@@ -4,6 +4,7 @@ import RequireCSRF from '../../middlewares/require-csrf';
 import AdminAuthentication from '../../middlewares/admin-authentication';
 import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { bumpConfigVersion } from '../../utils/bump-version';
+import { isValidHttpUrl, isValidV2rayJson } from '../../utils/validation';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 type Params = { id: string };
@@ -40,9 +41,9 @@ const schema = z.object({
   udp_version: z.string().optional(),
   udp_line_input: z.string().optional(),
   config_line_input: z.string().optional(),
-  v2ray_json: z.string().optional(),
+  v2ray_json: z.string().optional().refine(isValidV2rayJson, { message: 'JSON V2Ray no válido.' }),
   enhanced: z.string().optional(),
-  url_check_user: z.string().optional(),
+  url_check_user: z.string().optional().refine(isValidHttpUrl, { message: 'URL no válida.' }),
 });
 
 const orEmpty = (v?: string) => v ?? '';

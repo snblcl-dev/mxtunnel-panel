@@ -1,3 +1,4 @@
+import { validateCSRFToken } from '../utils/csrf-protection';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 export default async function RequireCSRF(
@@ -5,9 +6,16 @@ export default async function RequireCSRF(
   reply: FastifyReply
 ) {
   const body = (req.body as Record<string, any>) || {};
-  const token = (req as any).csrfToken;
+  const cookie = req.cookies?.csrfToken;
+  const submitted = body._csrf;
 
-  if (!token || !body._csrf || body._csrf !== token) {
+  // Doble envío firmado: la cookie y el campo _csrf deben coincidir Y la
+  // firma HMAC debe ser válida (protege contra fijación/forja de token).
+  if (!cookie || typeof submitted !== 'string' || cookie !== submitted) {
+    return reply.status(403).send({ error: 'CSRF', message: 'Token CSRF inválido.' });
+  }
+
+  if (!validateCSRFToken(submitted)) {
     return reply.status(403).send({ error: 'CSRF', message: 'Token CSRF inválido.' });
   }
 }

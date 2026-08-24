@@ -18,6 +18,7 @@ model User {
   email           String     @unique
   password        String? // bcrypt (login del panel)
   role            Role       @default(USER)
+  token_version   Int        @default(1) // revoca sesiones al hacer logout o cambiar contraseña
   expiration_date DateTime?
   banned          Boolean    @default(false)
   configs_locked  Boolean    @default(false)

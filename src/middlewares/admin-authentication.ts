@@ -1,4 +1,6 @@
 import JWTConfig from '../config/jwt-config';
+import prisma from '../config/prisma-client';
+import { clearAuthCookies } from '../utils/cookie-manager';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 export default async function AdminAuthentication(
@@ -15,6 +17,12 @@ export default async function AdminAuthentication(
     const payload = JWTConfig.verify(token);
     if (payload.role !== 'ADMIN') {
       return reply.status(403).redirect('/');
+    }
+    const user = await prisma.user.findUnique({ where: { id: payload.id } });
+    // Verifica que la sesión no fue revocada (logout o cambio de contraseña).
+    if (!user || user.token_version !== payload.token_version) {
+      clearAuthCookies(reply);
+      return reply.status(401).redirect('/login');
     }
     (req as any).user = payload;
   } catch {

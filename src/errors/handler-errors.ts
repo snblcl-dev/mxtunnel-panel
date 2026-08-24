@@ -19,6 +19,10 @@ export default function HandlerErrors(
     return reply.status(statusCode).send({ error: 'Error', message: error.message });
   }
 
-  console.error('[Error]', error.message);
+  console.error('[Error]', error);
+  if (process.env.NODE_ENV === 'production') {
+    // No exponer detalles internos en producción.
+    return reply.status(500).send({ error: 'InternalServerError' });
+  }
   return reply.status(500).send({ error: 'InternalServerError', message: error.message });
 }

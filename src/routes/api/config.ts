@@ -1,5 +1,4 @@
 import prisma from '../../config/prisma-client';
-import SafeCallback from '../../utils/safe-callback';
 import { isExpired } from '../../utils/format-date';
 import { serializeServer, serializeCategory } from '../../utils/serialize';
 import { getApiToken } from '../../utils/api-token';
@@ -16,9 +15,7 @@ export default {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Falta el token.' });
     }
 
-    const user = await SafeCallback(() =>
-      prisma.user.findUnique({ where: { id: token } })
-    );
+    const user = await prisma.user.findUnique({ where: { id: token } });
 
     if (!user) {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Token inválido.' });
@@ -33,22 +30,18 @@ export default {
     }
 
     const [categories, servers] = await Promise.all([
-      SafeCallback(() =>
-        prisma.category.findMany({
-          where: { user_id: user.id, status: 'ACTIVE' },
-          orderBy: { sorter: 'asc' },
-        })
-      ),
-      SafeCallback(() =>
-        prisma.server.findMany({
-          where: {
-            user_id: user.id,
-            status: 'ACTIVE',
-            category: { status: 'ACTIVE' },
-          },
-          orderBy: [{ sorter: 'asc' }, { id: 'asc' }],
-        })
-      ),
+      prisma.category.findMany({
+        where: { user_id: user.id, status: 'ACTIVE' },
+        orderBy: { sorter: 'asc' },
+      }),
+      prisma.server.findMany({
+        where: {
+          user_id: user.id,
+          status: 'ACTIVE',
+          category: { status: 'ACTIVE' },
+        },
+        orderBy: [{ sorter: 'asc' }, { id: 'asc' }],
+      }),
     ]);
 
     let settings = null;
@@ -64,8 +57,8 @@ export default {
       version: user.config_version,
       themeVersion: user.theme_version,
       settings,
-      categories: (categories ?? []).map(serializeCategory),
-      servers: (servers ?? []).map(serializeServer),
+      categories: categories.map(serializeCategory),
+      servers: servers.map(serializeServer),
     });
   },
 } as RouteOptions;

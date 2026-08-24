@@ -5,5 +5,6 @@ declare namespace NodeJS {
     JWT_SECRET_KEY: string;
     JWT_SECRET_REFRESH: string;
     CSRF_SECRET: string;
+    CORS_ALLOWED_ORIGINS?: string;
   }
 }

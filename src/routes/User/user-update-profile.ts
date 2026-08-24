@@ -5,6 +5,7 @@ import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
 import { ajaxOrRedirect, ajaxFail } from '../../utils/ajax';
 import { comparePassword, hashPassword } from '../../utils/bcrypt';
+import { clearAuthCookies } from '../../utils/cookie-manager';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 const emailSchema = z.object({ email: z.string().email() });
@@ -43,7 +44,12 @@ export default {
       const ok = await comparePassword(parsed.data.current_password, user.password);
       if (!ok) return ajaxFail(reply, 'Contraseña actual incorrecta.');
       const hashed = await hashPassword(parsed.data.new_password);
-      await prisma.user.update({ where: { id: userId }, data: { password: hashed } });
+      // Invalida todas las sesiones existentes al cambiar la contraseña.
+      await prisma.user.update({
+        where: { id: userId },
+        data: { password: hashed, token_version: { increment: 1 } },
+      });
+      clearAuthCookies(reply);
       return ajaxOrRedirect(req, reply, '/user/profile', 'Contraseña actualizada');
     }
     return ajaxFail(reply, 'Acción inválida.');

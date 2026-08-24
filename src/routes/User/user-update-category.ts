@@ -33,9 +33,12 @@ export default {
     if (!category) return ajaxFail(reply, 'No encontrada', 404);
 
     if (action === 'toggle') {
-      await prisma.category.update({
-        where: { id: category.id },
-        data: { status: category.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
+      await prisma.$transaction(async (tx) => {
+        const current = await tx.category.findUnique({ where: { id: category.id } });
+        await tx.category.update({
+          where: { id: category.id },
+          data: { status: current?.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' },
+        });
       });
       await bumpConfigVersion(userId);
       return ajaxOrRedirect(req, reply, '/user/categories', 'Estado actualizado');

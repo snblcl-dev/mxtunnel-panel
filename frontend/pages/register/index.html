@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MXTunnel Panel — Login</title>
+  <title>MXTunnel Panel — Registro</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -15,12 +15,26 @@
 <div class="login-shell">
   <div class="bg-glow bg-glow-1"></div>
   <div class="bg-glow bg-glow-2"></div>
+  <% if (it.disabled) { %>
   <div class="login-card fade-in">
     <div class="brand-row">
       <span class="brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
       <span>MXTunnel</span>
     </div>
-    <p class="subtitle">Iniciar sesión en tu panel</p>
+    <div class="alert alert-warning fade-in" role="alert">
+      <i class="bi bi-slash-circle me-2"></i>Los registros están deshabilitados por el momento.
+    </div>
+    <a href="/login" class="btn btn-secondary w-100">
+      <i class="bi bi-box-arrow-in-right me-2"></i>Volver al inicio de sesión
+    </a>
+  </div>
+  <% } else { %>
+  <div class="login-card fade-in">
+    <div class="brand-row">
+      <span class="brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
+      <span>MXTunnel</span>
+    </div>
+    <p class="subtitle">Crea tu cuenta en el panel</p>
 
     <% if (it.error) { %>
     <div class="alert alert-danger fade-in" role="alert">
@@ -28,27 +42,30 @@
     </div>
     <% } %>
 
-    <form method="POST" action="/login">
+    <form method="POST" action="/register">
       <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
       <div class="mb-3">
+        <label class="form-label"><i class="bi bi-person me-1"></i>Usuario</label>
+        <input type="text" name="username" class="form-control" placeholder="Nombre de usuario" required minlength="3" maxlength="50" autofocus />
+      </div>
+      <div class="mb-3">
         <label class="form-label"><i class="bi bi-envelope me-1"></i>Email</label>
-        <input type="email" name="email" class="form-control" placeholder="tu@email.com" required autofocus />
+        <input type="email" name="email" class="form-control" placeholder="tu@email.com" required />
       </div>
       <div class="mb-4">
         <label class="form-label"><i class="bi bi-lock me-1"></i>Contraseña</label>
-        <input type="password" name="password" class="form-control" placeholder="••••••••" required />
+        <input type="password" name="password" class="form-control" placeholder="•••••••• (mín. 6)" required minlength="6" />
       </div>
       <button type="submit" class="btn btn-primary w-100">
-        <i class="bi bi-box-arrow-in-right me-2"></i>Entrar
+        <i class="bi bi-person-plus me-2"></i>Registrarse
       </button>
     </form>
 
-    <% if (!it.disabled) { %>
     <div class="text-center mt-3">
-      <a href="/register" class="small text-muted">¿No tienes cuenta? Regístrate</a>
+      <a href="/login" class="small text-muted">¿Ya tienes cuenta? Inicia sesión</a>
     </div>
-    <% } %>
   </div>
+  <% } %>
 </div>
 </body>
 </html>

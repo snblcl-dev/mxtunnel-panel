@@ -23,6 +23,11 @@
       </a>
     </li>
     <li class="nav-item">
+      <a href="/admin/settings" class="nav-link <%= it.active === 'settings' ? 'active' : '' %>">
+        <i class="bi bi-gear"></i><span>Ajustes</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a href="/admin/profile" class="nav-link <%= it.active === 'profile' ? 'active' : '' %>">
         <i class="bi bi-person"></i><span>Perfil</span>
       </a>

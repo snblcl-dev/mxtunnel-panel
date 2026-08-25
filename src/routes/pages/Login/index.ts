@@ -20,6 +20,10 @@ export default {
         // token inválido o expirado: mostrar el login
       }
     }
-    return Render.page(req, reply, '/login/index.html');
+    const setting = await prisma.setting.findUnique({
+      where: { key: 'registration_enabled' },
+    });
+    const disabled = setting?.value !== 'true';
+    return Render.page(req, reply, '/login/index.html', { disabled });
   },
 } as RouteOptions;

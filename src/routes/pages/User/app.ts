@@ -24,6 +24,8 @@ export default {
       }
     }
 
+    const activeTab = (req.query as any)?.tab === 'themes' ? 'themes' : 'settings';
+
     return Render.page(req, reply, '/user/app.html', {
       active: 'app',
       themes,
@@ -31,6 +33,7 @@ export default {
       activeThemeId: user?.active_theme_id ?? null,
       MAX_THEMES: 10,
       appSettings,
+      activeTab,
     });
   },
 } as RouteOptions;

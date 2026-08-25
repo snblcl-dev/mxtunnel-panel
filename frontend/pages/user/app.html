@@ -340,6 +340,14 @@
       themeFileThumb.innerHTML = '';
     });
   }
+
+  // Abrir la pestaña de Temas cuando se llega con ?tab=themes (p.ej. tras
+  // descargar un tema de la Comunidad).
+  const ACTIVE_TAB = '<%= it.activeTab || "settings" %>';
+  if (ACTIVE_TAB === 'themes') {
+    const themesTabBtn = document.getElementById('tab-themes-btn');
+    if (themesTabBtn) bootstrap.Tab.getOrCreateInstance(themesTabBtn).show();
+  }
 </script>
 </body>
 </html>

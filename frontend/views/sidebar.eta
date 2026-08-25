@@ -27,6 +27,11 @@
       </a>
     </li>
     <li class="nav-item">
+      <a href="/user/community" class="nav-link <%= it.active === 'community' ? 'active' : '' %>">
+        <i class="bi bi-people"></i><span>Comunidad</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a href="/user/profile" class="nav-link <%= it.active === 'profile' ? 'active' : '' %>">
         <i class="bi bi-person"></i><span>Perfil</span>
       </a>

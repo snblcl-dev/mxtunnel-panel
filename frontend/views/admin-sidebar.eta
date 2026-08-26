@@ -1,4 +1,5 @@
 <aside class="app-sidebar">
+  <button type="button" class="btn-close-sidebar" aria-label="Cerrar menú"><i class="bi bi-x-lg"></i></button>
   <div class="brand">
     <span class="brand-mark"><i class="bi bi-shield-lock-fill"></i></span>
     <span>MXTunnel</span>

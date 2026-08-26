@@ -906,10 +906,298 @@ details.cfg-group .cfg-body {
 }
 
 /* ============================================
-   Responsive
+   Responsive — mobile + tablet
    ============================================ */
-@media (max-width: 768px) {
-  .app-sidebar { transform: translateX(-100%); transition: transform .22s ease; }
+
+/* Sidebar toggle (inyectado por JS, solo móvil/tablet) */
+.sidebar-toggle {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 110;
+  width: 42px;
+  height: 42px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-1);
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-sm);
+  color: var(--ink);
+  font-size: 1.35rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-card);
+  transition: border-color .18s, color .18s, transform .12s;
+  padding: 0;
+}
+.sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
+.sidebar-toggle:active { transform: scale(.96); }
+
+/* Backdrop del sidebar móvil */
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.62);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  z-index: 99;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease;
+}
+.sidebar-backdrop.show { opacity: 1; pointer-events: auto; }
+
+/* Botón cerrar dentro del sidebar (oculto en desktop) */
+.app-sidebar .btn-close-sidebar {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border-hi);
+  border-radius: var(--r-sm);
+  color: var(--ink-2);
+  font-size: .95rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: color .18s, border-color .18s;
+}
+.app-sidebar .btn-close-sidebar:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ---- Tablet (769–991px): sidebar oculta + ajustes intermedios ---- */
+@media (max-width: 991px) {
+  .sidebar-toggle { display: flex; }
+
+  .app-sidebar {
+    transform: translateX(-100%);
+    transition: transform .26s cubic-bezier(.4, 0, .2, 1);
+    box-shadow: 4px 0 28px rgba(0,0,0,.55);
+  }
   .app-sidebar.show { transform: translateX(0); }
-  .app-main { margin-left: 0; padding: 1rem; }
+  .app-sidebar .btn-close-sidebar { display: flex; }
+
+  .app-main {
+    margin-left: 0;
+    padding: 4.25rem 1.1rem 2rem;
+  }
+
+  /* Stat cards más compactas en tablet */
+  .stat-card { padding: 1.1rem 1.15rem; min-height: 96px; }
+  .stat-card .value { font-size: 1.35rem; }
+
+  /* Tablas: padding reducido en tablet (sin romper el layout) */
+  .table thead th, .table tbody td {
+    padding: .55rem .75rem;
+    font-size: .8rem;
+  }
+
+  /* Gráfico admin */
+  .chart-wrap { height: 240px; }
+}
+
+/* ---- Móvil (<=768px) ---- */
+@media (max-width: 768px) {
+  .app-main { padding: 4.25rem .85rem 2rem; }
+
+  /* Reducir glows de fondo para que no causen overflow-x */
+  .bg-glow-1 { width: 360px !important; height: 360px !important; filter: blur(80px) !important; opacity: .1 !important; }
+  .bg-glow-2 { width: 320px !important; height: 320px !important; filter: blur(80px) !important; opacity: .07 !important; }
+
+  /* Page-header: título arriba, botones debajo a ancho completo */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: .85rem;
+    margin-bottom: 1.25rem;
+  }
+  .page-header > .btn,
+  .page-header > .d-flex,
+  .page-header > a {
+    width: 100%;
+    justify-content: center;
+  }
+  .page-header > .d-flex > .btn { width: auto; flex: 1; }
+
+  /* Welcome card del dashboard */
+  .welcome-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.1rem;
+    padding: 1.3rem 1.1rem;
+  }
+  .welcome-right { width: 100%; min-width: 0; }
+
+  /* Profile section */
+  .profile-section { padding: 1.15rem 1rem; }
+  .dl-info dt, .dl-info dd { padding: .3rem 0; }
+  .dl-info dt { font-size: .72rem; }
+  .dl-info dd { font-size: .82rem; word-break: break-word; }
+
+  /* Token highlight: wrap correcto en móvil */
+  .token-highlight {
+    font-size: .72rem;
+    padding: .45rem .65rem;
+    word-break: break-all;
+  }
+
+  /* Tablas: transformar en tarjetas apiladas usando data-label */
+  .table-responsive > .table,
+  .table-responsive .table {
+    border: 0;
+  }
+  .table-responsive .table thead { display: none; }
+  .table-responsive .table tbody,
+  .table-responsive .table tr,
+  .table-responsive .table td {
+    display: block;
+    width: 100%;
+  }
+  .table-responsive .table tbody tr {
+    background: var(--bg-1);
+    border: 1px solid var(--border);
+    border-radius: var(--r-md);
+    margin-bottom: .8rem;
+    padding: .25rem;
+    box-shadow: var(--shadow-card);
+  }
+  .table-responsive .table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: .65rem .8rem;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    text-align: right;
+    min-height: 44px;
+  }
+  .table-responsive .table tbody td:last-child {
+    border-bottom: 0;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: .4rem;
+  }
+  .table-responsive .table tbody td::before {
+    content: attr(data-label);
+    color: var(--ink-3);
+    font-size: 9px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    font-weight: 600;
+    text-align: left;
+    flex-shrink: 0;
+    max-width: 55%;
+  }
+  /* Override del primer-hijo (border-left + radius) */
+  .table-responsive .table tbody td:first-child {
+    border-left: 0;
+    border-radius: 0;
+  }
+  /* Empty state: colspan no debe mostrarse como fila normal */
+  .table-responsive .table tbody td[colspan] {
+    display: block;
+    padding: 0;
+    border: 0;
+  }
+  .table-responsive .table tbody td[colspan]::before { display: none; }
+  .table-responsive .table tbody td[colspan] .empty-state { padding: 1.6rem 1rem; }
+
+  /* Theme cards: pasar de 2 columnas a 1 en móvil pequeño */
+  .theme-card-actions .btn { font-size: .72rem; padding: .25rem .5rem; }
+
+  /* Switches de tabla: alineación correcta en card */
+  .table-responsive .form-check.form-switch { padding-left: 0; }
+
+  /* List-group de categorías (admin/config): apilar en móvil */
+  .list-group-item {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: .65rem;
+    padding: .85rem;
+  }
+  .list-group-item > .d-flex.align-items-center.gap-2 {
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: .4rem !important;
+  }
+
+  /* Modal: ocupar casi todo el ancho en móvil */
+  .modal-dialog { margin: .5rem; max-width: calc(100% - 1rem); }
+  .modal-content { border-radius: var(--r-md); }
+  .modal-body { padding: 1rem; }
+  .modal-header, .modal-footer { padding: .75rem 1rem; }
+
+  /* Login / register */
+  .login-shell { padding: .75rem; }
+  .login-card { padding: 1.5rem 1.2rem; border-radius: var(--r-lg); }
+  .login-card .brand-row { font-size: 1rem; }
+
+  /* Stat cards */
+  .stat-card { padding: 1rem 1.1rem; min-height: auto; }
+  .stat-card .value { font-size: 1.3rem; }
+
+  /* Forms: min-height para touch targets */
+  .form-control, .form-select { min-height: 42px; }
+
+  /* Section divider más compacto */
+  .section-divider { margin-top: 1rem !important; padding-top: .65rem; }
+
+  /* cfg-switches en una columna ya es el default, pero asegura padding */
+  .cfg-switches { gap: .35rem; }
+  details.cfg-group summary { padding: .65rem .85rem; }
+  details.cfg-group .cfg-body { padding: .75rem .85rem .9rem; }
+
+  /* Chart */
+  .chart-wrap { height: 220px; }
+
+  /* Badges más pequeños en rows para que no rompan */
+  .table-responsive .table .badge { font-size: .65rem; }
+}
+
+/* ---- Móvil pequeño (<=576px) ---- */
+@media (max-width: 576px) {
+  .app-main { padding: 4.25rem .75rem 2rem; }
+
+  /* Toast: top-center en lugar de bottom-right */
+  .toast-container {
+    top: .75rem !important;
+    right: .75rem !important;
+    left: .75rem !important;
+    bottom: auto !important;
+    padding: 0 !important;
+  }
+  .toast-container .toast { width: 100%; max-width: 100%; }
+
+  /* Glows aún más sutiles */
+  .bg-glow-1 { width: 260px !important; height: 260px !important; }
+  .bg-glow-2 { width: 220px !important; height: 220px !important; }
+
+  /* Botones principales a ancho completo en formularios cortos */
+  .profile-section .btn { width: 100%; }
+  .profile-section .d-flex { flex-direction: column; align-items: stretch !important; }
+  .profile-section .token-highlight + .btn { width: 100%; margin-top: .35rem; }
+
+  /* Footer del sidebar: el botón de logout a ancho completo ya está, ok */
+
+  /* Page header h3 más pequeño */
+  .page-header h3 { font-size: 1.15rem; }
+  .page-header .text-muted { font-size: .75rem; }
+}
+
+/* ---- Tablet intermedia (769–991px): ajustes específicos sin sidebar toggle conflict ---- */
+@media (min-width: 769px) and (max-width: 991px) {
+  /* Garantiza que el contenido aproveche mejor el ancho */
+  .welcome-card { padding: 1.5rem 1.4rem; gap: 1.5rem; }
+  .welcome-right { min-width: 220px; }
+
+  /* Listas de acciones en celdas: que no se desborden */
+  .table tbody td { font-size: .78rem; }
 }

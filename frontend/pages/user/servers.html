@@ -48,12 +48,12 @@
           <% } %>
           <% it.servers.forEach(function(s) { %>
             <tr>
-              <td><strong><%= s.name %></strong></td>
-              <td><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
-              <td><span class="badge bg-primary"><%= it.tunnelTypeName(s.tunnel_type) %></span></td>
-              <td><span class="badge bg-secondary"><%= s.sorter %></span></td>
-              <td><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
-              <td>
+              <td data-label="Nombre"><strong><%= s.name %></strong></td>
+              <td data-label="Categoría"><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
+              <td data-label="Tipo de conexión"><span class="badge bg-primary"><%= it.tunnelTypeName(s.tunnel_type) %></span></td>
+              <td data-label="Orden"><span class="badge bg-secondary"><%= s.sorter %></span></td>
+              <td data-label="Estado"><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
+              <td data-label="Acciones">
                 <div class="d-flex align-items-center gap-3">
                   <div class="form-check form-switch m-0">
                     <input class="form-check-input js-ajax-toggle" type="checkbox" role="switch"

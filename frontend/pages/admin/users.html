@@ -55,16 +55,16 @@
           <% } %>
           <% it.users.forEach(function(u) { %>
             <tr>
-              <td><strong><%= u.username %></strong></td>
-              <td><%= u.email %></td>
-              <td><code><%= u.id %></code></td>
-              <td><%= u.expiration_date ? u.expiration_date.toLocaleDateString('es-ES') : '—' %></td>
-              <td>
+              <td data-label="Usuario"><strong><%= u.username %></strong></td>
+              <td data-label="Email"><%= u.email %></td>
+              <td data-label="UUID"><code><%= u.id %></code></td>
+              <td data-label="Expira"><%= u.expiration_date ? u.expiration_date.toLocaleDateString('es-ES') : '—' %></td>
+              <td data-label="Estado">
                 <% if (u.banned) { %><span class="badge bg-danger">Baneado</span>
                 <% } else { %><span class="badge bg-success">Activo</span><% } %>
               </td>
-              <td><span class="badge bg-secondary"><%= u._count.servers %></span></td>
-              <td>
+              <td data-label="Serv"><span class="badge bg-secondary"><%= u._count.servers %></span></td>
+              <td data-label="Acciones">
                 <div class="d-flex flex-wrap gap-1">
                   <a class="btn btn-sm btn-primary" href="/admin/users/<%= u.id %>/config"><i class="bi bi-gear"></i></a>
                   <form method="POST" action="/admin/users/<%= u.id %>" class="m-0" data-ajax="true">

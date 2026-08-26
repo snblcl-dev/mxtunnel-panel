@@ -325,4 +325,54 @@
   window.tunnelTypeName = function (n) {
     return window.TUNNEL_TYPES[n] || ('Tipo ' + n);
   };
+
+  // ----- Sidebar móvil: botón hamburguesa + overlay (solo si hay sidebar) -----
+  function initMobileSidebar() {
+    var sidebar = document.querySelector('.app-sidebar');
+    if (!sidebar) return;
+    if (document.querySelector('.sidebar-toggle')) return;
+
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'sidebar-toggle';
+    toggle.setAttribute('aria-label', 'Abrir menú');
+    toggle.innerHTML = '<i class="bi bi-list"></i>';
+
+    var backdrop = document.createElement('div');
+    backdrop.className = 'sidebar-backdrop';
+
+    document.body.appendChild(toggle);
+    document.body.appendChild(backdrop);
+
+    var open = function () {
+      sidebar.classList.add('show');
+      backdrop.classList.add('show');
+    };
+    var close = function () {
+      sidebar.classList.remove('show');
+      backdrop.classList.remove('show');
+    };
+
+    toggle.addEventListener('click', open);
+    backdrop.addEventListener('click', close);
+
+    sidebar.querySelectorAll('.nav-link').forEach(function (a) {
+      a.addEventListener('click', close);
+    });
+    sidebar.querySelectorAll('.btn-close-sidebar').forEach(function (b) {
+      b.addEventListener('click', close);
+    });
+
+    // Auto-cerrar al pasar a layout desktop
+    var mq = window.matchMedia('(min-width: 992px)');
+    var onChange = function (e) { if (e.matches) close(); };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMobileSidebar);
+  } else {
+    initMobileSidebar();
+  }
 })();

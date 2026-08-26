@@ -44,11 +44,11 @@
           <% } %>
           <% it.categories.forEach(function(c) { %>
             <tr>
-              <td><strong><%= c.name %></strong></td>
-              <td><span class="color-dot" style="background:<%= c.color %>"></span> <code><%= c.color %></code></td>
-              <td><%= c.sorter %></td>
-              <td><span class="badge <%= c.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= c.id %>"><%= c.status %></span></td>
-              <td>
+              <td data-label="Nombre"><strong><%= c.name %></strong></td>
+              <td data-label="Color"><span class="color-dot" style="background:<%= c.color %>"></span> <code><%= c.color %></code></td>
+              <td data-label="Orden"><%= c.sorter %></td>
+              <td data-label="Estado"><span class="badge <%= c.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= c.id %>"><%= c.status %></span></td>
+              <td data-label="Acciones">
                 <div class="d-flex align-items-center gap-3">
                   <div class="form-check form-switch m-0">
                     <input class="form-check-input js-ajax-toggle" type="checkbox" role="switch"

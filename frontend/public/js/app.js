@@ -332,6 +332,13 @@
     if (!sidebar) return;
     if (document.querySelector('.sidebar-toggle')) return;
 
+    // .app-layout tiene z-index:1 y crea su propio contexto de apilamiento.
+    // Si el toggle/backdrop se añaden a body, z-index 99/110 > .app-layout(1)
+    // y quedarían ENCIMA del sidebar (que vive dentro de .app-layout).
+    // Hay que inyectarlos dentro de .app-layout para que compartan contexto.
+    var appLayout = document.querySelector('.app-layout');
+    if (!appLayout) return;
+
     var toggle = document.createElement('button');
     toggle.type = 'button';
     toggle.className = 'sidebar-toggle';
@@ -341,16 +348,18 @@
     var backdrop = document.createElement('div');
     backdrop.className = 'sidebar-backdrop';
 
-    document.body.appendChild(toggle);
-    document.body.appendChild(backdrop);
+    appLayout.appendChild(toggle);
+    appLayout.appendChild(backdrop);
 
     var open = function () {
       sidebar.classList.add('show');
       backdrop.classList.add('show');
+      toggle.classList.add('hidden');
     };
     var close = function () {
       sidebar.classList.remove('show');
       backdrop.classList.remove('show');
+      toggle.classList.remove('hidden');
     };
 
     toggle.addEventListener('click', open);

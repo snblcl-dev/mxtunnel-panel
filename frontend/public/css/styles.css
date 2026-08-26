@@ -914,7 +914,7 @@ details.cfg-group .cfg-body {
   position: fixed;
   top: 12px;
   left: 12px;
-  z-index: 110;
+  z-index: 50;
   width: 42px;
   height: 42px;
   display: none;
@@ -927,11 +927,12 @@ details.cfg-group .cfg-body {
   font-size: 1.35rem;
   cursor: pointer;
   box-shadow: var(--shadow-card);
-  transition: border-color .18s, color .18s, transform .12s;
+  transition: border-color .18s, color .18s, transform .12s, opacity .18s;
   padding: 0;
 }
 .sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
 .sidebar-toggle:active { transform: scale(.96); }
+.sidebar-toggle.hidden { opacity: 0; pointer-events: none; }
 
 /* Backdrop del sidebar móvil */
 .sidebar-backdrop {
@@ -981,7 +982,15 @@ details.cfg-group .cfg-body {
     transition: transform .26s cubic-bezier(.4, 0, .2, 1);
     box-shadow: 4px 0 28px rgba(0,0,0,.55);
   }
-  .app-sidebar.show { transform: translateX(0); }
+  .app-sidebar.show {
+    transform: translateX(0);
+    /* Al estar sobre el backdrop, su propio backdrop-filter ya no aporta
+       nada y vuelve el sidebar borroso. Lo neutralizamos y damos fondo
+       sólido para que se lea bien y los clicks se enfoquen en los items. */
+    background: rgba(10, 10, 10, 0.98);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
   .app-sidebar .btn-close-sidebar { display: flex; }
 
   .app-main {

@@ -175,7 +175,13 @@
     const form = document.getElementById('confirmDeleteForm');
     form.action = url;
     const csrfInput = document.getElementById('confirmDeleteCsrf');
-    if (csrfInput) csrfInput.value = csrf;
+    // Usar el token fresco renderizado en la página (hidden _csrf global) en
+    // lugar del pasado por URL: si la cookie CSRF rotó (p. ej. tras cambiar
+    // password/sesión), el de la URL queda desincronizado y daba "CSRF inválido".
+    let freshCsrf = csrf;
+    const pageCsrf = document.querySelector('input[name="_csrf"]');
+    if (pageCsrf && pageCsrf.value) freshCsrf = pageCsrf.value;
+    if (csrfInput) csrfInput.value = freshCsrf;
     const actionInput = document.getElementById('confirmDeleteAction');
     if (actionInput) actionInput.value = action || 'delete';
     if (window.bootstrap) new bootstrap.Modal(m).show();

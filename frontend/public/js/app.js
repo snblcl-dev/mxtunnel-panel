@@ -60,6 +60,12 @@
     try {
       submitAjax(form).then(resp => {
         showToast((resp && resp.message) || 'Guardado', 'success');
+        // Si el backend pide redirigir (p. ej. login limpio tras cambiar
+        // contraseña), se hace la redirección en lugar de recargar.
+        if (resp && resp.redirect) {
+          setTimeout(() => { window.location.href = resp.redirect; }, 600);
+          return;
+        }
         const modalEl = form.closest && form.closest('.modal');
         if (modalEl && window.bootstrap) {
           const inst = bootstrap.Modal.getInstance(modalEl);
@@ -120,6 +126,10 @@
     e.preventDefault();
     submitAjax(form).then(resp => {
       showToast((resp && resp.message) || 'Guardado', 'success');
+      if (resp && resp.redirect) {
+        setTimeout(() => { window.location.href = resp.redirect; }, 600);
+        return;
+      }
       setTimeout(() => window.location.reload(), 700);
     }).catch(() => {});
   });

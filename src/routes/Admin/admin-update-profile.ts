@@ -50,7 +50,8 @@ export default {
         data: { password: hashed, token_version: { increment: 1 } },
       });
       clearAuthCookies(reply);
-      return ajaxOrRedirect(req, reply, '/admin/profile', 'Contraseña actualizada');
+      // Forzar login limpio: la sesión quedó invalidada, el frontend redirige a /login
+      return reply.send({ ok: true, message: 'Contraseña actualizada. Vuelve a iniciar sesión.', redirect: '/login' });
     }
     return ajaxFail(reply, 'Acción inválida.');
   },

@@ -66,13 +66,23 @@ MANIFEST="$WORK/app/AndroidManifest.xml"
 # Cambiar el package en el manifest
 sed -i "s/package=\"com\.mxtunnel\.app\"/package=\"$PKG\"/" "$MANIFEST"
 
-# Label: si el manifest usa @string/app_name, se edita strings.xml
+# Label: si el manifest usa @string/app_name, se edita app_name en TODOS los
+# locales (values, values-es, values-en, ...) para que el launcher muestre el
+# nombre elegido en cualquier idioma del dispositivo.
 if grep -q 'android:label="@string/app_name"' "$MANIFEST"; then
-  STRINGS="$WORK/app/res/values/strings.xml"
-  [[ -f "$STRINGS" ]] || { echo "ERROR: no está res/values/strings.xml"; exit 1; }
   # Escapar & < > para XML
   ESC_NAME=$(printf '%s' "$NAME" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g')
-  sed -i "s|<string name=\"app_name\">[^<]*</string>|<string name=\"app_name\">$ESC_NAME</string>|" "$STRINGS"
+  FOUND=0
+  for STRINGS in "$WORK"/app/res/values*/strings.xml; do
+    if [[ -f "$STRINGS" ]]; then
+      sed -i "s|<string name=\"app_name\">[^<]*</string>|<string name=\"app_name\">$ESC_NAME</string>|" "$STRINGS"
+      FOUND=1
+    fi
+  done
+  if [[ "$FOUND" -eq 0 ]]; then
+    echo "ERROR: no se encontró res/values*/strings.xml"
+    exit 1
+  fi
 else
   sed -i "s|android:label=\"[^\"]*\"|android:label=\"$NAME\"|" "$MANIFEST"
 fi

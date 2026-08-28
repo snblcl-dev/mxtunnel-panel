@@ -65,16 +65,6 @@ function saveIcon(userId: string, iconBase64: string): string {
   return file;
 }
 
-/** Cifra el token usando el helper Python (misma clave APK_TOKEN_KEY). */
-async function encryptToken(token: string): Promise<string> {
-  const py = path.join(toolsDir(), 'token_encrypt.py');
-  const { stdout } = await execFileAsync('python3', [py, token], {
-    env: { ...process.env, APK_TOKEN_KEY: envOrThrow('APK_TOKEN_KEY') },
-    timeout: 30000,
-  });
-  return stdout.trim();
-}
-
 /** Borra los APKs con más de APK_TTL_MS de antigüedad en el directorio de salida. */
 export function cleanOldApks(): void {
   try {
@@ -128,7 +118,9 @@ export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
   if (!fs.existsSync(base)) throw new Error('APK base no encontrada (configura APK_BASE).');
 
   const iconPath = input.iconBase64 ? saveIcon(input.userId, input.iconBase64) : undefined;
-  const tokenEnc = await encryptToken(input.token);
+  // El token va EN CLARO al script: repack_apk.sh ya lo cifra con token_encrypt.py
+  // (la app descifra una vez con TokenCipher). Pasarlo cifrado aquí doblaría el cifrado.
+  const tokenEnc = input.token;
 
   const dir = outputDir();
   fs.mkdirSync(dir, { recursive: true });

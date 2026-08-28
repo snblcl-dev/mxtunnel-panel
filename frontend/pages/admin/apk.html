@@ -121,7 +121,23 @@
     var f = iconInput.files && iconInput.files[0];
     if (!f) { iconBase64 = ''; return; }
     var reader = new FileReader();
-    reader.onload = function (e) { iconBase64 = e.target.result; };
+    reader.onload = function (e) {
+      var img = new Image();
+      img.onload = function () {
+        // Convertir a PNG (el drawable de la base es PNG; apktool exige firma PNG)
+        var canvas = document.createElement('canvas');
+        var size = 512;
+        canvas.width = size; canvas.height = size;
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, size, size);
+        var s = Math.min(size / img.width, size / img.height);
+        var w = img.width * s, h = img.height * s;
+        ctx.drawImage(img, (size - w) / 2, (size - h) / 2, w, h);
+        iconBase64 = canvas.toDataURL('image/png');
+      };
+      img.onerror = function () { iconBase64 = ''; alert('No se pudo leer la imagen.'); };
+      img.src = e.target.result;
+    };
     reader.readAsDataURL(f);
   });
 

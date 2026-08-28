@@ -52,10 +52,15 @@ function saveIcon(userId: string, iconBase64: string): string {
   if (buf.length === 0 || buf.length > 5 * 1024 * 1024) {
     throw new Error('Icono inválido (vacío o >5MB).');
   }
+  // El drawable de la base es ico.png: apktool exige que el archivo sea PNG.
+  // El frontend convierte a PNG vía canvas; aquí validamos la firma real.
+  const PNG_SIG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+  if (buf.length < 8 || !buf.subarray(0, 8).equals(PNG_SIG)) {
+    throw new Error('El icono debe ser PNG (usa una imagen PNG o JPG; se convertirá a PNG).');
+  }
   const dir = outputDir();
   fs.mkdirSync(dir, { recursive: true });
-  const ext = /^data:image\/(png|jpe?g|webp)/.test(iconBase64) ? (m && /png/.test(iconBase64) ? 'png' : 'jpg') : 'png';
-  const file = path.join(dir, `icon_${userId}.${ext}`);
+  const file = path.join(dir, `icon_${userId}.png`);
   fs.writeFileSync(file, buf);
   return file;
 }

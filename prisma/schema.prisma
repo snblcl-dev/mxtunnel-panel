@@ -26,6 +26,12 @@ model User {
   theme_version   Int        @default(1)
   app_settings    String? // JSON con ajustes controlados por el panel (ver frontend/user/app)
   active_theme_id Int?
+  // Personalización de la APK generada por el panel
+  apk_package     String?
+  apk_name        String?
+  apk_icon        String? // path (uploads/apk/) o dataURL del icono subido
+  apk_generated   Boolean  @default(false)
+  apk_updated_at  DateTime?
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt
 

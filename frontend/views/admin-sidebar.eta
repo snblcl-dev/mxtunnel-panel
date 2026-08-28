@@ -24,6 +24,11 @@
       </a>
     </li>
     <li class="nav-item">
+      <a href="/admin/apk" class="nav-link <%= it.active === 'apk' ? 'active' : '' %>">
+        <i class="bi bi-stars"></i><span>Generar APK</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a href="/admin/settings" class="nav-link <%= it.active === 'settings' ? 'active' : '' %>">
         <i class="bi bi-gear"></i><span>Ajustes</span>
       </a>

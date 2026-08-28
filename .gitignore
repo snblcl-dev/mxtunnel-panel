@@ -6,3 +6,7 @@ build/
 dist/
 .DS_Store
 .commandcode/
+# Secretos y APKs generadas (no versionar)
+secrets/
+uploads/
+tools/*.apk

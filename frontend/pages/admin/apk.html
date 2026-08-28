@@ -66,30 +66,27 @@
     </div>
 
     <div class="card fade-in">
-      <div class="card-header"><i class="bi bi-download me-2"></i>APKs generadas</div>
+      <div class="card-header"><i class="bi bi-people me-2"></i>Usuarios con APK generada</div>
       <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
-          <thead><tr><th>Archivo</th><th>Tamaño</th><th>Generada</th><th></th></tr></thead>
+          <thead><tr><th>Usuario</th><th>Email</th><th>Package</th><th>Nombre</th><th>Estado</th></tr></thead>
           <tbody>
-          <% if (it.apks.length === 0) { %>
-            <tr><td colspan="4">
+          <% if (!it.users.some(function(u){ return u.apk_generated; })) { %>
+            <tr><td colspan="5">
               <div class="empty-state">
                 <i class="bi bi-phone"></i>
-                <h6>No hay APKs generadas</h6>
+                <h6>Ningún usuario ha generado APK todavía</h6>
                 <p>Usa el formulario de arriba para generar la primera.</p>
               </div>
             </td></tr>
           <% } %>
-          <% it.apks.forEach(function(a) { %>
+          <% it.users.forEach(function(u) { if (!u.apk_generated) return; %>
             <tr>
-              <td><code class="text-break"><%= a.file %></code></td>
-              <td><%= (a.size / 1048576).toFixed(0) %> MB</td>
-              <td><%= a.mtime.toLocaleString('es-ES') %></td>
-              <td class="text-end">
-                <a class="btn btn-sm btn-primary" href="/admin/apk/download/<%= encodeURIComponent(a.file) %>">
-                  <i class="bi bi-download me-1"></i>Descargar
-                </a>
-              </td>
+              <td><strong><%= u.username %></strong></td>
+              <td><%= u.email %></td>
+              <td><code class="text-break"><%= u.apk_package || '—' %></code></td>
+              <td><%= u.apk_name || '—' %></td>
+              <td><span class="badge bg-success">Generada</span></td>
             </tr>
           <% }) %>
           </tbody>

@@ -10,22 +10,22 @@ export default async function AdminAuthentication(
   const token = req.cookies.accessToken;
 
   if (!token) {
-    return reply.status(401).redirect('/login');
+    return reply.redirect('/login');
   }
 
   try {
     const payload = JWTConfig.verify(token);
     if (payload.role !== 'ADMIN') {
-      return reply.status(403).redirect('/');
+      return reply.redirect('/');
     }
     const user = await prisma.user.findUnique({ where: { id: payload.id } });
     // Verifica que la sesión no fue revocada (logout o cambio de contraseña).
     if (!user || user.token_version !== payload.token_version) {
       clearAuthCookies(reply);
-      return reply.status(401).redirect('/login');
+      return reply.redirect('/login');
     }
     (req as any).user = payload;
   } catch {
-    return reply.status(401).redirect('/login');
+    return reply.redirect('/login');
   }
 }

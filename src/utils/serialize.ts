@@ -1,5 +1,16 @@
 import type { Server, Category } from '@prisma/client';
 
+// Prefijo del proxy para envolver la URL de CheckUser que recibe la app.
+// Vacío = se entrega la URL tal cual. Ej: https://mxtunnel.pro/proxy/?url=
+const PROXY_PREFIX = (process.env.PROXY_PREFIX ?? '').replace(/\/+$/, '');
+
+function wrapWithProxy(url: string): string {
+  if (!url) return '';
+  if (!PROXY_PREFIX) return url;
+  if (url.startsWith(PROXY_PREFIX) || url.startsWith(PROXY_PREFIX + '/')) return url;
+  return `${PROXY_PREFIX}/?url=${encodeURIComponent(url)}`;
+}
+
 // Serializa un Server de Prisma al JSON plano que espera la app
 // (mapeo 1:1 con SettingsConstants de com.hex.custom)
 export function serializeServer(server: Server) {
@@ -45,7 +56,7 @@ export function serializeServer(server: Server) {
     // Enhanced mode (V2)
     enhanced: server.enhanced,
     // CheckUser
-    urlCheckUser: server.url_check_user ?? '',
+    urlCheckUser: wrapWithProxy(server.url_check_user ?? ''),
   };
 }
 

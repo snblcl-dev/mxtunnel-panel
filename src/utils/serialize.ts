@@ -1,14 +1,23 @@
 import type { Server, Category } from '@prisma/client';
 
 // Prefijo del proxy para envolver la URL de CheckUser que recibe la app.
-// Vacío = se entrega la URL tal cual. Ej: https://mxtunnel.pro/proxy/?url=
-const PROXY_PREFIX = (process.env.PROXY_PREFIX ?? '').replace(/\/+$/, '');
+// Acepta "https://mxtunnel.pro/proxy" o "https://mxtunnel.pro/proxy/?url=".
+// Vacío = se entrega la URL tal cual.
+const PROXY_RAW = (process.env.PROXY_PREFIX ?? '').trim();
+// Indica si el prefijo ya trae el query "?url=" (forma "…/proxy/?url=")
+const PROXY_HAS_QUERY = /[?&]url=$/i.test(PROXY_RAW);
+// Base limpia: "https://mxtunnel.pro/proxy" (sin / finales ni ?url=)
+const PROXY_BASE = PROXY_RAW.replace(/\/+$/, '').replace(/\?url=$/i, '');
 
 function wrapWithProxy(url: string): string {
   if (!url) return '';
-  if (!PROXY_PREFIX) return url;
-  if (url.startsWith(PROXY_PREFIX) || url.startsWith(PROXY_PREFIX + '/')) return url;
-  return `${PROXY_PREFIX}/?url=${encodeURIComponent(url)}`;
+  if (!PROXY_RAW) return url;
+  // Forma final: si el prefijo ya trae "?url=" se usa "base?url=", si no "base/?url="
+  const wrapped = PROXY_HAS_QUERY
+    ? `${PROXY_BASE}?url=`
+    : `${PROXY_BASE}/?url=`;
+  if (url.startsWith(wrapped)) return url;
+  return `${wrapped}${encodeURIComponent(url)}`;
 }
 
 // Serializa un Server de Prisma al JSON plano que espera la app

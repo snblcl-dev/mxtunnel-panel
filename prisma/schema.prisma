@@ -122,6 +122,11 @@ model Server {
   udp_line_input  String?
   config_line_input String?
 
+  // SlowDNS / DNSTT (modo 5): dominio + public key + DNS de transporte
+  slowdns_nameserver String?
+  slowdns_public_key String?
+  slowdns_dns        String?
+
   // V2Ray
   v2ray_json String?
 

@@ -98,6 +98,17 @@
       </details>
 
       <details class="cfg-group">
+        <summary>SlowDNS / DNSTT <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+        <div class="cfg-body">
+          <div class="row g-2">
+            <div class="col-md-6"><label class="form-label">NameServer (dominio)</label><input class="form-control font-monospace" name="slowdns_nameserver" value="<%= it.server.slowdns_nameserver %>" /></div>
+            <div class="col-md-6"><label class="form-label">Public Key DNSTT</label><input class="form-control font-monospace" name="slowdns_public_key" value="<%= it.server.slowdns_public_key %>" /></div>
+            <div class="col-md-4"><label class="form-label">DNS transporte</label><input class="form-control font-monospace" name="slowdns_dns" value="<%= it.server.slowdns_dns %>" placeholder="8.8.8.8" /></div>
+          </div>
+        </div>
+      </details>
+
+      <details class="cfg-group">
         <summary>V2Ray <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
         <div class="cfg-body">
           <div class="row g-2">

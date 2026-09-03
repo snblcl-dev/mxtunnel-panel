@@ -60,6 +60,10 @@ export function serializeServer(server: Server) {
     udpVersion: server.udp_version ?? '',
     udpLineInput: server.udp_line_input ?? '',
     configLineInput: server.config_line_input ?? '',
+    // SlowDNS / DNSTT (modo 5)
+    slowdnsNameserver: server.slowdns_nameserver ?? '',
+    slowdnsPublicKey: server.slowdns_public_key ?? '',
+    slowdnsDns: server.slowdns_dns ?? '',
     // V2Ray
     v2rayjson: server.v2ray_json ?? '',
     // Enhanced mode (V2)

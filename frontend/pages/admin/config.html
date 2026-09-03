@@ -169,6 +169,10 @@
             <div class="col-12 section-divider"><i class="bi bi-globe"></i><strong>DNS</strong></div>
             <div class="col-md-4"><label class="form-label">DNS 1</label><input class="form-control" name="dns_resolver1" /></div>
             <div class="col-md-4"><label class="form-label">DNS 2</label><input class="form-control" name="dns_resolver2" /></div>
+            <div class="col-12 section-divider"><i class="bi bi-rss"></i><strong>SlowDNS / DNSTT</strong></div>
+            <div class="col-md-4"><label class="form-label">NameServer (dominio)</label><input class="form-control font-monospace" name="slowdns_nameserver" /></div>
+            <div class="col-md-4"><label class="form-label">Public Key DNSTT</label><input class="form-control font-monospace" name="slowdns_public_key" /></div>
+            <div class="col-md-4"><label class="form-label">DNS transporte</label><input class="form-control font-monospace" name="slowdns_dns" placeholder="8.8.8.8" /></div>
             <div class="col-12 section-divider"><i class="bi bi-shield-shaded"></i><strong>V2Ray</strong></div>
             <div class="col-md-6"><label class="form-label">v2ray JSON <small class="text-muted">(arrastra para expandir)</small></label><textarea class="form-control font-monospace" name="v2ray_json" rows="3"></textarea></div>
             <div class="col-12 section-divider"><i class="bi bi-sliders"></i><strong>Opciones (V2)</strong></div>
@@ -269,6 +273,7 @@
     set('udp_resolver', s.udp_resolver);
     set('udp_server', s.udp_server); set('udp_port', s.udp_port);
     set('udp_sni', s.udp_sni); set('udp_version', s.udp_version);
+    set('slowdns_nameserver', s.slowdns_nameserver); set('slowdns_public_key', s.slowdns_public_key); set('slowdns_dns', s.slowdns_dns);
     set('v2ray_json', s.v2ray_json);
     set('enhanced', s.enhanced ? '1' : '0');
     fillCategorySelect(form, s.category_id);

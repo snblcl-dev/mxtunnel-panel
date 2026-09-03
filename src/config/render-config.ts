@@ -2,20 +2,18 @@ import path from 'path';
 import { eta } from '../http';
 import { FastifyRequest, FastifyReply } from 'fastify';
 
-// Mapeo tunnel_type (numero) -> nombre legible, reutilizado por las
+// Mapeo tunnel_type (numero) -> nombre en la app VpnApp, reutilizado por las
 // plantillas Eta para mostrar el tipo de conexion en tablas de servidores.
+// Solo los modos implementados en VpnApp: 1..6, 10 y 13 (BHTTP).
 export const TUNNEL_TYPES: Record<number, string> = {
-  1: 'SSH Directo',
-  2: 'SSH Proxy',
-  3: 'SSH SSL',
-  4: 'SSL Payload',
-  5: 'SlowDNS',
-  6: 'SSL RP',
-  7: 'SSH',
-  8: 'RE',
-  9: 'UDP',
+  1: 'SSH + Payload',
+  2: 'SSH + Proxy + Payload',
+  3: 'SSH_SSL + SNI',
+  4: 'SSH_SSL + SNI + Payload',
+  5: 'SlowDNS / DNSTT',
+  6: 'SSH_SSL + SNI + Proxy + Payload',
   10: 'V2Ray',
-  12: 'DNSTT + V2Ray',
+  13: 'BHTTP (Tunnel SSH)',
 };
 
 export function tunnelTypeName(n: number | string | null | undefined): string {

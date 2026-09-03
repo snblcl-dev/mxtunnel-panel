@@ -46,17 +46,14 @@
             <div class="col-md-2">
               <label class="form-label">Tipo</label>
               <select class="form-select" name="tunnel_type">
-                <option value="1"  <%= it.server.tunnel_type === 1  ? 'selected' : '' %>>SSH Directo</option>
-                <option value="2"  <%= it.server.tunnel_type === 2  ? 'selected' : '' %>>SSH Proxy</option>
-                <option value="3"  <%= it.server.tunnel_type === 3  ? 'selected' : '' %>>SSH SSL</option>
-                <option value="4"  <%= it.server.tunnel_type === 4  ? 'selected' : '' %>>SSL Payload</option>
-                <option value="5"  <%= it.server.tunnel_type === 5  ? 'selected' : '' %>>SlowDNS</option>
-                <option value="6"  <%= it.server.tunnel_type === 6  ? 'selected' : '' %>>SSL RP</option>
-                <option value="7"  <%= it.server.tunnel_type === 7  ? 'selected' : '' %>>SSH</option>
-                <option value="8"  <%= it.server.tunnel_type === 8  ? 'selected' : '' %>>RE</option>
-                <option value="9"  <%= it.server.tunnel_type === 9  ? 'selected' : '' %>>UDP</option>
+                <option value="1"  <%= it.server.tunnel_type === 1  ? 'selected' : '' %>>SSH + Payload</option>
+                <option value="2"  <%= it.server.tunnel_type === 2  ? 'selected' : '' %>>SSH + Proxy + Payload</option>
+                <option value="3"  <%= it.server.tunnel_type === 3  ? 'selected' : '' %>>SSH_SSL + SNI</option>
+                <option value="4"  <%= it.server.tunnel_type === 4  ? 'selected' : '' %>>SSH_SSL + SNI + Payload</option>
+                <option value="5"  <%= it.server.tunnel_type === 5  ? 'selected' : '' %>>SlowDNS / DNSTT</option>
+                <option value="6"  <%= it.server.tunnel_type === 6  ? 'selected' : '' %>>SSH_SSL + SNI + Proxy + Payload</option>
                 <option value="10" <%= it.server.tunnel_type === 10 ? 'selected' : '' %>>V2Ray</option>
-                <option value="12" <%= it.server.tunnel_type === 12 ? 'selected' : '' %>>DNSTT + V2Ray</option>
+                <option value="13" <%= it.server.tunnel_type === 13 ? 'selected' : '' %>>BHTTP (Tunnel SSH)</option>
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="<%= it.server.sorter %>" /></div>
@@ -96,19 +93,6 @@
           <div class="row g-2">
             <div class="col-md-4"><label class="form-label">DNS 1</label><input class="form-control" name="dns_resolver1" value="<%= it.server.dns_resolver1 %>" /></div>
             <div class="col-md-4"><label class="form-label">DNS 2</label><input class="form-control" name="dns_resolver2" value="<%= it.server.dns_resolver2 %>" /></div>
-            <div class="col-md-4"><label class="form-label">UDP resolver</label><input class="form-control" name="udp_resolver" value="<%= it.server.udp_resolver %>" /></div>
-          </div>
-        </div>
-      </details>
-
-      <details class="cfg-group">
-        <summary>DNSTT / UDP <span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
-        <div class="cfg-body">
-          <div class="row g-2">
-            <div class="col-md-3"><label class="form-label">UDP server</label><input class="form-control" name="udp_server" value="<%= it.server.udp_server %>" /></div>
-            <div class="col-md-3"><label class="form-label">UDP puerto</label><input class="form-control" name="udp_port" value="<%= it.server.udp_port %>" /></div>
-            <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" value="<%= it.server.udp_sni %>" /></div>
-            <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" value="<%= it.server.udp_version %>" /></div>
           </div>
         </div>
       </details>

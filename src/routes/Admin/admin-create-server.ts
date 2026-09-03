@@ -14,7 +14,7 @@ const schema = z.object({
   description: z.string().optional(),
   category_id: z.coerce.number().int(),
   sorter: z.coerce.number().int().default(0),
-  tunnel_type: z.coerce.number().int().min(1).max(12).default(1),
+  tunnel_type: z.coerce.number().int().min(1).max(13).default(1),
   ssh_server: z.string().optional(),
   ssh_port: z.string().optional(),
   ssh_user: z.string().optional(),

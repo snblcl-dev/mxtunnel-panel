@@ -322,21 +322,18 @@
     }
   };
 
-  // Mapeo tunnel_type (numerico) -> nombre legible. Tambien esta disponible
-  // en el server-side (src/config/render-config.ts); aqui se expone para el JS
-  // del navegador (formularios dinamicos, modales, etc.).
+  // Mapeo tunnel_type (numerico) -> nombre en la app VpnApp. Tambien esta
+  // disponible en el server-side (src/config/render-config.ts); aqui se expone
+  // para el JS del navegador (formularios dinamicos, modales, etc.).
   window.TUNNEL_TYPES = {
-    1: 'SSH Directo',
-    2: 'SSH Proxy',
-    3: 'SSH SSL',
-    4: 'SSL Payload',
-    5: 'SlowDNS',
-    6: 'SSL RP',
-    7: 'SSH',
-    8: 'RE',
-    9: 'UDP',
+    1: 'SSH + Payload',
+    2: 'SSH + Proxy + Payload',
+    3: 'SSH_SSL + SNI',
+    4: 'SSH_SSL + SNI + Payload',
+    5: 'SlowDNS / DNSTT',
+    6: 'SSH_SSL + SNI + Proxy + Payload',
     10: 'V2Ray',
-    12: 'DNSTT + V2Ray',
+    13: 'BHTTP (Tunnel SSH)',
   };
   window.tunnelTypeName = function (n) {
     return window.TUNNEL_TYPES[n] || ('Tipo ' + n);

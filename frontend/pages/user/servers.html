@@ -103,10 +103,9 @@
             <div class="col-md-2">
               <label class="form-label">Tipo</label>
               <select class="form-select" name="tunnel_type">
-                <option value="1">SSH Directo</option><option value="2">SSH Proxy</option><option value="3">SSH SSL</option>
-                <option value="4">SSL Payload</option><option value="5">SlowDNS</option><option value="6">SSL RP</option>
-                <option value="7">SSH</option><option value="8">RE</option><option value="9">UDP</option>
-                <option value="10">V2Ray</option><option value="12">DNSTT + V2Ray</option>
+                <option value="1">SSH + Payload</option><option value="2">SSH + Proxy + Payload</option><option value="3">SSH_SSL + SNI</option>
+                <option value="4">SSH_SSL + SNI + Payload</option><option value="5">SlowDNS / DNSTT</option><option value="6">SSH_SSL + SNI + Proxy + Payload</option>
+                <option value="10">V2Ray</option><option value="13">BHTTP (Tunnel SSH)</option>
               </select>
             </div>
             <div class="col-md-2"><label class="form-label">Orden</label><input class="form-control" name="sorter" type="number" value="0" /></div>
@@ -133,13 +132,6 @@
             <div class="col-12 section-divider"><i class="bi bi-globe"></i><strong>DNS</strong></div>
             <div class="col-md-4"><label class="form-label">DNS 1</label><input class="form-control" name="dns_resolver1" /></div>
             <div class="col-md-4"><label class="form-label">DNS 2</label><input class="form-control" name="dns_resolver2" /></div>
-            <div class="col-md-4"><label class="form-label">UDP resolver</label><input class="form-control" name="udp_resolver" /></div>
-
-            <div class="col-12 section-divider"><i class="bi bi-broadcast"></i><strong>DNSTT / UDP</strong></div>
-            <div class="col-md-3"><label class="form-label">UDP server</label><input class="form-control" name="udp_server" /></div>
-            <div class="col-md-3"><label class="form-label">UDP puerto</label><input class="form-control" name="udp_port" /></div>
-            <div class="col-md-3"><label class="form-label">UDP SNI</label><input class="form-control" name="udp_sni" /></div>
-            <div class="col-md-3"><label class="form-label">UDP version</label><input class="form-control" name="udp_version" /></div>
 
             <div class="col-12 section-divider"><i class="bi bi-shield-shaded"></i><strong>V2Ray</strong></div>
             <div class="col-md-6"><label class="form-label">v2ray JSON <small class="text-muted">(arrastra para expandir)</small></label><textarea class="form-control font-monospace" name="v2ray_json" rows="3"></textarea></div>

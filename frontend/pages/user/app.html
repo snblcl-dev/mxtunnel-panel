@@ -59,7 +59,7 @@
                   <option value="tun" <%= (s.motorSocks || 'tun') === 'tun' ? 'selected' : '' %>>TUN2SOCKS (BADVPN)</option>
                   <option value="hev" <%= (s.motorSocks || 'tun') === 'hev' ? 'selected' : '' %>>HEVSOCKS5TUNNEL</option>
                 </select>
-                <div class="form-hint">TUN redirige todo el tráfico; HEV solo lo que la app necesita.</div>
+                <div class="form-hint">HEV (HEVSOCKS5TUNNEL) por ahora solo aplica al modo V2Ray. Los modos SSH usan TUN2SOCKS; el soporte de HEV para SSH llegará pronto.</div>
               </div>
               <div class="col-md-6">
                 <label class="form-label" for="opt_pingerSSH">Ping (segundos)</label>

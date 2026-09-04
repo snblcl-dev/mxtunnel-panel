@@ -50,7 +50,7 @@
         <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
 
         <details class="cfg-group" open>
-          <summary>Conexión <span class="cfg-count">motor, ping, subred</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+          <summary>Conexión <span class="cfg-count">motor, ping, compresión</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
           <div class="cfg-body">
             <div class="row g-2">
               <div class="col-md-6">
@@ -88,29 +88,15 @@
                   </div>
                   <div class="form-hint">Conexión más rápida al iniciar (desactiva espera).</div>
                 </div>
-                <div>
-                  <div class="form-check form-switch m-0">
-                    <input class="form-check-input" type="checkbox" name="tetherSubnet" value="true" id="opt_tetherSubnet" <%= b('tetherSubnet', false) ? 'checked' : '' %> />
-                    <label class="form-check-label" for="opt_tetherSubnet">Subred de anclaje</label>
-                  </div>
-                  <div class="form-hint">Permite compartir internet del móvil a través del VPN.</div>
-                </div>
             </div>
           </div>
         </details>
 
         <details class="cfg-group" open>
-          <summary>Apariencia <span class="cfg-count">logs, wakelock, vibración</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
+          <summary>Apariencia <span class="cfg-count">vibración, wakelock</span><span class="chev"><i class="bi bi-chevron-right"></i></span></summary>
           <div class="cfg-body">
             <div class="row g-2">
               <div class="col-md-12 cfg-switches">
-                <div>
-                  <div class="form-check form-switch m-0">
-                    <input class="form-check-input" type="checkbox" name="hideLog" value="true" id="opt_hideLog" <%= b('hideLog', false) ? 'checked' : '' %> />
-                    <label class="form-check-label" for="opt_hideLog">Mostrar logs al conectar</label>
-                  </div>
-                  <div class="form-hint">Muestra la ventana de logs al iniciar el VPN.</div>
-                </div>
                 <div>
                   <div class="form-check form-switch m-0">
                     <input class="form-check-input" type="checkbox" name="vibrate" value="true" id="opt_vibrate" <%= b('vibrate', true) ? 'checked' : '' %> />

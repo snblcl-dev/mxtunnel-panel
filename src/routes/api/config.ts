@@ -2,6 +2,7 @@ import prisma from '../../config/prisma-client';
 import { isExpired } from '../../utils/format-date';
 import { serializeServer, serializeCategory } from '../../utils/serialize';
 import { getApiToken } from '../../utils/api-token';
+import { encryptConfig, configCryptoEnabled } from '../../utils/crypto';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 export default {
@@ -53,12 +54,21 @@ export default {
       }
     }
 
-    return reply.send({
+    const payload = {
       version: user.config_version,
       themeVersion: user.theme_version,
       settings,
       categories: categories.map(serializeCategory),
       servers: servers.map(serializeServer),
-    });
+    };
+
+    // Modo cifrado: la config viaja en un envelope AES-GCM que solo la APK con la
+    // clave correspondiente puede abrir. Si CONFIG_CRYPTO_ENABLED=false (o falta la
+    // clave), se responde el JSON plano (compatibilidad/rollback).
+    if (configCryptoEnabled()) {
+      return reply.send(encryptConfig(payload));
+    }
+
+    return reply.send(payload);
   },
 } as RouteOptions;

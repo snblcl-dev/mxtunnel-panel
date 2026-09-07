@@ -3,6 +3,7 @@ import { isExpired } from '../../utils/format-date';
 import { serializeServer, serializeCategory } from '../../utils/serialize';
 import { getApiToken } from '../../utils/api-token';
 import { encryptConfig, configCryptoEnabled } from '../../utils/crypto';
+import { verifyRequestSignature, deriveEncKey } from '../../utils/sign';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 export default {
@@ -20,6 +21,12 @@ export default {
 
     if (!user) {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Token inválido.' });
+    }
+
+    // Firma HMAC obligatoria (bloquea curl/navegador con solo el UUID)
+    const sigErr = verifyRequestSignature(req, user.id);
+    if (sigErr) {
+      return reply.status(sigErr.status).send({ error: 'Unauthorized', message: sigErr.message });
     }
 
     if (user.banned) {
@@ -62,11 +69,12 @@ export default {
       servers: servers.map(serializeServer),
     };
 
-    // Modo cifrado: la config viaja en un envelope AES-GCM que solo la APK con la
-    // clave correspondiente puede abrir. Si CONFIG_CRYPTO_ENABLED=false (o falta la
-    // clave), se responde el JSON plano (compatibilidad/rollback).
+    // Modo cifrado: la config viaja en un envelope AES-GCM cifrado con la clave
+    // POR USUARIO (deriveEncKey). Si CONFIG_CRYPTO_ENABLED=false (o falta la
+    // clave), se responde el JSON plano (compatibilidad/rollback), siempre con
+    // la firma HMAC ya verificada.
     if (configCryptoEnabled()) {
-      return reply.send(encryptConfig(payload));
+      return reply.send(encryptConfig(payload, deriveEncKey(user.id)));
     }
 
     return reply.send(payload);

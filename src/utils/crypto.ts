@@ -20,11 +20,10 @@ export function configCryptoEnabled(): boolean {
 
 /**
  * Cifra un objeto como JSON en un envelope AES-256-GCM:
- * { v: 1, iv, ct, tag } (todo base64). El receptor (la app) descifra con su clave.
+ * { v: 1, iv, ct, tag } (todo base64). El receptor (la app) descifra con su
+ * clave. La clave es POR USUARIO (deriveEncKey en sign.ts), nunca la global.
  */
-export function encryptConfig(obj: unknown): { v: number; iv: string; ct: string; tag: string } {
-  const key = getKey();
-  if (!key) throw new Error('APP_CRYPTO_KEY no configurada.');
+export function encryptConfig(obj: unknown, key: Buffer): { v: number; iv: string; ct: string; tag: string } {
   const iv = crypto.randomBytes(12);
   const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
   const plain = Buffer.from(JSON.stringify(obj), 'utf8');

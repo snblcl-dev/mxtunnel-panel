@@ -1,6 +1,7 @@
 import prisma from '../../config/prisma-client';
 import { isExpired } from '../../utils/format-date';
 import { getApiToken } from '../../utils/api-token';
+import { verifyRequestSignature } from '../../utils/sign';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
 export default {
@@ -18,6 +19,12 @@ export default {
 
     if (!user) {
       return reply.status(401).send({ error: 'Unauthorized', message: 'Token inválido.' });
+    }
+
+    // Firma HMAC obligatoria (mismo esquema que /api/config)
+    const sigErr = verifyRequestSignature(req, user.id);
+    if (sigErr) {
+      return reply.status(sigErr.status).send({ error: 'Unauthorized', message: sigErr.message });
     }
 
     if (user.banned) {

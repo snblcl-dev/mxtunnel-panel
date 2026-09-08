@@ -134,6 +134,15 @@
     }).catch(() => {});
   });
 
+  // ----- Submenús colapsables del sidebar (p. ej. Aplicación) -----
+  document.addEventListener('click', function (e) {
+    const btn = e.target && e.target.closest ? e.target.closest('.nav-group-toggle') : null;
+    if (!btn) return;
+    const group = btn.closest('.nav-group');
+    if (!group) return;
+    group.classList.toggle('open');
+  });
+
   // ----- Toggle switch -----
   document.addEventListener('change', function (e) {
     const t = e.target;

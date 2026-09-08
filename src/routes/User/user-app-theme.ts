@@ -30,7 +30,7 @@ export default {
       if (!theme) return ajaxFail(reply, 'Tema no encontrado', 404);
       await prisma.user.update({ where: { id: userId }, data: { active_theme_id: id } });
       await bumpThemeVersion(userId);
-      return ajaxOrRedirect(req, reply, '/user/app', 'Tema activado');
+      return ajaxOrRedirect(req, reply, '/user/app/themes', 'Tema activado');
     }
 
     if (action === 'delete') {
@@ -41,7 +41,7 @@ export default {
         await prisma.user.update({ where: { id: userId }, data: { active_theme_id: null } });
       }
       await bumpThemeVersion(userId);
-      return ajaxOrRedirect(req, reply, '/user/app', 'Tema eliminado');
+      return ajaxOrRedirect(req, reply, '/user/app/themes', 'Tema eliminado');
     }
 
     const parsed = schema.safeParse(body);
@@ -53,6 +53,6 @@ export default {
 
     await prisma.theme.create({ data: { name: d.name, html: d.html, owner_id: userId } });
     await bumpThemeVersion(userId);
-    return ajaxOrRedirect(req, reply, '/user/app', 'Tema creado');
+    return ajaxOrRedirect(req, reply, '/user/app/themes', 'Tema creado');
   },
 } as RouteOptions;

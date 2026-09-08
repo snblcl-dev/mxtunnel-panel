@@ -189,6 +189,43 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 }
 .app-sidebar .nav-link.active::before { color: var(--accent); }
 .app-sidebar .nav-link.active i { color: var(--accent); }
+
+/* Submenú colapsable (p. ej. Aplicación → Ajustes app / Temas) */
+.app-sidebar .nav-group { display: flex; flex-direction: column; }
+.app-sidebar .nav-group-toggle { width: 100%; border: 0; background: none; cursor: pointer; font-family: inherit; }
+.app-sidebar .nav-group-toggle .nav-caret {
+  font-size: .7rem; color: var(--ink-3);
+  width: auto; flex: none; margin-left: .15rem;
+  transition: transform .2s ease;
+}
+.app-sidebar .nav-group.open .nav-group-toggle .nav-caret { transform: rotate(180deg); }
+.app-sidebar .nav-submenu {
+  list-style: none;
+  margin: 0 0 .2rem;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+}
+.app-sidebar .nav-group.open .nav-submenu { max-height: 200px; }
+.app-sidebar .nav-submenu .nav-link {
+  padding: .38rem .6rem .38rem 1.15rem;
+  font-size: .8rem;
+  color: var(--ink-3);
+  border-left: 2px solid transparent;
+}
+.app-sidebar .nav-submenu .nav-link::before { content: '▸'; width: .7rem; color: var(--dim); font-size: .6rem; }
+.app-sidebar .nav-submenu .nav-link i { font-size: .8rem; width: .95rem; }
+.app-sidebar .nav-submenu .nav-link:hover { transform: none; background: transparent; color: var(--ink); }
+.app-sidebar .nav-submenu .nav-link.active {
+  color: var(--accent);
+  background: transparent;
+  border-left-color: var(--accent);
+}
+.app-sidebar .nav-submenu .nav-link.active::before,
+.app-sidebar .nav-submenu .nav-link.active i { color: var(--accent); }
+.app-sidebar .nav-link .nav-ext { font-size: .62rem; color: var(--dim); width: auto; flex: none; margin-left: .1rem; }
+.app-sidebar .nav-link:hover .nav-ext { color: var(--accent); }
 .app-sidebar .sidebar-footer { margin-top: auto; padding-top: 1rem; }
 .app-sidebar .sidebar-footer .btn { width: 100%; }
 

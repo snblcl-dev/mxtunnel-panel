@@ -32,6 +32,6 @@ export default {
       data: { name: global.name, html: global.html, owner_id: userId },
     });
 
-    return ajaxOrRedirect(req, reply, '/user/app?tab=themes', 'Tema guardado en tus temas');
+    return ajaxOrRedirect(req, reply, '/user/app/themes', 'Tema guardado en tus temas');
   },
 } as RouteOptions;

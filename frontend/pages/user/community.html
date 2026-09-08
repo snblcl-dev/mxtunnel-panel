@@ -34,13 +34,13 @@
         <% if (it.downloadBlocked) { %>
           <div class="alert alert-warning d-flex align-items-center gap-2">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <span>Tienes el máximo de <strong><%= it.MAX_THEMES %> temas</strong>. Elimina uno en <a href="/user/app?tab=themes" class="alert-link">Aplicación</a> para poder descargar más.</span>
+            <span>Tienes el máximo de <strong><%= it.MAX_THEMES %> temas</strong>. Elimina uno en <a href="/user/app/themes" class="alert-link">Temas</a> para poder descargar más.</span>
           </div>
         <% } %>
 
         <div class="alert alert-secondary d-flex align-items-center gap-2">
           <i class="bi bi-info-circle"></i>
-          <span>Tienes <strong><%= it.ownCount %>/<%= it.MAX_THEMES %></strong> temas propios. Pulsa <strong>Descargar</strong> para guardar uno de la comunidad en tu sección Aplicación.</span>
+          <span>Tienes <strong><%= it.ownCount %>/<%= it.MAX_THEMES %></strong> temas propios. Pulsa <strong>Descargar</strong> para guardar uno de la comunidad en tu sección Temas.</span>
         </div>
 
         <% if (it.themes.length === 0) { %>

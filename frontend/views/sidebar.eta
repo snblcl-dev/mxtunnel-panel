@@ -22,9 +22,27 @@
         <i class="bi bi-hdd-rack"></i><span>Servidores</span>
       </a>
     </li>
-    <li class="nav-item">
-      <a href="/user/app" class="nav-link <%= it.active === 'app' ? 'active' : '' %>">
+    <li class="nav-item nav-group <%= (it.active === 'app-settings' || it.active === 'app-themes') ? 'open' : '' %>">
+      <button type="button" class="nav-link nav-group-toggle <%= (it.active === 'app-settings' || it.active === 'app-themes') ? 'active' : '' %>">
         <i class="bi bi-phone"></i><span>Aplicación</span>
+        <i class="bi bi-chevron-down nav-caret"></i>
+      </button>
+      <ul class="nav-submenu">
+        <li>
+          <a href="/user/app" class="nav-link <%= it.active === 'app-settings' ? 'active' : '' %>">
+            <i class="bi bi-sliders"></i><span>Ajustes app</span>
+          </a>
+        </li>
+        <li>
+          <a href="/user/app/themes" class="nav-link <%= it.active === 'app-themes' ? 'active' : '' %>">
+            <i class="bi bi-palette"></i><span>Temas</span>
+          </a>
+        </li>
+      </ul>
+    </li>
+    <li class="nav-item">
+      <a href="/user/community" class="nav-link <%= it.active === 'community' ? 'active' : '' %>">
+        <i class="bi bi-people"></i><span>Comunidad</span>
       </a>
     </li>
     <li class="nav-item">
@@ -33,13 +51,14 @@
       </a>
     </li>
     <li class="nav-item">
-      <a href="/user/community" class="nav-link <%= it.active === 'community' ? 'active' : '' %>">
-        <i class="bi bi-people"></i><span>Comunidad</span>
+      <a href="/user/profile" class="nav-link <%= it.active === 'profile' ? 'active' : '' %>">
+        <i class="bi bi-person"></i><span>Perfil</span>
       </a>
     </li>
     <li class="nav-item">
-      <a href="/user/profile" class="nav-link <%= it.active === 'profile' ? 'active' : '' %>">
-        <i class="bi bi-person"></i><span>Perfil</span>
+      <a href="https://t.me/LuxAetr" target="_blank" rel="noopener" class="nav-link">
+        <i class="bi bi-send"></i><span>Contacto y soporte</span>
+        <i class="bi bi-box-arrow-up-right nav-ext"></i>
       </a>
     </li>
   </ul>

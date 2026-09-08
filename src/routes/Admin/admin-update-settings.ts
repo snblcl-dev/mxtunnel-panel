@@ -17,10 +17,22 @@ export default {
     if (action === 'registration') {
       // El checkbox solo se envía cuando está marcado.
       const enabled = body.registration_enabled === 'true' || body.registration_enabled === 'on';
+
+      const daysRaw = String(body.registration_days ?? '').trim();
+      const days = daysRaw === '' ? 0 : Number(daysRaw);
+      if (!Number.isInteger(days) || days < 0 || days > 3650) {
+        return ajaxFail(reply, 'Indica un número de días válido (0 = sin límite).');
+      }
+
       await prisma.setting.upsert({
         where: { key: 'registration_enabled' },
         update: { value: enabled ? 'true' : 'false' },
         create: { key: 'registration_enabled', value: enabled ? 'true' : 'false' },
+      });
+      await prisma.setting.upsert({
+        where: { key: 'registration_expiration_days' },
+        update: { value: String(days) },
+        create: { key: 'registration_expiration_days', value: String(days) },
       });
       return ajaxOrRedirect(req, reply, '/admin/settings', 'Ajustes guardados');
     }

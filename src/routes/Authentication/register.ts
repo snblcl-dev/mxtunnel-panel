@@ -41,10 +41,17 @@ export default {
     const { username, email, password } = parsed.data;
     const hashed = await hashPassword(password);
 
+    const daysSetting = await prisma.setting.findUnique({
+      where: { key: 'registration_expiration_days' },
+    });
+    const days = Number(daysSetting?.value ?? '0');
+    const expiration =
+      days > 0 ? new Date(Date.now() + days * 24 * 60 * 60 * 1000) : null;
+
     let user;
     try {
       user = await prisma.user.create({
-        data: { username, email, password: hashed, role: 'USER' },
+        data: { username, email, password: hashed, role: 'USER', expiration_date: expiration },
       });
     } catch (e: any) {
       if (e.code === 'P2002') {

@@ -9,12 +9,18 @@ export default {
   method: 'GET',
   onRequest: [Authentication, AdminAuthentication],
   handler: async (req: FastifyRequest, reply: FastifyReply) => {
-    const setting = await prisma.setting.findUnique({
-      where: { key: 'registration_enabled' },
-    });
+    const [enabledSetting, daysSetting] = await Promise.all([
+      prisma.setting.findUnique({
+        where: { key: 'registration_enabled' },
+      }),
+      prisma.setting.findUnique({
+        where: { key: 'registration_expiration_days' },
+      }),
+    ]);
     return Render.page(req, reply, '/admin/settings.html', {
       active: 'settings',
-      registrationEnabled: setting?.value === 'true',
+      registrationEnabled: enabledSetting?.value === 'true',
+      registrationDays: daysSetting?.value ?? '0',
     });
   },
 } as RouteOptions;

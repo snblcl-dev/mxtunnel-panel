@@ -31,6 +31,14 @@ async function main() {
   });
 
   console.log('Setting registration_enabled=false verificado');
+
+  await prisma.setting.upsert({
+    where: { key: 'registration_expiration_days' },
+    update: {},
+    create: { key: 'registration_expiration_days', value: '0' },
+  });
+
+  console.log('Setting registration_expiration_days=0 verificado');
 }
 
 main()

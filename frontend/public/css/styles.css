@@ -536,11 +536,6 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 }
 .btn i { line-height: 1; flex: none; }
 
-/* Botones solo-ícono: cuadrados con el glifo centrado, mismo alto que un
-   botón de texto vecino (para que no se vean "deformes" en filas de acciones). */
-.btn:has(> i:first-child:last-child) { padding: 0; width: 2.5rem; height: 2.5rem; }
-.btn-sm:has(> i:first-child:last-child) { width: 1.95rem; height: 1.95rem; }
-
 .btn-primary {
   background: var(--accent);
   color: #06130d;

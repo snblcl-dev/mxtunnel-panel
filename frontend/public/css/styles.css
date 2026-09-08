@@ -527,12 +527,23 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
   font-family: var(--f-body);
   font-size: .85rem;
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  line-height: 1.5;
 }
-.btn i { line-height: 1; }
+.btn i { line-height: 1; flex: none; }
+
+/* Botones solo-ícono: cuadrados con el glifo centrado, mismo alto que un
+   botón de texto vecino (para que no se vean "deformes" en filas de acciones). */
+.btn:has(> i:first-child:last-child) { padding: 0; width: 2.5rem; height: 2.5rem; }
+.btn-sm:has(> i:first-child:last-child) { width: 1.95rem; height: 1.95rem; }
 
 .btn-primary {
   background: var(--accent);
-  border: none; color: #06130d;
+  color: #06130d;
   box-shadow: 0 0 20px rgba(0,255,136,.2);
 }
 .btn-primary:hover, .btn-primary:focus {
@@ -555,10 +566,10 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
   box-shadow: var(--glow-accent);
 }
 
-.btn-success { background: var(--accent); border: none; color: #06130d; }
+.btn-success { background: var(--accent); color: #06130d; }
 .btn-success:hover { background: var(--accent-d); color: #06130d; }
 
-.btn-danger  { background: var(--danger); border: none; color: #1a0505; box-shadow: 0 0 18px rgba(255,92,92,.18); }
+.btn-danger  { background: var(--danger); color: #1a0505; box-shadow: 0 0 18px rgba(255,92,92,.18); }
 .btn-danger:hover { background: #ff4a4a; color: #1a0505; box-shadow: 0 0 26px rgba(255,92,92,.32); }
 .btn-outline-danger {
   color: var(--danger);
@@ -569,7 +580,7 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 
 .btn-secondary {
   background: var(--bg-3);
-  border: 1px solid var(--border-hi);
+  border-color: var(--border-hi);
   color: var(--ink-2);
 }
 .btn-secondary:hover { background: var(--border-hi); border-color: var(--border-hi); color: var(--ink); }

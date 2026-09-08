@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+  <!-- Fondo tipo brand-mark del panel: cuadrado oscuro redondeado -->
+  <rect x="0.4" y="0.4" width="15.2" height="15.2" rx="3.4" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="0.8"/>
+  <!-- Candado: arco (grillete) sobre el cuerpo -->
+  <path d="M5.3 7.6 V5.5 a2.7 2.7 0 0 1 5.4 0 V7.6" fill="none" stroke="#00ff88" stroke-width="2.2" stroke-linecap="round"/>
+  <!-- Cuerpo del candado -->
+  <rect x="2.9" y="7.4" width="10.2" height="7.3" rx="1.9" fill="#00ff88"/>
+  <!-- Cerradura (ojo de la llave) en el centro -->
+  <circle cx="8" cy="10.6" r="1.25" fill="#1a1a1a"/>
+  <rect x="7.45" y="11.1" width="1.1" height="2.5" rx="0.55" fill="#1a1a1a"/>
+</svg>

@@ -15,7 +15,7 @@ export interface ApkBuildInput {
   userId: string;
   package: string;
   name: string;
-  iconBase64?: string; // dataURL (data:image/png;base64,...) o base64 puro
+  iconBase64: string; // dataURL (data:image/png;base64,...) o base64 puro (obligatorio)
   token: string; // UUID del usuario
 }
 
@@ -32,7 +32,7 @@ function envOrThrow(name: string): string {
 }
 
 function baseApkPath(): string {
-  return process.env.APK_BASE || path.resolve(process.cwd(), 'secrets', 'app-release-unsigned.apk');
+  return process.env.APK_BASE || path.resolve(process.cwd(), 'secrets', 'vpnapp-release-unsigned.apk');
 }
 
 function outputDir(): string {
@@ -90,12 +90,11 @@ export function cleanOldApks(): void {
 }
 
 /**
- * Genera la APK personalizada para un usuario.
+ * Genera la APK personalizada de VpnApp para un usuario.
  * 1. Valida package/nombre.
- * 2. Guarda el icono.
- * 3. Cifra el token.
- * 4. Llama a tools/repack_apk.sh.
- * 5. Limpia APKs viejos.
+ * 2. Guarda el icono (obligatorio).
+ * 3. Llama a tools/repack_apk.sh (token.enc + pkey.enc por usuario).
+ * 4. Limpia APKs viejos.
  */
 export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
   const pkg = input.package.trim();
@@ -107,7 +106,8 @@ export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
   if (name.length < 1 || name.length > 40) {
     throw new Error('Nombre inválido (1-40 caracteres).');
   }
-  if (pkg === 'com.mxtunnel.app') {
+  const RESERVED = ['com.vpnapp', 'com.mxtunnel.app'];
+  if (RESERVED.includes(pkg)) {
     throw new Error('Ese package está reservado. Elige otro.');
   }
 
@@ -117,14 +117,18 @@ export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
   const base = baseApkPath();
   if (!fs.existsSync(base)) throw new Error('APK base no encontrada (configura APK_BASE).');
 
-  const iconPath = input.iconBase64 ? saveIcon(input.userId, input.iconBase64) : undefined;
-  // El token va EN CLARO al script: repack_apk.sh ya lo cifra con token_encrypt.py
-  // (la app descifra una vez con TokenCipher). Pasarlo cifrado aquí doblaría el cifrado.
+  if (!input.iconBase64 || input.iconBase64.trim().length === 0) {
+    throw new Error('El icono es obligatorio.');
+  }
+  const iconPath = saveIcon(input.userId, input.iconBase64);
+  // El token y el userId van EN CLARO al script: repack_apk.sh los cifra con
+  // token_encrypt.py (token.enc) y pkey_encrypt.py (pkey.enc, auth/enc por
+  // usuario). Pasarlos cifrados aquí doblaría el cifrado.
   const tokenEnc = input.token;
 
   const dir = outputDir();
   fs.mkdirSync(dir, { recursive: true });
-  const file = `MXTunnel_${pkg.replace(/\./g, '_')}.apk`;
+  const file = `VpnApp_${pkg.replace(/\./g, '_')}.apk`;
   const out = path.join(dir, file);
 
   const script = path.join(toolsDir(), 'repack_apk.sh');
@@ -132,17 +136,17 @@ export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
     '--apk', base,
     '--pkg', pkg,
     '--name', name,
+    '--icon', iconPath,
     '--token', tokenEnc,
     '--out', out,
   ];
-  if (iconPath) {
-    args.push('--icon', iconPath);
-  }
 
   const { stdout } = await execFileAsync('bash', [script, ...args], {
     env: {
       ...process.env,
       APK_TOKEN_KEY: envOrThrow('APK_TOKEN_KEY'),
+      APP_CRYPTO_KEY: envOrThrow('APP_CRYPTO_KEY'),
+      APP_WRAP_KEY: envOrThrow('APP_WRAP_KEY'),
       APK_KEYSTORE: process.env.APK_KEYSTORE || '',
       APK_KS_PASS: process.env.APK_KS_PASS || '',
       APK_KS_ALIAS: process.env.APK_KS_ALIAS || '',

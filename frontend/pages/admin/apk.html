@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MXTunnel — Generar APK</title>
+  <title>VpnApp — Generar APK</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -21,12 +21,12 @@
     <div class="page-header">
       <div>
         <h3>Generar APK</h3>
-        <div class="text-muted">Genera una APK personalizada para un usuario</div>
+        <div class="text-muted">Genera una APK personalizada de VpnApp para un usuario</div>
       </div>
     </div>
 
     <div class="card mb-4 fade-in">
-      <div class="card-header"><i class="bi bi-phone me-2"></i>Nueva APK</div>
+      <div class="card-header"><i class="bi bi-phone me-2"></i>Nueva APK de VpnApp</div>
       <div class="card-body">
         <form id="apkForm" class="row g-3">
           <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
@@ -35,7 +35,8 @@
             <select class="form-select" name="userId" id="apkUser" required>
               <option value="">— Selecciona un usuario —</option>
               <% it.users.forEach(function(u) { %>
-                <option value="<%= u.id %>" data-pkg="<%= u.apk_package || '' %>" data-name="<%= u.apk_name || '' %>">
+                <option value="<%= u.id %>" data-pkg="<%= u.apk_package || '' %>" data-name="<%= u.apk_name || '' %>"
+                        data-username="<%= u.username %>">
                   <%= u.username %> (<%= u.email %>)
                 </option>
               <% }) %>
@@ -43,17 +44,17 @@
           </div>
           <div class="col-md-4">
             <label class="form-label">Package (ID de la app)</label>
-            <input class="form-control font-mono" name="package" id="apkPackage" placeholder="com.mxtunnel.app.usuario" required />
+            <input class="form-control font-mono" name="package" id="apkPackage" placeholder="com.vpnapp.usuario" required />
             <div class="form-hint">Solo minúsculas, números y puntos.</div>
           </div>
           <div class="col-md-4">
             <label class="form-label">Nombre de la app</label>
-            <input class="form-control" name="name" id="apkName" placeholder="MXTunnel - Usuario" maxlength="40" required />
+            <input class="form-control" name="name" id="apkName" placeholder="VpnApp" maxlength="40" required />
           </div>
           <div class="col-md-8">
-            <label class="form-label">Icono (opcional)</label>
-            <input type="file" class="form-control" id="apkIcon" accept="image/png,image/jpeg,image/webp" />
-            <div class="form-hint">PNG/JPG/WEBP. Si no eliges, se usa el icono por defecto.</div>
+            <label class="form-label">Icono <span class="text-danger">*</span></label>
+            <input type="file" class="form-control" id="apkIcon" accept="image/png,image/jpeg,image/webp" required />
+            <div class="form-hint">PNG/JPG/WEBP. Se convierte a PNG 512×512 (obligatorio).</div>
           </div>
           <div class="col-md-4 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100" id="apkGenerateBtn">
@@ -109,12 +110,14 @@
   var iconInput = document.getElementById('apkIcon');
   var iconBase64 = '';
 
-  // Al elegir usuario, precargar package/nombre si ya generó antes
+  // Al elegir usuario, precargar package/nombre si ya generó un clon de VpnApp
   document.getElementById('apkUser').addEventListener('change', function () {
     var opt = this.options[this.selectedIndex];
     if (!opt) return;
-    if (opt.dataset.pkg) document.getElementById('apkPackage').value = opt.dataset.pkg;
-    if (opt.dataset.name) document.getElementById('apkName').value = opt.dataset.name;
+    var isVpn = opt.dataset.pkg && opt.dataset.pkg.indexOf('com.vpnapp') === 0;
+    var defUser = (opt.dataset.username || 'usuario').toLowerCase().replace(/[^a-z0-9]/g, '');
+    document.getElementById('apkPackage').value = isVpn ? opt.dataset.pkg : ('com.vpnapp.' + defUser);
+    document.getElementById('apkName').value = isVpn && opt.dataset.name ? opt.dataset.name : 'VpnApp';
   });
 
   iconInput.addEventListener('change', function () {
@@ -147,6 +150,10 @@
     var pkg = document.getElementById('apkPackage').value.trim();
     var name = document.getElementById('apkName').value.trim();
     if (!userId) { status.innerHTML = '<div class="alert alert-danger">Selecciona un usuario.</div>'; return; }
+    if (!iconBase64) {
+      status.innerHTML = '<div class="alert alert-danger">Elige un icono (obligatorio).</div>';
+      return;
+    }
     if (!/^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/.test(pkg)) {
       status.innerHTML = '<div class="alert alert-danger">Package inválido. Usa com.ejemplo.app (minúsculas y puntos).</div>';
       return;

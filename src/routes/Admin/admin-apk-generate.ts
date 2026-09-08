@@ -10,7 +10,7 @@ const schema = z.object({
   userId: z.string().min(1),
   package: z.string().regex(PKG_REGEX, 'Package inválido. Usa com.ejemplo.app'),
   name: z.string().min(1).max(40),
-  icon: z.string().optional().or(z.literal('')),
+  icon: z.string().min(1, 'El icono es obligatorio.'),
 });
 
 export default {
@@ -34,7 +34,7 @@ export default {
         userId,
         package: pkg,
         name,
-        iconBase64: icon || undefined,
+        iconBase64: icon,
         token: user.id,
       });
 

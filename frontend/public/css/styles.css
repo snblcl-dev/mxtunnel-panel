@@ -600,6 +600,14 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 .btn-sm { padding: .32rem .7rem; font-size: .78rem; }
 .btn .spinner-border { width: .9rem; height: .9rem; border-width: .14rem; }
 
+/* Iconos de acciones de fila (tablas y listas): tamaño uniforme para que
+   ningún glifo se vea más chico que el resto (sin tocar el tamaño del botón). */
+.table .btn-sm i,
+.list-group-item .btn-sm i {
+  font-size: .92rem;
+  line-height: 1;
+}
+
 /* ============================================
    Forms (terminal)
    ============================================ */

@@ -72,7 +72,7 @@
                     <input type="hidden" name="_csrf" value="<%= it.csrfToken %>" />
                     <input type="hidden" name="action" value="ban" />
                     <button class="btn btn-sm <%= u.banned ? 'btn-success' : 'btn-outline-danger' %>" title="<%= u.banned ? 'Desbanear' : 'Banear' %>">
-                      <i class="bi bi-<%= u.banned ? 'unlock' : 'slash-circle' %>"></i>
+                      <i class="bi bi-<%= u.banned ? 'unlock' : 'ban' %>"></i>
                     </button>
                   </form>
                   <form method="POST" action="/admin/users/<%= u.id %>" class="m-0 d-flex gap-1">

@@ -91,6 +91,12 @@ sed -i "s/package=\"$BASE_PKG\"/package=\"$PKG\"/" "$MANIFEST"
 # debe coincidir con el package nuevo. Dos ocurrencias (<permission> y <uses-permission>).
 sed -i "s/${BASE_PKG}\.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION/${PKG}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION/g" "$MANIFEST"
 
+# Authority de ContentProviders horneada en build con el applicationId original
+# (p. ej. com.vpnapp.androidx-startup). Dos apps no pueden compartir authority:
+# se reescribe para que cada clon tenga la suya (${PKG}.androidx-startup). Las
+# authorities nunca son nombres de clase, así que el prefijo BASE_PKG es seguro.
+sed -i "s/android:authorities=\"${BASE_PKG}\./android:authorities=\"$PKG./g" "$MANIFEST"
+
 # Label: si el manifest usa @string/app_name, se edita app_name en TODOS los
 # locales (values, values-es, ...).
 if grep -q 'android:label="@string/app_name"' "$MANIFEST"; then

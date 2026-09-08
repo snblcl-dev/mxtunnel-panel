@@ -2,11 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Authentication from '../../middlewares/authentication';
 import UserActive from '../../middlewares/user-active';
+import { userApkDir } from '../../utils/apk-builder';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
-
-function outputDir(): string {
-  return process.env.APK_OUTPUT_DIR || path.resolve(process.cwd(), 'uploads', 'apk');
-}
 
 export default {
   url: '/user/apk/download/:file',
@@ -17,7 +14,8 @@ export default {
     if (!file || !/^[\w.\-]+\.apk$/.test(file)) {
       return reply.status(400).send('Nombre de archivo inválido.');
     }
-    const full = path.join(outputDir(), file);
+    const userId = (req as any).user.id;
+    const full = path.join(userApkDir(userId), file);
     if (!fs.existsSync(full)) {
       return reply.status(404).send('APK no encontrada o expirada (se borra a las 3 horas).');
     }

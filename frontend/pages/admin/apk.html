@@ -181,7 +181,7 @@
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-stars me-2"></i>Generar APK';
         if (res.ok) {
-          status.innerHTML = '<div class="alert alert-success">APK generada. <a href="/admin/apk/download/' + encodeURIComponent(res.file) + '" class="alert-link">Descárgala aquí</a></div>';
+          status.innerHTML = '<div class="alert alert-success">APK generada. <a href="/admin/apk/download/' + userId + '/' + encodeURIComponent(res.file) + '" class="alert-link">Descárgala aquí</a></div>';
           setTimeout(function () { location.reload(); }, 1500);
         } else {
           status.innerHTML = '<div class="alert alert-danger">' + (res.message || 'Error al generar') + '</div>';

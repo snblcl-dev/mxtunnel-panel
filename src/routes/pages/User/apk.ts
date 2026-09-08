@@ -4,16 +4,12 @@ import prisma from '../../../config/prisma-client';
 import { Render } from '../../../config/render-config';
 import Authentication from '../../../middlewares/authentication';
 import UserActive from '../../../middlewares/user-active';
-import { cleanOldApks } from '../../../utils/apk-builder';
+import { cleanOldApks, userApkDir } from '../../../utils/apk-builder';
 import { FastifyReply, FastifyRequest, RouteOptions } from 'fastify';
 
-function outputDir(): string {
-  return process.env.APK_OUTPUT_DIR || path.resolve(process.cwd(), 'uploads', 'apk');
-}
-
-function listUserApks(): { file: string; size: number; mtime: Date }[] {
+function listUserApks(userId: string): { file: string; size: number; mtime: Date }[] {
   try {
-    const dir = outputDir();
+    const dir = userApkDir(userId);
     if (!fs.existsSync(dir)) return [];
     return fs
       .readdirSync(dir)
@@ -40,7 +36,7 @@ export default {
     return Render.page(req, reply, '/user/apk.html', {
       active: 'apk',
       me,
-      apks: listUserApks(),
+      apks: listUserApks(userId),
     });
   },
 } as RouteOptions;

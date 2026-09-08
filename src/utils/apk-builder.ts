@@ -1,5 +1,6 @@
 import { execFile } from 'child_process';
 import { promisify } from 'util';
+import { createHash } from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
@@ -7,6 +8,21 @@ const execFileAsync = promisify(execFile);
 
 // Regex estricto para el package de Android: a.b.c (solo minúsculas, dígitos, puntos)
 export const PKG_REGEX = /^[a-z][a-z0-9]*(\.[a-z0-9]+)+$/;
+
+// Carpeta de salida raíz para las APKs.
+export function outputDir(): string {
+  return process.env.APK_OUTPUT_DIR || path.resolve(process.cwd(), 'uploads', 'apk');
+}
+
+// Cada usuario tiene una subcarpeta con hash de su id (no el token), para que el
+// nombre de los archivos no exponga el UUID del usuario.
+export function userApkFolder(userId: string): string {
+  return createHash('sha256').update(userId).digest('hex').slice(0, 16);
+}
+
+export function userApkDir(userId: string): string {
+  return path.join(outputDir(), userApkFolder(userId));
+}
 
 // Tiempo de vida de los APKs generados (ms)
 export const APK_TTL_MS = 3 * 60 * 60 * 1000; // 3 horas
@@ -35,15 +51,11 @@ function baseApkPath(): string {
   return process.env.APK_BASE || path.resolve(process.cwd(), 'secrets', 'vpnapp-release-unsigned.apk');
 }
 
-function outputDir(): string {
-  return process.env.APK_OUTPUT_DIR || path.resolve(process.cwd(), 'uploads', 'apk');
-}
-
 function toolsDir(): string {
   return path.resolve(process.cwd(), 'tools');
 }
 
-/** Guarda el icono (base64) en uploads/apk/ y devuelve la ruta. */
+/** Guarda el icono (base64) en la carpeta del usuario y devuelve la ruta. */
 function saveIcon(userId: string, iconBase64: string): string {
   // Quitar el prefijo dataURL si viene
   const m = /^data:image\/[a-zA-Z+]+;base64,(.+)$/.exec(iconBase64.trim());
@@ -58,32 +70,52 @@ function saveIcon(userId: string, iconBase64: string): string {
   if (buf.length < 8 || !buf.subarray(0, 8).equals(PNG_SIG)) {
     throw new Error('El icono debe ser PNG (usa una imagen PNG o JPG; se convertirá a PNG).');
   }
-  const dir = outputDir();
+  const dir = userApkDir(userId);
   fs.mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, `icon_${userId}.png`);
+  const file = path.join(dir, 'icon.png');
   fs.writeFileSync(file, buf);
   return file;
 }
 
-/** Borra los APKs con más de APK_TTL_MS de antigüedad en el directorio de salida. */
+/** Borra las APKs con más de APK_TTL_MS de antigüedad (recursivo sobre las carpetas por usuario). */
 export function cleanOldApks(): void {
   try {
     const dir = outputDir();
     if (!fs.existsSync(dir)) return;
     const now = Date.now();
-    for (const f of fs.readdirSync(dir)) {
-      if (!f.endsWith('.apk')) continue;
-      const full = path.join(dir, f);
+
+    const cleanFolder = (folder: string) => {
+      let entries: fs.Dirent[];
       try {
-        const st = fs.statSync(full);
-        if (now - st.mtimeMs > APK_TTL_MS) {
-          fs.unlinkSync(full);
-          console.log(`[apk-builder] Limpieza: borrado ${f}`);
-        }
+        entries = fs.readdirSync(folder, { withFileTypes: true });
       } catch {
-        // archivo desapareció o no se puede leer; ignorar
+        return;
       }
-    }
+      for (const entry of entries) {
+        const full = path.join(folder, entry.name);
+        if (entry.isDirectory()) {
+          cleanFolder(full);
+          try {
+            if (fs.readdirSync(full).length === 0) fs.rmdirSync(full);
+          } catch {
+            // carpeta no vacía o desapareció; ignorar
+          }
+          continue;
+        }
+        if (!entry.name.endsWith('.apk')) continue;
+        try {
+          const st = fs.statSync(full);
+          if (now - st.mtimeMs > APK_TTL_MS) {
+            fs.unlinkSync(full);
+            console.log(`[apk-builder] Limpieza: borrado ${entry.name} en ${folder}`);
+          }
+        } catch {
+          // archivo desapareció o no se puede leer; ignorar
+        }
+      }
+    };
+
+    cleanFolder(dir);
   } catch (err) {
     console.error('[apk-builder] Error en limpieza de APKs:', err);
   }
@@ -126,7 +158,7 @@ export async function buildApk(input: ApkBuildInput): Promise<ApkBuildResult> {
   // usuario). Pasarlos cifrados aquí doblaría el cifrado.
   const tokenEnc = input.token;
 
-  const dir = outputDir();
+  const dir = userApkDir(input.userId);
   fs.mkdirSync(dir, { recursive: true });
   const file = `VpnApp_${pkg.replace(/\./g, '_')}.apk`;
   const out = path.join(dir, file);

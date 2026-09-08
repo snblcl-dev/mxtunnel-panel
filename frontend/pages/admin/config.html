@@ -25,17 +25,31 @@
       </div>
       <div class="d-flex gap-2">
         <a href="/admin/users" class="btn btn-secondary"><i class="bi bi-arrow-left me-1"></i>Volver</a>
-        <button class="btn btn-outline-primary" onclick="openCreateCategory()"><i class="bi bi-folder-plus me-1"></i>Nueva categoría</button>
-        <button class="btn btn-primary" onclick="openCreateServer()" <%= it.categories.length === 0 ? 'disabled' : '' %>><i class="bi bi-plus-lg me-1"></i>Nuevo servidor</button>
       </div>
     </div>
 
-    <div class="row g-3">
-      <!-- Categorías -->
-      <div class="col-lg-5">
-        <div class="card fade-in">
-          <div class="card-header"><i class="bi bi-folder me-2"></i>Categorías</div>
-          <div class="card-body">
+    <div class="config-tabs card fade-in">
+      <div class="card-header p-0">
+        <ul class="nav nav-tabs card-header-tabs px-3 pt-2" id="configTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-categories-tab" data-bs-toggle="tab" data-bs-target="#tab-categories" type="button" role="tab" aria-controls="tab-categories" aria-selected="true">
+              <i class="bi bi-folder me-2"></i>Categorías <span class="badge text-bg-secondary ms-1"><%= it.categories.length %></span>
+            </button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-servers-tab" data-bs-toggle="tab" data-bs-target="#tab-servers" type="button" role="tab" aria-controls="tab-servers" aria-selected="false">
+              <i class="bi bi-hdd-rack me-2"></i>Servidores <span class="badge text-bg-secondary ms-1"><%= it.servers.length %></span>
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="card-body">
+        <div class="tab-content" id="configTabsContent">
+
+          <div class="tab-pane fade show active" id="tab-categories" role="tabpanel" aria-labelledby="tab-categories-tab">
+            <div class="d-flex justify-content-end mb-3">
+              <button class="btn btn-outline-primary btn-sm" onclick="openCreateCategory()"><i class="bi bi-folder-plus me-1"></i>Nueva categoría</button>
+            </div>
             <ul class="list-group list-group-flush">
             <% if (it.categories.length === 0) { %>
               <li class="list-group-item bg-transparent"><div class="empty-state"><i class="bi bi-folder"></i><p class="m-0">Sin categorías</p></div></li>
@@ -58,48 +72,48 @@
             <% }) %>
             </ul>
           </div>
-        </div>
-      </div>
 
-      <!-- Servidores -->
-      <div class="col-lg-7">
-        <% if (it.categories.length === 0) { %>
-          <div class="alert alert-warning fade-in"><i class="bi bi-exclamation-triangle me-2"></i>Crea primero una categoría para poder agregar servidores.</div>
-        <% } %>
-
-        <div class="card fade-in">
-          <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0">
-              <thead><tr><th>Nombre</th><th>Categoría</th><th>Tipo de conexión</th><th>Orden</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody>
-              <% if (it.servers.length === 0) { %>
-                <tr><td colspan="6"><div class="empty-state"><i class="bi bi-hdd-rack"></i><p class="m-0">Sin servidores</p></div></td></tr>
-              <% } %>
-              <% it.servers.forEach(function(s) { %>
-                <tr>
-                  <td data-label="Nombre"><strong><%= s.name %></strong></td>
-                  <td data-label="Categoría"><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
-                  <td data-label="Tipo de conexión"><span class="badge bg-primary"><%= it.tunnelTypeName(s.tunnel_type) %></span></td>
-                  <td data-label="Orden"><span class="badge bg-secondary"><%= s.sorter %></span></td>
-                  <td data-label="Estado"><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
-                  <td data-label="Acciones">
-                    <div class="d-flex align-items-center gap-2">
-                      <div class="form-check form-switch m-0">
-                        <input class="form-check-input js-ajax-toggle" type="checkbox" role="switch"
-                          <%= s.status === 'ACTIVE' ? 'checked' : '' %>
-                          data-url="/admin/users/<%= it.user.id %>/servers/<%= s.id %>"
-                          data-action="toggle" data-csrf="<%= it.csrfToken %>"
-                          data-target-id="<%= s.id %>" data-active-label="ACTIVE" data-inactive-label="INACTIVE" />
+          <div class="tab-pane fade" id="tab-servers" role="tabpanel" aria-labelledby="tab-servers-tab">
+            <% if (it.categories.length === 0) { %>
+              <div class="alert alert-warning mb-3"><i class="bi bi-exclamation-triangle me-2"></i>Crea primero una categoría para poder agregar servidores.</div>
+            <% } %>
+            <div class="d-flex justify-content-end mb-3">
+              <button class="btn btn-primary btn-sm" onclick="openCreateServer()" <%= it.categories.length === 0 ? 'disabled' : '' %>><i class="bi bi-plus-lg me-1"></i>Nuevo servidor</button>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead><tr><th>Nombre</th><th>Categoría</th><th>Tipo de conexión</th><th>Orden</th><th>Estado</th><th>Acciones</th></tr></thead>
+                <tbody>
+                <% if (it.servers.length === 0) { %>
+                  <tr><td colspan="6"><div class="empty-state"><i class="bi bi-hdd-rack"></i><p class="m-0">Sin servidores</p></div></td></tr>
+                <% } %>
+                <% it.servers.forEach(function(s) { %>
+                  <tr>
+                    <td data-label="Nombre"><strong><%= s.name %></strong></td>
+                    <td data-label="Categoría"><span class="badge bg-secondary"><%= it.categories.find(function(c){return c.id===s.category_id}) ? it.categories.find(function(c){return c.id===s.category_id}).name : '—' %></span></td>
+                    <td data-label="Tipo de conexión"><span class="badge bg-primary"><%= it.tunnelTypeName(s.tunnel_type) %></span></td>
+                    <td data-label="Orden"><span class="badge bg-secondary"><%= s.sorter %></span></td>
+                    <td data-label="Estado"><span class="badge <%= s.status === 'ACTIVE' ? 'bg-success' : 'bg-secondary' %>" data-status-badge="<%= s.id %>"><%= s.status %></span></td>
+                    <td data-label="Acciones">
+                      <div class="d-flex align-items-center gap-2">
+                        <div class="form-check form-switch m-0">
+                          <input class="form-check-input js-ajax-toggle" type="checkbox" role="switch"
+                            <%= s.status === 'ACTIVE' ? 'checked' : '' %>
+                            data-url="/admin/users/<%= it.user.id %>/servers/<%= s.id %>"
+                            data-action="toggle" data-csrf="<%= it.csrfToken %>"
+                            data-target-id="<%= s.id %>" data-active-label="ACTIVE" data-inactive-label="INACTIVE" />
+                        </div>
+                        <button class="btn btn-sm btn-outline-primary" onclick="openEditServer(<%= s.id %>)"><i class="bi bi-pencil"></i></button>
+                        <button class="btn btn-sm btn-danger" onclick="confirmDelete('/admin/users/<%= it.user.id %>/servers/<%= s.id %>', '<%= it.csrfToken %>', '¿Eliminar servidor <%= s.name %>?')"><i class="bi bi-trash"></i></button>
                       </div>
-                      <button class="btn btn-sm btn-outline-primary" onclick="openEditServer(<%= s.id %>)"><i class="bi bi-pencil"></i></button>
-                      <button class="btn btn-sm btn-danger" onclick="confirmDelete('/admin/users/<%= it.user.id %>/servers/<%= s.id %>', '<%= it.csrfToken %>', '¿Eliminar servidor <%= s.name %>?')"><i class="bi bi-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
-              <% }) %>
-              </tbody>
-            </table>
+                    </td>
+                  </tr>
+                <% }) %>
+                </tbody>
+              </table>
+            </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -293,6 +307,21 @@
     fillCategorySelect(form);
     editSrvModal.show();
   };
+
+  (function () {
+    const key = 'admin-config-tab';
+    const tabButtons = document.querySelectorAll('#configTabs [data-bs-toggle="tab"]');
+    tabButtons.forEach(function (btn) {
+      btn.addEventListener('shown.bs.tab', function () {
+        sessionStorage.setItem(key, btn.getAttribute('data-bs-target'));
+      });
+    });
+    const last = sessionStorage.getItem(key);
+    if (last) {
+      const btn = document.querySelector('#configTabs [data-bs-target="' + last + '"]');
+      if (btn) new bootstrap.Tab(btn).show();
+    }
+  })();
 </script>
 </body>
 </html>

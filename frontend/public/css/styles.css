@@ -236,6 +236,50 @@ a:focus-visible, button:focus-visible, .btn:focus-visible { outline: 2px solid v
 .card-body { padding: 1.25rem; }
 
 /* ============================================
+   Tabs de configuración (categorías / servidores)
+   ============================================ */
+.config-tabs .card-header {
+  display: block;
+  padding: 0;
+  border-bottom: 1px solid var(--border);
+}
+.config-tabs .nav-tabs,
+.config-tabs .card-header-tabs {
+  border-bottom: 0;
+  margin: 0;
+  gap: .15rem;
+}
+.config-tabs .nav-link {
+  border: 0;
+  border-radius: 0;
+  border-bottom: 2px solid transparent;
+  color: var(--ink-3);
+  font-weight: 500;
+  font-size: .8rem;
+  letter-spacing: .01em;
+  padding: .9rem .85rem .75rem;
+  transition: color .15s, border-color .15s;
+}
+.config-tabs .nav-link:hover { color: var(--ink); }
+.config-tabs .nav-link:focus-visible { outline-offset: -2px; }
+.config-tabs .nav-link.active {
+  background: transparent;
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.config-tabs .nav-link .badge {
+  background: var(--bg-3);
+  color: var(--ink-2);
+  font-weight: 600;
+  vertical-align: 1px;
+}
+.config-tabs .nav-link.active .badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+}
+.config-tabs .card-body { padding: 1.25rem 1.25rem 1rem; }
+
+/* ============================================
    Stat cards
    ============================================ */
 .stat-card {
